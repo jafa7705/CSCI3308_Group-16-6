@@ -1,0 +1,60 @@
+1. Team Number: 16-6
+
+2. Team Name: 6-pack
+
+3. Team Members: 
+    Sydney Pritchard, sypr7620, sypr7620@colorado.edu
+    Christian Mesa, chris7199, chme9651@colorado.edu
+    Evan Kweder, ekweder, evkw2629@colorado.edu
+    Jiaye Zheng, JustinZheng0518, jizh4409@colorado.edu
+    Jason Fan, jafa7705, jafa7705@colorado.edu
+
+4. Application Name: Larté
+
+5. Application Description: 
+Our project idea is a social media-like website but with art portfolios that users can use 
+to upload art, connect with other artists, and communicate with employers. Each user
+may have the ability to possibly represent employers with proper verification, which will
+then allow them special permissions such as to contact artists about jobs, request art, 
+and generally show interest in working with artists. This will allow for a professional and
+effective form of communication between the two groups, while keeping the employers
+safe from being possibly bombarded with messages from users.
+    
+Our layout includes the users’ profile page, where they can upload their art, add
+descriptions, and attach tags for what medium/genre their art falls into. These tags
+will then allow employers to see what kind of art the artist focuses on, further allowing for
+organization of the website and for the employers. The layout will consist of a home page which 
+includes feeds of other artists that the user has connections with, a messages page, a login page,
+and a user profile page. Overall, this will be a professional, LinkedIn-type of website geared 
+towards artists and artist employers.
+
+
+6. Audience: 
+As mentioned, our audience is artists wishing to enhance connections and be provided with
+opportunities in the art community. We wish to solve the struggle that is being successful 
+in the art world, as engaging with people who are willing to buy art is very difficult, 
+especially in today's age with technology at the forefront of entertainment. This also 
+means we intend to make a very intuitive, user friendly website that has exactly what 
+the artists and employers need, and not much more. This is because our target audience
+likely is not as interested in technology and computers, and will want these interactions 
+to be simple, quick, and easy.
+
+7. Vision Statement: For artists and artist employers who need a way to professionally 
+communicate with one another, as well as express their goals and needs for their career. 
+Larté is a social website that allows for building connections within the art community.
+Unlike LinkedIn, our product is geared towards artists. This is essential for professions such
+as these as the need to coincide and be integrated into technology today is greater than ever.
+
+8. *Files made*
+
+9. Development Methodology: We will use Kanban boards to track progress.
+
+10. Communication Plan: We are using Slack.
+
+11. Meeting Plan: 
+TA meeting: Tuesday[1:15 - 1:30pm]
+Group meeting: Friday [1:30 - 2:30pm]
+
+12. Use Case Diagram: 
+
+    
