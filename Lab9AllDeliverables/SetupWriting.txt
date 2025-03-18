@@ -47,7 +47,7 @@ as these as the need to coincide and be integrated into technology today is grea
 
 8. *Files made*
 
-9. Development Methodology: We will use Kanban boards to track progress.
+9. Development Methodology: We will use Github boards to track progress.
 
 10. Communication Plan: We are using Slack.
 
@@ -55,6 +55,6 @@ as these as the need to coincide and be integrated into technology today is grea
 TA meeting: Tuesday[1:15 - 1:30pm]
 Group meeting: Friday [1:30 - 2:30pm]
 
-12. Use Case Diagram: 
+12. Use Case Diagram: Attached in Deliverables
 
     
