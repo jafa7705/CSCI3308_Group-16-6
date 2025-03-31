@@ -1,3 +1,63 @@
-{{!test}}
-<h1>Test homepage</h1>
-<p>testing</p>
+<div class="container" style="position: relative; padding: 20px;">
+    <header>
+    <div style="position: absolute; top: 20px; right: 20px;">
+        <a href="/login">Login/Register</a>
+    </div>
+    <h1 style="text-align: center;">Art Feed</h1>
+    </header>
+
+<section id="feedexample" style="max-width: 800px; margin: 40px auto;">
+    {{!example feed, this can get deleted once the feed is up and running.}}
+    <article class="post" style="margin-bottom: 40px;">
+        <p><a href="/profile/artist">artist profile</a></p>
+        <img src="/img/art.jpg" alt=image>
+        <p>description example.</p>
+    </article>
+    
+    <article class="post" style="margin-bottom: 40px;">
+        <p><a href="/profile/artist">artist profile</a></p>
+        <img src="/img/art.jpg" alt=image>
+        <p>example description</p>
+    </article>
+
+    <article class="post" style="margin-bottom: 40px;">
+        <p><a href="/profile/ekweder">artist profile</a></p>
+        <img src="/img/art.jpg" alt=image>
+        <p>example description</p>
+    </article>
+
+    <article class="post" style="margin-bottom: 40px;">
+        <p><a href="/profile/ekweder">artist profile</a></p>
+        <img src="/img/art.jpg" alt=image>
+        <p>example description</p>
+    </article>
+
+    <article class="post" style="margin-bottom: 40px;">
+        <p><a href="/profile/ekweder">artist profile</a></p>
+        <img src="/img/art.jpg" alt=image>
+        <p>example description</p>
+    </article>
+
+    <article class="post" style="margin-bottom: 40px;">
+        <p><a href="/profile/ekweder">artist profile</a></p>
+        <img src="/img/art.jpg" alt=image>
+        <p>example description</p>
+    </article>
+
+    <article class="post" style="margin-bottom: 40px;">
+        <p><a href="/profile/ekweder">artist profile</a></p>
+        <img src="/img/art.jpg" alt=image>
+        <p>example description</p>
+    </article>
+</section>
+</div>
+{{!real feed that pulls posts from database}}
+<section id="feed" style="max-width: 800px; margin: 40px auto;">
+    {{#each posts}}
+    <article class="post" style="margin-bottom: 40px;">
+        <p><a href="{{user.profileUrl}}">{{user.username}}</a></p>
+        <img src="{{imageUrl}}" alt="{{title}}">
+        <p>{{description}}</p>
+    </article>
+    {{/each}}
+</section>
