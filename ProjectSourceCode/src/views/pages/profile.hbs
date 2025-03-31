@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    {{! {{> header}}
+    {{! {{> message if we are doing messages}}
+    <section class="profile">
+        <img src="{{! {{ sql stuff}}" alt="Profile Photo" class="profile-photo">
+        <h1>{{name}}</h1>
+        <h2>Bio:</h2>
+        <p>{{bio}}</p>
+        <p>Contact me: <a href="mailto:{{email}}">{{email}}</a></p>
+    </section>
+
+    <section class="posts">
+        <h1>Posts</h1>
+        {{!-- I will include the feed part here with a hard filter for this specific user --}}
+    </section>
+    
+
+    {{! {{> footer}}
+</body>
+</html>

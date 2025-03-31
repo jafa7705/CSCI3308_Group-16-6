@@ -10,6 +10,6 @@ app.get('/', (req, res) => {
   res.render('pages/home');
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
+app.get('/profile', (req, res) => {
+  res.render('pages/profile');
 });
