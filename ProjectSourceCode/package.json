@@ -1,19 +1,19 @@
 {
-    "name": "projectsourcecode",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "directories": {
-        "test": "test"
-    },
-    "scripts": {
-        "start": "node src/index.js"
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "express": "^4.21.2",
-        "express-handlebars": "^8.0.1",
-        "hbs": "^4.2.0"
-    }
+  "name": "projectsourcecode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "express-handlebars": "^8.0.1",
+    "hbs": "^4.2.0"
+  }
 }
