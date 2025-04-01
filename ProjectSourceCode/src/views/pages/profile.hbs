@@ -6,14 +6,35 @@
     <title>Profile</title>
 </head>
 <body>
-    {{! {{> header}}
+    {{! {{> header (TODO: MAY NEED TO REMOVE HTML <> DEPENDING ON HOW HEADER IS MADE)}}
     {{! {{> message if we are doing messages}}
-    <section class="profile">
+    <section class="profile"> {{! TODO: make edit buttons icons instead of text (maybe) and sql stuff and edit buttons functional}}
+
         <img src="{{! {{ sql stuff}}" alt="Profile Photo" class="profile-photo">
-        <h1>{{name}}</h1>
-        <h2>Bio:</h2>
-        <p>{{bio}}</p>
-        <p>Contact me: <a href="mailto:{{email}}">{{email}}</a></p>
+        <button class="edit-button" onclick="{{! sql stuff for edit}}">Edit</button>
+
+        <p>Username: {{!sql stuff for username}}</p>
+        
+        <div class="profile-info">
+            <div class="info-row">
+                <h1>{{! displayName}}</h1>
+                <button class="edit-button" onclick="{{! sql stuff for edit}}">Edit</button>
+            </div>
+
+            <div class="info-row">
+                <h2>Bio:</h2>
+                <button class="edit-button" onclick="{{! sql stuff for edit}}">Edit</button>
+            </div>
+            <p>{{! sql stuff for bio}}</p>
+
+            <div class="info-row">
+                <h2>Employment Status:</h2>
+                <button class="edit-button" onclick="{{! sql stuff for edit}}">Edit</button>
+            </div>
+            <p>{{!sql stuff for employment status}}</p>
+
+            <p>Contact me: <a href="mailto:{{email}}">{{email}}</a></p> {{! TODO: only employers can see}}
+        </div>  
     </section>
 
     <section class="posts">
@@ -25,3 +46,6 @@
     {{! {{> footer}}
 </body>
 </html>
+
+
+{{! Things to do in meeting: Get database idea, get header and footer idea (for the <html> stuff), maybe style stuff}}
