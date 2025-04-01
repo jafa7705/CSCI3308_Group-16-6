@@ -16,7 +16,7 @@ app.get('/profile', (req, res) => {
   res.render('pages/profile');
 });
 
-app.get('/profile', (req, res) => {
+app.get('/register', (req, res) => {
     res.render('pages/register');
   });
 
