@@ -20,6 +20,10 @@ app.get('/profile', (req, res) => {
     res.render('pages/register');
   });
 
+app.get('/profile', (req, res) => {
+    res.render('pages/login');
+});
+
 app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
 });
