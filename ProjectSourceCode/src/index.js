@@ -24,4 +24,8 @@ app.get('/login', (req, res) => {
     res.render('pages/login');
 });
 
+app.get('/welcome', (req, res) => {
+  res.json({status: 'success', message: 'Welcome!'});
+});
+
 module.exports = app.listen(3000);
