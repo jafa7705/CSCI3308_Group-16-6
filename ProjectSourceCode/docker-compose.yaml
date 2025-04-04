@@ -5,8 +5,11 @@ services:
     expose:
       - '5432'
     volumes:
+      # This volume persists your PostgreSQL data
       - group-project:/var/lib/postgresql/data
+      # Mount init scripts to auto-create tables on first startup
       - ./src/init_data:/docker-entrypoint-initdb.d
+
   web:
     image: node:lts
     user: 'node'
@@ -21,5 +24,6 @@ services:
     volumes:
       - ./:/repository
     command: "npm run testandrun"
+
 volumes:
   group-project:
