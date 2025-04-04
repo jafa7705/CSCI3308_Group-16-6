@@ -54,10 +54,12 @@ app.post('/login', async (res,req) => {
       .then(async user => {
           const match = await bcrypt.compare(password, user.password);
           if (match){
-              res.redirect('/home')
+              res.status(200);
+              res.redirect('/home');
           }
           else {
-              res.render('/login', {message: "Wrong username or password"});
+              res.status(400);
+              res.render('login', {message: "Wrong username or password"});
           }
       })
       .catch(err => {
