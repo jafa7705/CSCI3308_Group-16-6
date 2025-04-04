@@ -52,7 +52,7 @@ describe('Register API Tests', () => {
 describe('Login Route Tests', () => {
   const testUser = {
     username: 'testuser',
-    password: 'testpass123',
+    password: 'password',
   };
 
 
@@ -75,8 +75,8 @@ describe('Login Route Tests', () => {
       .request(server)
       .post('/login')
       .send({
-        username: 'testuser',
-        password: 'password',
+        username: testUser.username,
+        password: testUser.username,
       })
       .end((err,res) => {
         expect(res).to.have.status(302);
