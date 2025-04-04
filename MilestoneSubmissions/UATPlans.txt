@@ -1,0 +1,32 @@
+UAT Plans
+
+Feature 1: Functioning User Profile Edit Buttons
+    The users want edit buttons on their profiles that are usable/visible by just the person who owns that profile. 
+    Test data that could be used are the users individual pages/ID and the bio text.
+    This would be tested through the cloud, with verifcication of the changes seen on the page.
+    If the buttons are visible to exclusevly the user's owner and the changes that occur are saved to the database and thus
+        seen by all users then the feature is working correctly
+    User acceptence testers can just be us developers. 
+
+    Results:
+
+
+Feature 2: Functioning Feed
+    The users want a feed that will show posts from other users on the website. They can filter by tags on these posts.
+    Test data could be posts that are already on the website (or sample posts). 
+    This would be tested through the cloud, with verifcication of the changes seen on the page.
+    If posts are visible from other users in the feed section, and the users are able sort with filters then the feature
+        is working correctly.
+    User acceptence testers can just be us developers. 
+
+    Results:
+
+
+Feature 3: Ability to Post Art
+    The users want the ability to post art with tags with descriptions.
+    Test data could be sample images, tags, and descriptions for specific users.
+    This would be tested through the localhost, with verifcication of the changes seen on the database.
+    If the image, tags, description, and userID are visible on the database then the feature is working correctly.
+    User acceptence testers can just be us developers. 
+
+    Results:
