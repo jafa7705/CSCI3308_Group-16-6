@@ -44,6 +44,29 @@ app.get('/login', (req, res) => {
     res.render('pages/login');
 });
 
+
+app.post('/login', async (res,req) => {
+  const {username, password } = req.body;
+
+  const searchQuery = `SELECT * FROM users WHERE username = $1;`;
+
+  db.one(searchQuery, [username])
+      .then(async user => {
+          const match = await bcrypt.compare(password, user.password);
+          if (match){
+              res.redirect('/home')
+          }
+          else {
+              res.render('/login', {message: "Wrong username or password"});
+          }
+      })
+      .catch(err => {
+          console.log(err)
+          res.redirect('/login')
+      })
+});
+
+
 app.get('/welcome', (req, res) => {
   res.json({status: 'success', message: 'Welcome!'});
   res.status(200).json({ message: 'Registration successful' });
