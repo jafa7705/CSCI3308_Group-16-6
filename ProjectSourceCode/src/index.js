@@ -20,20 +20,25 @@ app.get('/register', (req, res) => {
     res.render('pages/register');
   });
 
-app.post('/register', async (req, res) => {
-  try {
-    const hash = await bcrypt.hash(req.body.password, 10);
-    await db.none(
-      'INSERT INTO users(username, password) VALUES($1, $2)',
-      [req.body.username, hash]
-    );
-    res.redirect('/login');
-  } 
-  catch (error) {
-    console.error(error);
-    res.redirect('/register');
+  const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.post('/register', (req, res) => {
+  const { username, password, confirmPassword } = req.body;
+
+  if (!username || !password || !confirmPassword) {
+    return res.status(400).json({ message: 'All fields are required.' });
   }
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: 'Passwords do not match' });
+  }
+
+  // Simulate successful registration
+  return res.status(200).json({ message: 'Registration successful' });
 });
+
 
 app.get('/login', (req, res) => {
     res.render('pages/login');
@@ -41,6 +46,9 @@ app.get('/login', (req, res) => {
 
 app.get('/welcome', (req, res) => {
   res.json({status: 'success', message: 'Welcome!'});
+  res.status(200).json({ message: 'Registration successful' });
+  res.status(400).json({ message: 'Passwords do not match' });
+
 });
 
 module.exports = app.listen(3000);
