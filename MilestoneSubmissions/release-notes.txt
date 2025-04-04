@@ -1,0 +1,9 @@
+Version: 1.00
+Date: 4/1/2025
+
+Changes:
+- Added home/feed page
+- Added profile page
+- Added login/registration pages
+- Footer added with copyright information
+- Website can be hosted locally
