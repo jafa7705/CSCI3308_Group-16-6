@@ -30,9 +30,25 @@ app.get('/', (req, res) => {
   res.render('pages/home');
 });
 
-app.get('/profile', (req, res) => {
-  res.render('pages/profile');
+
+// Profile ROutes
+app.get('/profile', async (req, res) => {
+  const userID = 3; //TODO: Replace with login stuff
+  const profileUserID = 1; // TODO: replace with the profile ID on the page
+
+  try {
+      const user = await db.one('SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
+      const isOwner = userID === profileUserID;
+      const isOwnerOrClient = isOwner || (await db.one('SELECT isClient FROM users WHERE user_id = $1', [userID])).isClient;
+
+      res.render('pages/profile', { user, isOwner, isOwnerOrClient });
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('ERROR: Could not get profile');
+  }
 });
+
+
 
 app.get('/register', (req, res) => {
   res.render('pages/register');

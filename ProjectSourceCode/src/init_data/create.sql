@@ -4,11 +4,11 @@ CREATE TABLE users (
   username VARCHAR(50) NOT NULL UNIQUE,
   password VARCHAR(200) NOT NULL,
   email VARCHAR(200) NOT NULL UNIQUE,
-  role VARCHAR(20) NOT NULL CHECK (role IN ('artist', 'client')),
+  isClient BOOLEAN NOT NULL, --role VARCHAR(20) NOT NULL CHECK (role IN ('artist', 'client')),
   bio TEXT,
   website VARCHAR(200),
   location VARCHAR(100),
-  phone VARCHAR(20),
+  phone VARCHAR(20)
 );
 
 DROP TABLE IF EXISTS artworks;
@@ -18,6 +18,6 @@ CREATE TABLE artworks (
   title VARCHAR(100) NOT NULL,
   creation_date DATE NOT NULL,
   description TEXT,
-  category VARCHAR(50) NOT NULL,
+  category VARCHAR(50) NOT NULL
   -- TODO: Add a key to store the image and the text.
 );
