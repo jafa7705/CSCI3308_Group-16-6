@@ -17,7 +17,7 @@
 
         <div class="profile-info">
             <div class="info-row">
-                <h1 id="display-name">{{user.username}}</h1> {{! TODO: Maybe change to just username idk}}
+                <h1 id="display-name">{{user.username}}</h1> {{! TODO: Maybe change to just username not display idk}}
             </div>
 
             <div class="info-row">
@@ -40,8 +40,8 @@
             </div>
             <p id="bio">{{user.bio}}</p>
 
-            {{#if isOwnerOrClient}}  {{! TODO: Test if this works (we only got 2 profiles)}}
-            <p>Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p> {{! TODO: only employers can see}}
+            {{#if isOwnerOrClient}} 
+            <p>Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p> {{!TODO: Make a little info icon to explain that this is only visible to clients}}
             {{/if}}
         </div>
     </section>
@@ -55,23 +55,24 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Edit Profile</h2>
+            <form action="/profile/update" method="post">
+                <label for="edit-employment-status">Profile Picture:</label> {{! TODO: Add image stuff}}
+                <input type="text" id="edit-profile-pic" name="profilePic"><br><br>
 
-            <label for="edit-employment-status">Profile Picture:</label> {{! TODO: Add image stuff}}
-            <input type="text" id="edit-profile-pic"><br><br>
+                <label for="edit-display-name">Display Name:</label>  {{! TODO: figure out if we do display names}}
+                <input type="text" id="edit-display-name" name="displayName"><br><br>
 
-            <label for="edit-display-name">Display Name:</label>
-            <input type="text" id="edit-display-name"><br><br>
+                <label for="edit-website">Website:</label>
+                <input type="text" id="edit-website" name="website"><br><br>
 
-            <label for="edit-website">Website:</label>
-            <input type="text" id="edit-website"><br><br>
+                <label for="edit-location">Location:</label>
+                <input type="text" id="edit-location" name="location"><br><br>
 
-            <label for="edit-location">Location:</label>
-            <input type="text" id="edit-location"><br><br>
+                <label for="edit-bio">Bio:</label><br>
+                <textarea id="edit-bio" rows="4" cols="50" name="bio"></textarea><br><br> {{! TODO: Figure out how enter (newline) works with all this}}
 
-            <label for="edit-bio">Bio:</label><br>
-            <textarea id="edit-bio" rows="4" cols="50"></textarea><br><br>
-
-            <button id="save-profile-changes">Save Changes</button>
+                <button id="save-profile-changes" type="submit">Save Changes</button>
+            </form>
         </div>
     </div>
     <script src="/index.js"></script>

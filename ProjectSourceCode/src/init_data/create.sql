@@ -4,7 +4,7 @@ CREATE TABLE users (
   username VARCHAR(50) NOT NULL UNIQUE,
   password VARCHAR(200) NOT NULL,
   email VARCHAR(200) NOT NULL UNIQUE,
-  isClient BOOLEAN NOT NULL, --role VARCHAR(20) NOT NULL CHECK (role IN ('artist', 'client')),
+  isClient BOOLEAN NOT NULL, --if we want to revert: role VARCHAR(20) NOT NULL CHECK (role IN ('artist', 'client')),
   bio TEXT,
   website VARCHAR(200),
   location VARCHAR(100),
