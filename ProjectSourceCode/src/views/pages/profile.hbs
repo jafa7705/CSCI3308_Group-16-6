@@ -10,36 +10,39 @@
     {{! {{> message if we are doing messages}}
     <section class="profile">
         <img src="{{! {{ sql stuff}}" alt="Profile Photo" class="profile-photo">
+        {{#if isOwner}}
         <button id="edit-profile-button" style="display:;">Edit Profile</button>
-
-        <p>Username: {{!sql stuff for username}}</p>
+        {{/if}}
+        <p>Username: {{user.username}}</p>
 
         <div class="profile-info">
             <div class="info-row">
-                <h1 id="display-name">{{! sql stuff for displayName}}</h1>
+                <h1 id="display-name">{{user.username}}</h1> {{! TODO: Maybe change to just username idk}}
             </div>
 
             <div class="info-row">
                 <h2>User Role:</h2>
             </div>
-            <p id="user-role">{{! sql stuff for user role}}</p>
+            <p id="user-role">{{user.role}}</p>
 
             <div class="info-row">
                 <h2>Website:</h2>
             </div>
-            <p id="website">{{! sql stuff for website}}</p>
+            <p id="website">{{user.website}}</p>
 
             <div class="info-row">
                 <h2>Location:</h2>
             </div>
-            <p id="location">{{! sql stuff for location}}</p>
+            <p id="location">{{user.location}}</p>
 
             <div class="info-row">
                 <h2>Bio:</h2>
             </div>
-            <p id="bio">{{! sql stuff for bio}}</p>
+            <p id="bio">{{user.bio}}</p>
 
-            <p>Contact me: <a href="mailto:{{email}}">{{email}}</a></p> {{! TODO: only employers can see}}
+            {{#if isOwnerOrClient}}  {{! TODO: Test if this works (we only got 2 profiles)}}
+            <p>Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p> {{! TODO: only employers can see}}
+            {{/if}}
         </div>
     </section>
 
