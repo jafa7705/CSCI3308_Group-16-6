@@ -4,26 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <link rel="stylesheet" href="../../resources/css/style.css">
 </head>
 <body>
     {{! {{> header (TODO: MAY NEED TO REMOVE HTML <> DEPENDING ON HOW HEADER IS MADE)}}
-    {{! {{> message if we are doing messages}}
     <section class="profile">
-        <img src="{{! {{ sql stuff}}" alt="Profile Photo" class="profile-photo">
+        <img src="resources/img/defaultProfilePic.png" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;"> {{!TODO: sql stuff for the profile image}}
         {{#if isOwner}}
-        <button id="edit-profile-button" style="display:;">Edit Profile</button>
+        <button id="edit-profile-button" style="display:;">
+            <img src="resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
+            Edit Profile
+        </button>
         {{/if}}
-        <p>Username: {{user.username}}</p>
 
         <div class="profile-info">
             <div class="info-row">
-                <h1 id="display-name">{{user.username}}</h1> {{! TODO: Maybe change to just username idk}}
+                <h1 id="display-name">{{user.username}}</h1> {{! TODO: Maybe change to just username not display idk}}
             </div>
-
+            
             <div class="info-row">
-                <h2>User Role:</h2>
+                <p>@{{user.username}}</p>
             </div>
-            <p id="user-role">{{user.role}}</p>
+            
+            <div class="info-row">
+            </div>
+            <p id="user-role">
+                {{#if user.isClient}}
+                    Client
+                {{else}}
+                    Artist
+                {{/if}}
+            </p>
 
             <div class="info-row">
                 <h2>Website:</h2>
@@ -40,41 +51,68 @@
             </div>
             <p id="bio">{{user.bio}}</p>
 
-            {{#if isOwnerOrClient}}  {{! TODO: Test if this works (we only got 2 profiles)}}
-            <p>Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p> {{! TODO: only employers can see}}
+            {{#if isOwnerOrClient}} 
+            <p>Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p> {{!TODO: Make a little info icon to explain that this is only visible to clients}}
             {{/if}}
         </div>
     </section>
 
     <section class="posts">
         <h1>Posts</h1>
-        {{!-- I will include the feed part here with a hard filter for this specific user --}}
+        {{!-- TODO: I will include the feed part here with a hard filter for this specific user --}}
     </section>
     
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Edit Profile</h2>
+            <form action="/profile/update" method="post">
+                <label for="edit-employment-status">Profile Picture:</label> {{! TODO: Add image stuff}}
+                <input type="text" id="edit-profile-pic" name="profilePic"><br><br>
 
-            <label for="edit-employment-status">Profile Picture:</label> {{! TODO: Add image stuff}}
-            <input type="text" id="edit-profile-pic"><br><br>
+                <label for="edit-display-name">Display Name:</label>  {{! TODO: figure out if we do display names}}
+                <input type="text" id="edit-display-name" name="displayName"><br><br>
 
-            <label for="edit-display-name">Display Name:</label>
-            <input type="text" id="edit-display-name"><br><br>
+                <label for="edit-website">Website:</label>
+                <input type="text" id="edit-website" name="website"><br><br>
 
-            <label for="edit-website">Website:</label>
-            <input type="text" id="edit-website"><br><br>
+                <label for="edit-location">Location:</label>
+                <input type="text" id="edit-location" name="location"><br><br>
 
-            <label for="edit-location">Location:</label>
-            <input type="text" id="edit-location"><br><br>
+                <label for="edit-bio">Bio:</label><br>
+                <textarea id="edit-bio" rows="4" cols="50" name="bio"></textarea><br><br> {{! TODO: Figure out how enter (newline) works with all this}}
 
-            <label for="edit-bio">Bio:</label><br>
-            <textarea id="edit-bio" rows="4" cols="50"></textarea><br><br>
-
-            <button id="save-profile-changes">Save Changes</button>
+                <button id="save-profile-changes" type="submit">Save Changes</button>
+            </form>
         </div>
     </div>
+
+    {{! {{> TODO: footer}}
+
     <script src="/index.js"></script>
-    {{! {{> footer}}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('editModal');
+            const btn = document.getElementById('edit-profile-button');
+            const span = document.getElementsByClassName('close')[0];
+
+            if (btn) {
+                btn.onclick = function() {
+                    modal.style.display = 'block';
+                };
+            }
+            if (span) {
+                span.onclick = function() {
+                    modal.style.display = 'none';
+                };
+            }
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+        });
+    </script>
 </body>
 </html>

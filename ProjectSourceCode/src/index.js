@@ -25,31 +25,57 @@ app.set('views', path.join(__dirname, 'views'));
 // Static files
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
 
-// Routes
+// --------------------------Routes-------------------------------------
 app.get('/', (req, res) => {
   res.render('pages/home');
 });
 
 
-// Profile ROutes
+// ---------------------Profile Routes
 app.get('/profile', async (req, res) => {
-  const userID = 3; //TODO: Replace with login stuff
-  const profileUserID = 1; // TODO: replace with the profile ID on the page
+  const userID = 1; //the ID of the user viewing the page             TODO: Replace with login stuff
+  const profileUserID = 1; //the ID of the user that page shows       TODO: replace with the profile ID on the page
 
   try {
-      const user = await db.one('SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
-      const isOwner = userID === profileUserID;
-      const isOwnerOrClient = isOwner || (await db.one('SELECT isClient FROM users WHERE user_id = $1', [userID])).isClient;
+    const user = await db.one('SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
 
-      res.render('pages/profile', { user, isOwner, isOwnerOrClient });
+    let viewingUser;
+    try {
+        viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
+    } catch (err) {
+        console.error("Viewing user not found:", err);
+        viewingUser = { isClient: false };
+    }
+    const isOwner = userID === profileUserID;
+    const isOwnerOrClient = isOwner || viewingUser.isClient;
+
+    res.render('pages/profile', { user, isOwner, isOwnerOrClient });
   } catch (err) {
-      console.error(err);
-      res.status(500).send('ERROR: Could not get profile');
+    console.error(err);
+    res.status(500).send('ERROR: Could not get profile');
+  }
+});
+
+app.post('/profile/update', async(req,res) => {
+  const userID = 1; //TODO: Replace with login stuff
+  const { website, location, bio } = req.body;
+
+  try {
+    await db.none('UPDATE users SET website = $1, location = $2, bio = $3 WHERE user_id = $4', [
+      website,
+      location,
+      bio,
+      userID,
+    ]);
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('ERROR: Could not update profile info');
   }
 });
 
 
-
+// ----------------------Register Routes
 app.get('/register', (req, res) => {
   res.render('pages/register');
 });
@@ -69,6 +95,8 @@ app.post('/register', (req, res) => {
   return res.status(200).json({ message: 'Registration successful' });
 });
 
+
+// --------------------------Login Routes
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
