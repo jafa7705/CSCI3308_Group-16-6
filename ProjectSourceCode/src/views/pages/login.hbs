@@ -1,14 +1,36 @@
-<h1 class="login-title">Login</h1>
-<form action="/login" method="POST">
-  <div class="mb-3">
-    <label for="username">Enter Username</label>
-    <input type="text" id="username" name="username" placeholder="Enter Username" required>
-  </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <div style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
+        <h1 class="login-title" style="text-align: center;">Login</h1>
+        
+        <form action="/login" method="POST">
+            <div class="mb-3" style="margin-bottom: 15px;">
+                <label for="username" style="font-weight: bold;">Enter Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter Username" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
+            </div>
 
-  <div class="mb-3">
-    <label for="password">Enter Password</label>
-    <input type="password" id="password" name="password" placeholder="Enter Password" required>
-  </div>
+            <div class="mb-3" style="margin-bottom: 15px;">
+                <label for="password" style="font-weight: bold;">Enter Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter Password" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
+            </div>
 
-  <button type="submit" class="btn btn-primary">Login</button>
-</form>
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Login
+                </button>
+            </div>
+        </form>
+
+        <div style="text-align: center; margin-top: 15px;">
+            <p>Don't have an account? <a href="/register" style="color: #007BFF;">Register here</a></p>
+        </div>
+    </div>
+</body>
+</html>
+
