@@ -17,6 +17,7 @@ const db = pgp({
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
 // View engine setup
 app.set('view engine', 'hbs');
@@ -80,20 +81,46 @@ app.get('/register', (req, res) => {
   res.render('pages/register');
 });
 
-app.post('/register', (req, res) => {
-  const { username, password, confirmPassword } = req.body;
+app.post('/register', async (req, res) => {
+  console.log('> POST /register body:', req.body);
 
-  if (!username || !password || !confirmPassword) {
-    return res.status(400).json({ message: 'All fields are required.' });
+  const {
+    accountType,
+    username,
+    email,
+    password,
+    confirmPassword
+  } = req.body;
+
+  if (!accountType || !username || !email || !password || !confirmPassword) {
+    console.log('Missing fields');
+    return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
+    console.log('Passwords do not match');
+    return res.status(400).render('pages/register', { message: 'Passwords do not match.' });
   }
 
-  // Simulate successful registration
-  return res.status(200).json({ message: 'Registration successful' });
+  const isClient = accountType === 'personal';
+
+  try {
+    const hash = await bcrypt.hash(password, 10);
+
+    await db.none(
+      `INSERT INTO users (username, password, email, isClient)
+       VALUES ($1, $2, $3, $4)`,
+      [username, hash, email, isClient]
+    );
+    console.log('User inserted into DB');
+
+    return res.redirect('/login');
+  } catch (error) {
+    console.error('Registration error:', error);
+    return res.status(500).render('pages/register', { message: 'Registration failed. Try again.' });
+  }
 });
+
 
 
 // --------------------------Login Routes
@@ -110,7 +137,7 @@ app.post('/login', async (req, res) => {
     const user = await db.one(searchQuery, [username]);
     const match = await bcrypt.compare(password, user.password);
     if (match) {
-      res.redirect('/home');
+      res.redirect('/');
     } else {
       res.status(400);
       res.render('pages/login', { message: 'Wrong username or password' });
@@ -124,7 +151,6 @@ app.post('/login', async (req, res) => {
 app.get('/welcome', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Welcome!' });
 });
-
 
 app.get('/post', (req, res) => {
   res.render('pages/post');
