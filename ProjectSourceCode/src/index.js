@@ -133,7 +133,6 @@ app.get('/login', (req, res) => {
   res.render('pages/login');
 });
 
-/* Uncomment this if needed and you want to test login with DB
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -144,7 +143,6 @@ app.post('/login', async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       res.redirect('/');
-      res.redirect('/');
     } else {
       res.status(400);
       res.render('pages/login', { message: 'Wrong username or password' });
@@ -154,7 +152,6 @@ app.post('/login', async (req, res) => {
     res.status(400).render('pages/login', { message: 'Wrong username or password' });
   }
 });
-*/
 
 // Welcome test route
 app.get('/welcome', (req, res) => {
