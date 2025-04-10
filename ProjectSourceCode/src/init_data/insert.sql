@@ -1,45 +1,25 @@
-INSERT INTO users (user_id, username, password, email, isClient, bio, website, location, phone)
-VALUES
-(1, 'wharrison', '%8rg9JGda*', 'victoria47@aguilar.info', TRUE, 'Ability education today difficult shake.', 'http://richardson.com/', 'East Meghan, HI', '+1-495-971-8892x21939'),
-(2, 'osbornkevin', '_yr7)Hc(u1', 'derek12@lopez.com', FALSE, 'Pretty short me sister evening employee.', 'http://www.wood-morris.org/', 'West Brian, NJ', '793-760-6145'),
-(3, 'lwyatt', '%9&Cu6DyQF', 'santiagokristin@hotmail.com', FALSE, 'Stock admit statement voice describe music.', 'http://maldonado-rodriguez.net/', 'South Brandonshire, IA', '(042)568-2254x86758'),
-(4, 'chavezrobert', 'zy#9VHdQfH', 'stevenslauren@gmail.com', FALSE, 'Food discussion huge reflect.', 'http://bennett.info/', 'New Jonathanport, OH', '597.504.8533'),
-(5, 'michellesantiago', 'lA%hvLn8OE', 'vsmith@howard.info', TRUE, 'Suffer industry radio.', 'https://young.com/', 'Lake Richard, IL', '354.601.1436x9830'),
-(6, 'hgoodwin', 'V6a)vN0pZB', 'willisrichard@flores.com', FALSE, 'Nothing direction front approach purpose.', 'https://williams-davis.net/', 'North Joseph, WA', '559.989.1092'),
-(7, 'connerfrank', 'U7hbmENuxB', 'tara07@gmail.com', TRUE, 'Challenge difference might turn rise.', 'http://ramos-jackson.net/', 'West Alyssaport, NY', '+1-981-374-1094'),
-(8, 'ugonzales', 'hWq%6FsEol', 'crystalrodriguez@yahoo.com', TRUE, 'Camera identify range important.', 'https://brown.com/', 'Robertfurt, PA', '(588)275-9632x327'),
-(9, 'ngonzales', '#1u^YQL^rb', 'mckenzie75@bush.com', TRUE, 'Group girl eye test matter.', 'https://cooper-williams.org/', 'North Andreville, IL', '019.664.2317x82359'),
-(10, 'robinsonjames', 'ik0uYIke^)', 'clarklisa@hotmail.com', FALSE, 'Seek lay several theory.', 'https://www.williams.biz/', 'Erickport, AR', '+1-558-277-8467x073'),
-(11, 'morriscatherine', 'eD69pCwRyx', 'laurenallen@white.org', TRUE, 'From computer ability now clearly.', 'http://mccoy.info/', 'Brookeside, DE', '755.528.7932x4218'),
-(12, 'johnsonsamantha', 'PT!ge1XD)u', 'smithgary@yahoo.com', FALSE, 'Claim give leave task.', 'https://jackson.com/', 'Reedfurt, NC', '+1-257-394-8771'),
-(13, 'catherinewilson', 'R14Bt3TZef', 'stevenssusan@hotmail.com', TRUE, 'Resource mission act item among.', 'https://www.keller.biz/', 'North Rebeccafurt, AL', '(621)415-7065'),
-(14, 'brian88', 'ZRjxzVvn7j', 'kristinsmith@hotmail.com', TRUE, 'Just pressure trade central.', 'https://miller.biz/', 'Lake Cheryl, OK', '(331)578-2985x34328'),
-(15, 'reyesmichelle', '9S^ZppRXR8', 'wsmith@gmail.com', FALSE, 'Leader security team organization.', 'https://www.hernandez.com/', 'Cameronmouth, OR', '1-444-737-8896x71584'),
-(16, 'ashley91', 'CW%FzNwBFv', 'susan75@gmail.com', FALSE, 'Outside carry operation scene north.', 'http://mcdaniel.com/', 'South Josephmouth, GA', '683-509-7687'),
-(17, 'sandyadams', 'wn9T0kn#&R', 'paul93@hotmail.com', TRUE, 'Answer describe buy.', 'https://stevens-miller.com/', 'Lake Jose, NM', '(858)895-1572'),
-(18, 'millercurtis', 'TPz!kYPsEv', 'ramirezgary@hotmail.com', FALSE, 'Trial discover rest step type.', 'http://www.miller.com/', 'Lake Lindamouth, WI', '(681)724-7077x53817'),
-(19, 'natalie09', 'LDLeBmvC2X', 'jamescraig@hotmail.com', TRUE, 'Bank apply shoulder court.', 'https://daniel.com/', 'Port Nicole, MT', '280-591-6171'),
-(20, 'lindseyzimmerman', 'bCZ38sQvXy', 'catherine95@gmail.com', FALSE, 'Group law service drop.', 'http://webster-wright.com/', 'Gilbertmouth, MI', '510.713.5871');
+-- Insert 10 users
+INSERT INTO users (username, password, email, isClient, bio, website, location, phone) VALUES
+('alice', 'password123', 'alice@example.com', true, 'Painter based in NYC.', 'http://aliceart.com', 'New York, NY', '123-456-7890'),
+('bob', 'password456', 'bob@example.com', false, 'Photographer from LA.', 'http://bobphotos.com', 'Los Angeles, CA', '987-654-3210'),
+('charlie', 'charliepass', 'charlie@example.com', true, 'Abstract artist.', 'http://charliecreates.com', 'Chicago, IL', '555-555-5555'),
+('diana', 'diana321', 'diana@example.com', true, 'Digital illustrator.', 'http://dianaillustrates.com', 'Seattle, WA', '111-222-3333'),
+('eric', 'passeric', 'eric@example.com', false, 'Concept artist and animator.', 'http://ericconcepts.com', 'Austin, TX', '444-333-2222'),
+('frank', 'frankpass', 'frank@example.com', true, 'Printmaker from Denver.', 'http://frankprints.com', 'Denver, CO', '777-888-9999'),
+('grace', 'grace123', 'grace@example.com', false, 'Sculptor and 3D artist.', 'http://gracesculpts.com', 'Portland, OR', '666-777-8888'),
+('henry', 'henrypass', 'henry@example.com', true, 'Installation artist.', 'http://henryinstalls.com', 'Boston, MA', '333-222-1111'),
+('irene', 'irene777', 'irene@example.com', false, 'Street photographer.', 'http://irenephotos.com', 'San Diego, CA', '888-999-0000'),
+('jack', 'jack1234', 'jack@example.com', true, 'Modern visual artist.', 'http://jackvisual.com', 'Miami, FL', '999-111-2222');
 
-INSERT INTO artworks (artwork_id, artist_id, title, creation_date, description, category)
-VALUES
-(1, 1, 'Treatment section.', '2025-03-20', 'Kitchen movement political clearly produce international arm way manage agency parent war us.', 'Sculpture'),
-(2, 2, 'Chair conference yourself.', '2025-03-03', 'Manager then present major charge fire can.', 'Painting'),
-(3, 3, 'Gas perform.', '2023-04-14', 'Operation grow something church method message bar American establish medical.', 'Painting'),
-(4, 4, 'Party player.', '2022-09-21', 'Official outside board kind off.', 'Photography'),
-(5, 5, 'Speak travel occur.', '2024-07-24', 'Significant however cost military economy itself.', 'Mixed Media'),
-(6, 6, 'Evening reveal although.', '2022-01-30', 'Owner recognize wish develop avoid.', 'Illustration'),
-(7, 7, 'Beyond raise response.', '2023-07-09', 'Plan today economy.', 'Photography'),
-(8, 8, 'Story imagine.', '2024-10-16', 'Some very personal structure hair.', 'Painting'),
-(9, 9, 'Staff read.', '2024-11-08', 'Positive group goal simply four including shoulder.', 'Sculpture'),
-(10, 10, 'Trade shake.', '2023-02-06', 'Spend recently kind face everything despite.', 'Illustration'),
-(11, 11, 'Truth early.', '2024-05-05', 'Maintain think century trial difference likely.', 'Mixed Media'),
-(12, 12, 'Police music.', '2024-06-01', 'Among senior material activity.', 'Photography'),
-(13, 13, 'Dream explain.', '2024-04-13', 'Despite trouble near scene nothing.', 'Painting'),
-(14, 14, 'Edge wrong.', '2023-09-19', 'Well card various support real.', 'Illustration'),
-(15, 15, 'Million field.', '2022-03-23', 'Guess create seek Congress usually.', 'Sculpture'),
-(16, 16, 'Dark budget.', '2023-12-15', 'Serious instead store.', 'Photography'),
-(17, 17, 'Season less.', '2023-06-30', 'Interview anyone dark arm station.', 'Illustration'),
-(18, 18, 'Room decade.', '2022-12-27', 'Performance just agree.', 'Mixed Media'),
-(19, 19, 'Sense property.', '2023-01-04', 'Later marriage another school fine.', 'Painting'),
-(20, 20, 'Military training.', '2024-02-10', 'Impact similar traditional activity.', 'Photography');
+-- Insert 10 artworks
+INSERT INTO artworks (artist_id, title, creation_date, description, category, image_path) VALUES
+(1, 'Sunset Dreams', '2024-01-05', 'An abstract sunset with warm tones.', 'Painting', '/artworks/artwork1.jpg'),
+(2, 'City Reflections', '2023-11-12', 'Nighttime reflections in LA streets.', 'Photography', '/artworks/artwork2.jpg'),
+(3, 'Fragments of Thought', '2024-02-20', 'A chaotic composition of shapes.', 'Digital Art', '/artworks/artwork3.jpg'),
+(4, 'Bloom', '2024-03-10', 'Detailed study of a blooming flower.', 'Illustration', '/artworks/artwork4.jpg'),
+(5, 'The Last Light', '2023-12-01', 'A lonely mountain at dusk.', 'Painting', '/artworks/artwork5.jpg'),
+(6, 'Pixel Storm', '2024-01-18', 'A colorful digital storm.', 'Digital Art', '/artworks/artwork6.jpg'),
+(7, 'Form in Space', '2023-10-27', 'A 3D sculpture playing with shadows.', 'Sculpture', '/artworks/artwork7.jpg'),
+(8, 'Collapse', '2024-02-14', 'Installation of falling chairs.', 'Installation', '/artworks/artwork8.jpg'),
+(9, 'The Alleyway', '2023-11-30', 'Candid moment from city backstreets.', 'Photography', '/artworks/artwork9.jpg'),
+(10, 'Waves of Color', '2024-03-05', 'Experimental visual series.', 'Painting', '/artworks/artwork10.jpg');
