@@ -18,7 +18,6 @@ const db = pgp({
 // ------------------ Middleware Setup ------------------
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
 
 // ------------------ View Engine Setup ------------------
 app.set('view engine', 'hbs');
@@ -87,48 +86,27 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  console.log('> POST /register body:', req.body);
-  const {
-    accountType,
-    username,
-    email,
-    password,
-    confirmPassword
-  } = req.body;
+  const { username, password, confirmPassword } = req.body;
 
-  if (!accountType || !username || !email || !password || !confirmPassword) {
-    console.log('Missing fields');
-    return res.status(400).render('pages/register', { message: 'All fields are required.' });
+  if (!username || !password || !confirmPassword) {
+    return res.status(400).json({ message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-    console.log('Passwords do not match');
-    return res.status(400).render('pages/register', { message: 'Passwords do not match.' });
+    return res.status(400).json({ message: 'Passwords do not match' });
   }
 
-  const isClient = accountType === 'personal';
-
   try {
-    const hash = await bcrypt.hash(password, 10);
-
-    await db.none(
-      `INSERT INTO users (username, password, email, isClient)
-       VALUES ($1, $2, $3, $4)`,
-      [username, hash, email, isClient]
-    );
-    console.log('User inserted into DB');
-
-    return res.redirect('/login');
-  } catch (error) {
-    console.error('Registration error:', error);
-    return res.status(500).render('pages/register', { message: 'Registration failed. Try again.' });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.none('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
+    return res.status(200).json({ message: 'Registration successful' });
+  } catch (err) {
+    console.error('Error inserting user:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-
-
-// --------------------------Login Routes
-
+// Login
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
@@ -160,6 +138,7 @@ app.get('/welcome', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Welcome!' });
 });
 
+// Post page
 app.get('/post', (req, res) => {
   res.render('pages/post');
 });
