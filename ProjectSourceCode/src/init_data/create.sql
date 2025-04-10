@@ -18,6 +18,6 @@ CREATE TABLE artworks (
   title VARCHAR(100) NOT NULL,
   creation_date DATE NOT NULL,
   description TEXT,
-  category VARCHAR(50) NOT NULL
-  -- TODO: Add a key to store the image and the text.
+  category VARCHAR(50) NOT NULL,
+  image_path TEXT
 );
