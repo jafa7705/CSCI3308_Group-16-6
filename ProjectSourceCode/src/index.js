@@ -133,6 +133,25 @@ app.post('/login', async (req, res) => {
 });
 */
 
+app.get('/search', (req, res) => {
+  const userSearch  = req.query.searchStr || ''; //if query undefined or empty
+  //LOWER converts to lowercase
+  if (userSearch) {
+      const sqlQuery = `SELECT * FROM users WHERE LOWER(username) = LOWER(?)`;
+      db.all(sqlQuery, [query], (err, rows) => {
+          if (err) {
+              return res.status(500).send("Error querying the database.");
+          }
+          res.render('search', { userSearch, results: rows });
+          //renders results to search page
+      });
+  } else {
+      res.render('search', { userSearch, results: [] });
+  }
+});
+
+
+
 // Welcome test route
 app.get('/welcome', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Welcome!' });
