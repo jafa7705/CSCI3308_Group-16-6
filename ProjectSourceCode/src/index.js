@@ -4,19 +4,19 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
-
+const hbs = require('hbs'); // ✅ To register and use partials
 const exphbs = require('express-handlebars');
 
 // Setup database connection using environment variables
 const db = pgp({
-  host: 'db', // matches service name in docker-compose.yml
+  host: 'db',
   port: 5432,
   database: process.env.POSTGRES_DB || 'users_db',
   user: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'pwd',
 });
 
-// Change by Jiaye, Wait for test
+
 // Setup view engine
 app.engine('hbs', exphbs.engine({
   extname: 'hbs',
@@ -26,12 +26,15 @@ app.engine('hbs', exphbs.engine({
 }));
 
 // Middleware setup
+// ------------------ Middleware Setup ------------------
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
-// View engine setup
+// ------------------ View Engine Setup ------------------
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
+
 
 
 // Change by Jiaye, Wait for test
@@ -40,29 +43,35 @@ const hbs = require('hbs');
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
 // Static files
+// ✅ Register partials directory
+hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
+
+// ------------------ Static Files ------------------
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
 
-// --------------------------Routes-------------------------------------
+// ------------------ Routes ------------------
+
+// Home
 app.get('/', (req, res) => {
   res.render('pages/home');
 });
 
-
-// ---------------------Profile Routes
+// Profile
 app.get('/profile', async (req, res) => {
-  const userID = 1; //the ID of the user viewing the page             TODO: Replace with login stuff
-  const profileUserID = 1; //the ID of the user that page shows       TODO: replace with the profile ID on the page
+  const userID = 1;           // TODO: Replace with session-based user ID
+  const profileUserID = 1;    // TODO: Replace with route param or session
 
   try {
     const user = await db.one('SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
-
     let viewingUser;
+
     try {
-        viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
+      viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
     } catch (err) {
-        console.error("Viewing user not found:", err);
-        viewingUser = { isClient: false };
+      console.error("Viewing user not found:", err);
+      viewingUser = { isClient: false };
     }
+
     const isOwner = userID === profileUserID;
     const isOwnerOrClient = isOwner || viewingUser.isClient;
 
@@ -73,8 +82,8 @@ app.get('/profile', async (req, res) => {
   }
 });
 
-app.post('/profile/update', async(req,res) => {
-  const userID = 1; //TODO: Replace with login stuff
+app.post('/profile/update', async (req, res) => {
+  const userID = 1; // TODO: Replace with session-based user ID
   const { website, location, bio } = req.body;
 
   try {
@@ -91,26 +100,51 @@ app.post('/profile/update', async(req,res) => {
   }
 });
 
-
-// ----------------------Register Routes
+// Register
 app.get('/register', (req, res) => {
   res.render('pages/register');
 });
 
-app.post('/register', (req, res) => {
-  const { username, password, confirmPassword } = req.body;
+app.post('/register', async (req, res) => {
+  console.log('> POST /register body:', req.body);
 
-  if (!username || !password || !confirmPassword) {
-    return res.status(400).json({ message: 'All fields are required.' });
+  const {
+    accountType,
+    username,
+    email,
+    password,
+    confirmPassword
+  } = req.body;
+
+  if (!accountType || !username || !email || !password || !confirmPassword) {
+    console.log('Missing fields');
+    return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
+    console.log('Passwords do not match');
+    return res.status(400).render('pages/register', { message: 'Passwords do not match.' });
   }
 
-  // Simulate successful registration
-  return res.status(200).json({ message: 'Registration successful' });
+  const isClient = accountType === 'personal';
+
+  try {
+    const hash = await bcrypt.hash(password, 10);
+
+    await db.none(
+      `INSERT INTO users (username, password, email, isClient)
+       VALUES ($1, $2, $3, $4)`,
+      [username, hash, email, isClient]
+    );
+    console.log('User inserted into DB');
+
+    return res.redirect('/login');
+  } catch (error) {
+    console.error('Registration error:', error);
+    return res.status(500).render('pages/register', { message: 'Registration failed. Try again.' });
+  }
 });
+
 
 
 // --------------------------Login Routes
@@ -127,7 +161,7 @@ app.post('/login', async (req, res) => {
     const user = await db.one(searchQuery, [username]);
     const match = await bcrypt.compare(password, user.password);
     if (match) {
-      res.redirect('/home');
+      res.redirect('/');
     } else {
       res.status(400);
       res.render('pages/login', { message: 'Wrong username or password' });
@@ -138,15 +172,16 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Welcome test route
 app.get('/welcome', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Welcome!' });
 });
-
 
 app.get('/post', (req, res) => {
   res.render('pages/post');
 });
 
+// ------------------ Start Server ------------------
 module.exports = app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });

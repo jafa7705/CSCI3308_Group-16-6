@@ -1,0 +1,12 @@
+4/4 Group 16-6 Team Meeting
+
+Finish part c of lab
+Designed Database
+Nav Bar/Header redesign
+Decided on New Post page
+
+Todo:
+Implement database
+Finish Nav Bar/Header
+Finish Profile Frame (after database)
+Registration page direct access
