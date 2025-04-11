@@ -35,6 +35,7 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
 
+
 // Change by Jiaye, Wait for test
 // Register partials
 const hbs = require('hbs');
@@ -100,32 +101,52 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password, confirmPassword } = req.body;
+  console.log('> POST /register body:', req.body);
 
-  if (!username || !password || !confirmPassword) {
-    return res.status(400).json({ message: 'All fields are required.' });
+  const {
+    accountType,
+    username,
+    email,
+    password,
+    confirmPassword
+  } = req.body;
+
+  if (!accountType || !username || !email || !password || !confirmPassword) {
+    console.log('Missing fields');
+    return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
+    console.log('Passwords do not match');
+    return res.status(400).render('pages/register', { message: 'Passwords do not match.' });
   }
 
+  const isClient = accountType === 'personal';
+
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await db.none('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
-    return res.status(200).json({ message: 'Registration successful' });
-  } catch (err) {
-    console.error('Error inserting user:', err);
-    return res.status(500).json({ message: 'Internal server error' });
+    const hash = await bcrypt.hash(password, 10);
+
+    await db.none(
+      `INSERT INTO users (username, password, email, isClient)
+       VALUES ($1, $2, $3, $4)`,
+      [username, hash, email, isClient]
+    );
+    console.log('User inserted into DB');
+
+    return res.redirect('/login');
+  } catch (error) {
+    console.error('Registration error:', error);
+    return res.status(500).render('pages/register', { message: 'Registration failed. Try again.' });
   }
 });
 
-// Login
+
+
+// --------------------------Login Routes
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
 
-/* Uncomment this if needed and you want to test login with DB
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -145,38 +166,12 @@ app.post('/login', async (req, res) => {
     res.status(400).render('pages/login', { message: 'Wrong username or password' });
   }
 });
-*/
-
-app.get('/search', async (req, res) => {
-  const searchQuery = req.query.searchQuery;
-
-  try {
-    const result = await db.any(
-      `SELECT username FROM users WHERE LOWER(username) LIKE LOWER($1)`,
-      [`%${searchQuery}%`]
-    );
-    //LOWER - converts username to all lower case
-
-    res.render('pages/search', {
-      search_query: searchQuery,
-      items: result.rows,
-      //array of users containing the username
-      //eg - %john, john%, %john% all will return
-    });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('database error' + err.message);
-  }
-});
-
 
 // Welcome test route
 app.get('/welcome', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Welcome!' });
 });
 
-// Post page
 app.get('/post', (req, res) => {
   res.render('pages/post');
 });
