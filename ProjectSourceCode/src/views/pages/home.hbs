@@ -1,64 +1,28 @@
 {{> navbar}}
-<div class="container" style="position: relative; padding: 20px;">
-    <header>
-    <div style="position: absolute; top: 20px; right: 20px;">
-        <a href="/login">Login/Register</a>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Art Feed</title>
+</head>
+<body>
+  <div class="container" style="max-width: 800px; margin: 40px auto;">
     <h1 style="text-align: center;">Art Feed</h1>
-    </header>
 
-<section id="feedexample" style="max-width: 800px; margin: 40px auto;">
-    {{!example feed, this can get deleted once the feed is up and running.}}
-    <article class="post" style="margin-bottom: 40px;">
-        <p><a href="/profile/artist">artist profile</a></p>
-        <img src="/img/art.jpg" alt=image>
-        <p>description example.</p>
-    </article>
-    
-    <article class="post" style="margin-bottom: 40px;">
-        <p><a href="/profile/artist">artist profile</a></p>
-        <img src="/img/art.jpg" alt=image>
-        <p>example description</p>
-    </article>
-
-    <article class="post" style="margin-bottom: 40px;">
-        <p><a href="/profile/ekweder">artist profile</a></p>
-        <img src="/img/art.jpg" alt=image>
-        <p>example description</p>
-    </article>
-
-    <article class="post" style="margin-bottom: 40px;">
-        <p><a href="/profile/ekweder">artist profile</a></p>
-        <img src="/img/art.jpg" alt=image>
-        <p>example description</p>
-    </article>
-
-    <article class="post" style="margin-bottom: 40px;">
-        <p><a href="/profile/ekweder">artist profile</a></p>
-        <img src="/img/art.jpg" alt=image>
-        <p>example description</p>
-    </article>
-
-    <article class="post" style="margin-bottom: 40px;">
-        <p><a href="/profile/ekweder">artist profile</a></p>
-        <img src="/img/art.jpg" alt=image>
-        <p>example description</p>
-    </article>
-
-    <article class="post" style="margin-bottom: 40px;">
-        <p><a href="/profile/ekweder">artist profile</a></p>
-        <img src="/img/art.jpg" alt=image>
-        <p>example description</p>
-    </article>
-</section>
-</div>
-{{!real feed that pulls posts from database}}
-<section id="feed" style="max-width: 800px; margin: 40px auto;">
-    {{#each posts}}
-    <article class="post" style="margin-bottom: 40px;">
-        <p><a href="{{user.profileUrl}}">{{user.username}}</a></p>
-        <img src="{{imageUrl}}" alt="{{title}}">
-        <p>{{description}}</p>
-    </article>
-    {{/each}}
-</section>
+    {{#if posts.length}}
+      {{#each posts}}
+        <article class="post" style="margin-bottom: 40px; padding: 20px; border: 1px solid #ccc; border-radius: 6px;">
+          <h2>{{title}}</h2>
+          <p><strong>By:</strong> {{username}}</p>
+          <p><strong>Category:</strong> {{category}}</p>
+          <p><strong>Date:</strong> {{date_created}}</p>
+          <p>{{description}}</p>
+        </article>
+      {{/each}}
+    {{else}}
+      <p style="text-align: center;">No posts yet.</p>
+    {{/if}}
+  </div>
+</body>
+</html>

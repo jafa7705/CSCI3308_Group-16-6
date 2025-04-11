@@ -4,9 +4,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
-const hbs = require('hbs'); // ✅ To register and use partials
+const hbs = require('hbs');
 
-// ------------------ Database Connection ------------------
+// Database connection
 const db = pgp({
   host: 'db',
   port: 5432,
@@ -15,37 +15,64 @@ const db = pgp({
   password: process.env.POSTGRES_PASSWORD || 'pwd',
 });
 
-// ------------------ Middleware Setup ------------------
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
 
-// ------------------ View Engine Setup ------------------
+// Static and views
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
-
-// ✅ Register partials directory
-hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
-
-// ------------------ Static Files ------------------
+hbs.registerPartials(path.join(__dirname, 'views/partials'));
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
 
-// ------------------ Routes ------------------
+// ---------------- ROUTES ----------------
 
-// Home
-app.get('/', (req, res) => {
-  res.render('pages/home');
+// Home with posts
+app.get('/', async (req, res) => {
+  try {
+    const posts = await db.any(`
+      SELECT p.title, p.description, p.date_created, p.category, u.username
+      FROM posts p
+      JOIN users u ON p.user_id = u.user_id
+      ORDER BY p.date_created DESC
+    `);
+    res.render('pages/home', { posts });
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    res.status(500).send('Error loading posts.');
+  }
 });
 
-// Profile
+// Post form
+app.get('/post', (req, res) => {
+  res.render('pages/post');
+});
+
+// Submit post (text-only)
+app.post('/submit', async (req, res) => {
+  const { title, description, date, category } = req.body;
+  const userID = 1; // TODO: Replace with real session user ID
+
+  try {
+    await db.none(
+      'INSERT INTO posts (user_id, title, description, date_created, category) VALUES ($1, $2, $3, $4, $5)',
+      [userID, title, description, date, category]
+    );
+    res.redirect('/');
+  } catch (err) {
+    console.error('Error submitting post:', err);
+    res.status(500).send('Error submitting post.');
+  }
+});
+
+// Profile page
 app.get('/profile', async (req, res) => {
-  const userID = 1;           // TODO: Replace with session-based user ID
-  const profileUserID = 1;    // TODO: Replace with route param or session
+  const userID = 1;
+  const profileUserID = 1;
 
   try {
     const user = await db.one('SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
     let viewingUser;
-
     try {
       viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
     } catch (err) {
@@ -63,17 +90,16 @@ app.get('/profile', async (req, res) => {
   }
 });
 
+// Update profile
 app.post('/profile/update', async (req, res) => {
-  const userID = 1; // TODO: Replace with session-based user ID
+  const userID = 1;
   const { website, location, bio } = req.body;
 
   try {
-    await db.none('UPDATE users SET website = $1, location = $2, bio = $3 WHERE user_id = $4', [
-      website,
-      location,
-      bio,
-      userID,
-    ]);
+    await db.none(
+      'UPDATE users SET website = $1, location = $2, bio = $3 WHERE user_id = $4',
+      [website, location, bio, userID]
+    );
     res.redirect('/profile');
   } catch (err) {
     console.error(err);
@@ -81,58 +107,39 @@ app.post('/profile/update', async (req, res) => {
   }
 });
 
-// Register
+// Registration
 app.get('/register', (req, res) => {
   res.render('pages/register');
 });
 
 app.post('/register', async (req, res) => {
-  console.log('> POST /register body:', req.body);
+  const { username, password, confirmPassword } = req.body;
 
-  const {
-    accountType,
-    username,
-    email,
-    password,
-    confirmPassword
-  } = req.body;
-
-  if (!accountType || !username || !email || !password || !confirmPassword) {
-    console.log('Missing fields');
-    return res.status(400).render('pages/register', { message: 'All fields are required.' });
+  if (!username || !password || !confirmPassword) {
+    return res.status(400).json({ message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-    console.log('Passwords do not match');
-    return res.status(400).render('pages/register', { message: 'Passwords do not match.' });
+    return res.status(400).json({ message: 'Passwords do not match' });
   }
 
-  const isClient = accountType === 'personal';
-
   try {
-    const hash = await bcrypt.hash(password, 10);
-
-    await db.none(
-      `INSERT INTO users (username, password, email, isClient)
-       VALUES ($1, $2, $3, $4)`,
-      [username, hash, email, isClient]
-    );
-    console.log('User inserted into DB');
-
-    return res.redirect('/login');
-  } catch (error) {
-    console.error('Registration error:', error);
-    return res.status(500).render('pages/register', { message: 'Registration failed. Try again.' });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.none('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
+    return res.status(200).json({ message: 'Registration successful' });
+  } catch (err) {
+    console.error('Error inserting user:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-
-
-// --------------------------Login Routes
+// Login page
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
 
+// (Optional) Login handling
+/*
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -153,16 +160,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Welcome test route
-app.get('/welcome', (req, res) => {
-  res.status(200).json({ status: 'success', message: 'Welcome!' });
-});
-
-app.get('/post', (req, res) => {
-  res.render('pages/post');
-});
-
-// ------------------ Start Server ------------------
+// ---------------- START SERVER ----------------
 module.exports = app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
