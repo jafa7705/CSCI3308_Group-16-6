@@ -1,4 +1,4 @@
--- Drop if exists (safe for re-runs during dev)
+-- Drop existing tables if they exist (safe for re-runs during dev)
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
 
@@ -14,12 +14,12 @@ CREATE TABLE users (
   location TEXT
 );
 
--- Create posts table
+-- Create posts table with TIMESTAMP for full date + time
 CREATE TABLE posts (
   post_id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   description TEXT NOT NULL,
-  date_created DATE NOT NULL,
+  date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   category TEXT NOT NULL
 );

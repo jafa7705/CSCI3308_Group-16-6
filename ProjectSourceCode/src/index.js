@@ -28,8 +28,6 @@ app.engine('hbs', exphbs.engine({
 // ------------------ Middleware Setup ------------------
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-// Static and views
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -66,15 +64,16 @@ app.get('/post', (req, res) => {
   res.render('pages/post');
 });
 
-// Submit post (text-only)
+// Submit post (automatically sets current timestamp)
 app.post('/submit', async (req, res) => {
-  const { title, description, date, category } = req.body;
-  const userID = 1; // TODO: Replace with real session user ID
+  const { title, description, category } = req.body;
+  const userID = 1; // TODO: Replace with session-based user ID
 
   try {
     await db.none(
-      'INSERT INTO posts (user_id, title, description, date_created, category) VALUES ($1, $2, $3, $4, $5)',
-      [userID, title, description, date, category]
+      `INSERT INTO posts (user_id, title, description, date_created, category) 
+       VALUES ($1, $2, $3, NOW(), $4)`,
+      [userID, title, description, category]
     );
     res.redirect('/');
   } catch (err) {
@@ -89,7 +88,19 @@ app.get('/profile', async (req, res) => {
   const profileUserID = 1;
 
   try {
-    const user = await db.one('SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
+    const user = await db.one(
+      'SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1',
+      [profileUserID]
+    );
+
+    const posts = await db.any(
+      `SELECT title, description, date_created, category 
+       FROM posts 
+       WHERE user_id = $1 
+       ORDER BY date_created DESC`,
+      [profileUserID]
+    );
+
     let viewingUser;
     try {
       viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
@@ -101,7 +112,7 @@ app.get('/profile', async (req, res) => {
     const isOwner = userID === profileUserID;
     const isOwnerOrClient = isOwner || viewingUser.isClient;
 
-    res.render('pages/profile', { user, isOwner, isOwnerOrClient });
+    res.render('pages/profile', { user, posts, isOwner, isOwnerOrClient });
   } catch (err) {
     console.error(err);
     res.status(500).send('ERROR: Could not get profile');
@@ -177,6 +188,7 @@ app.post('/login', async (req, res) => {
     res.status(400).render('pages/login', { message: 'Wrong username or password' });
   }
 });
+*/
 
 // ---------------- START SERVER ----------------
 module.exports = app.listen(3000, () => {
