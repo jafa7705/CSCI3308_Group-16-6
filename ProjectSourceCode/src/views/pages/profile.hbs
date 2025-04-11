@@ -52,8 +52,12 @@
             </div>
             <p id="bio">{{user.bio}}</p>
 
-            {{#if isOwnerOrClient}} 
-            <p>Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p> {{!TODO: Make a little info icon to explain that this is only visible to clients}}
+            {{#if isOwnerOrClient}}
+            <p>Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a>
+            <span class="info-icon">
+                    <img src="resources/img/info.png" alt="Info" style="width: 20px; height: 20px; vertical-align: middle;">
+                    <span class="info-text">The contact me section is only visible to yourself and clients.</span>
+                </span>
             {{/if}}
         </div>
     </section>
@@ -65,7 +69,7 @@
     
     <div id="editModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close">&times;</span>     {{! TODO: Make it so that the values already present in db stay????}}
             <h2>Edit Profile</h2>
             <form action="/profile/update" method="post">
                 <label for="edit-employment-status">Profile Picture:</label> {{! TODO: Add image stuff}}
@@ -88,10 +92,10 @@
         </div>
     </div>
 
-    {{! {{> TODO: footer}}
+    {{> footer}}
 
     <script src="/index.js"></script>
-    
+        
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('editModal');

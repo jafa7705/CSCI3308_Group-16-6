@@ -4,7 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
-const hbs = require('hbs'); // ✅ To register and use partials
+const hbs = require('hbs'); 
 
 // ------------------ Database Connection ------------------
 const db = pgp({
@@ -23,8 +23,6 @@ app.use(express.urlencoded({ extended: true }));
 // ------------------ View Engine Setup ------------------
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
-
-// ✅ Register partials directory
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
 // ------------------ Static Files ------------------
@@ -43,7 +41,8 @@ app.get('/profile', async (req, res) => {
   const profileUserID = 1;    // TODO: Replace with route param or session
 
   try {
-    const user = await db.one('SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
+    const user = await db.one('SELECT user_id, username, email, isClient AS "isClient", bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
+
     let viewingUser;
 
     try {
