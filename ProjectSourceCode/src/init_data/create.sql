@@ -1,23 +1,25 @@
+-- Drop existing tables if they exist (safe for re-runs during dev)
+DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
+
+-- Create users table
 CREATE TABLE users (
   user_id SERIAL PRIMARY KEY,
-  username VARCHAR(50) NOT NULL UNIQUE,
-  password VARCHAR(200) NOT NULL,
-  email VARCHAR(200) NOT NULL UNIQUE,
-  isClient BOOLEAN NOT NULL,
+  username TEXT NOT NULL UNIQUE,
+  password TEXT NOT NULL,
+  email TEXT,
+  isClient BOOLEAN DEFAULT FALSE,
   bio TEXT,
-  website VARCHAR(200),
-  location VARCHAR(100),
-  phone VARCHAR(200)
+  website TEXT,
+  location TEXT
 );
 
-DROP TABLE IF EXISTS artworks;
-CREATE TABLE artworks (
-  artwork_id SERIAL PRIMARY KEY,
-  artist_id INTEGER NOT NULL REFERENCES users (user_id),
-  title VARCHAR(100) NOT NULL,
-  creation_date DATE NOT NULL,
-  description TEXT,
-  category VARCHAR(50) NOT NULL,
-  image_path TEXT
+-- Create posts table with TIMESTAMP for full date + time
+CREATE TABLE posts (
+  post_id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  category TEXT NOT NULL
 );

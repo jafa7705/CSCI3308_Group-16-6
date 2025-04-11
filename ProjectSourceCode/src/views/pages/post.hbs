@@ -2,57 +2,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create a New Post</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create a New Post</title>
 </head>
 <body>
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
-        <h1 style="text-align: center;">Create a New Post</h1>
-        
-        <form action="/submit" method="POST" enctype="multipart/form-data">
-            <div style="margin-bottom: 15px;">
-                <label for="title" style="font-weight: bold;">Title:</label>
-                <input type="text" name="title" id="title" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label for="description" style="font-weight: bold;">Description:</label>
-                <textarea name="description" id="description" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; height: 100px;"></textarea>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label for="date" style="font-weight: bold;">Date Created:</label>
-                <input type="text" name="date" id="date" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
-            </div>
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
+    <h1 style="text-align: center;">Create a New Post</h1>
+    
+    <form action="/submit" method="POST">
+      <div style="margin-bottom: 15px;">
+        <label for="title" style="font-weight: bold;">Title:</label>
+        <input type="text" name="title" id="title" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <label for="description" style="font-weight: bold;">Description:</label>
+        <textarea name="description" id="description" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; height: 100px;"></textarea>
+      </div>
 
-            <div style="margin-bottom: 15px;">
-                <label for="category" style="font-weight: bold;">Category:</label>
-                <select name="category" id="category" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
-                    <option value="painting">Painting</option>
-                    <option value="sculpture">Sculpture</option>
-                    <option value="photography">Photography</option>
-                    <option value="drawing">Drawing</option>
-                    <option value="pottery">Pottery</option>
-                    <option value="film">Film</option>
-                    <option value="digital_art">Digital Art</option>
-                    <option value="animation">Animation</option>
-                    <option value="architecture">Architecture</option>
-                </select>
-            </div>
+      <div style="margin-bottom: 15px;">
+        <label for="category" style="font-weight: bold;">Category:</label>
+        <select name="category" id="category" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
+          <option value="painting">Painting</option>
+          <option value="sculpture">Sculpture</option>
+          <option value="photography">Photography</option>
+          <option value="drawing">Drawing</option>
+          <option value="pottery">Pottery</option>
+          <option value="film">Film</option>
+          <option value="digital_art">Digital Art</option>
+          <option value="animation">Animation</option>
+          <option value="architecture">Architecture</option>
+        </select>
+      </div>
 
-            <div style="margin-bottom: 15px;">
-                <label for="photo" style="font-weight: bold;">Upload Photo:</label>
-                <input type="file" name="photo" id="photo" accept="image/*" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-            </div>
-
-            <div style="text-align: center;">
-                <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                    Submit
-                </button>
-            </div>
-        </form>
-    </div>
+      <div style="text-align: center;">
+        <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
 </body>
 </html>
-
