@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
 
+const exphbs = require('express-handlebars');
+
 // Setup database connection using environment variables
 const db = pgp({
   host: 'db', // matches service name in docker-compose.yml
@@ -14,6 +16,15 @@ const db = pgp({
   password: process.env.POSTGRES_PASSWORD || 'pwd',
 });
 
+// Change by Jiaye, Wait for test
+// Setup view engine
+app.engine('hbs', exphbs.engine({
+  extname: 'hbs',
+  defaultLayout: 'main',
+  layoutsDir: path.join(__dirname, 'views/layouts'),
+  partialsDir: path.join(__dirname, 'views/partials'),
+}));
+
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -21,6 +32,12 @@ app.use(bodyParser.json());
 // View engine setup
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
+
+
+// Change by Jiaye, Wait for test
+// Register partials
+const hbs = require('hbs');
+hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
 // Static files
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
