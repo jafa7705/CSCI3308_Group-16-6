@@ -133,10 +133,29 @@ app.post('/login', async (req, res) => {
 });
 */
 
-app.get('/search', (req,res) => {
-  const searchQuery = req.query.search_query;
-  res.render('pages/search', { search_query: searchQuery });
+app.get('/search', async (req, res) => {
+  const searchQuery = req.query.searchQuery;
+
+  try {
+    const result = await db.any(
+      `SELECT username FROM users WHERE LOWER(username) LIKE LOWER($1)`,
+      [`%${searchQuery}%`]
+    );
+    //LOWER - converts username to all lower case
+
+    res.render('pages/search', {
+      search_query: searchQuery,
+      items: result.rows,
+      //array of users containing the username
+      //eg - %john, john%, %john% all will return
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('database error' + err.message);
+  }
 });
+
 
 // Welcome test route
 app.get('/welcome', (req, res) => {
