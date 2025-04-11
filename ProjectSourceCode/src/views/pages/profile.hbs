@@ -19,16 +19,17 @@
     {{/if}}
 
     <div class="profile-info">
-      <div class="info-row">
-        <h1 id="display-name">{{user.username}}</h1>
-      </div>
 
       <div class="info-row">
-        <p>@{{user.username}}</p>
+        <h1>@{{user.username}}</h1>
       </div>
 
       <p id="user-role">
-        {{#if user.isClient}}Client{{else}}Artist{{/if}}
+        {{#if user.isClient}}
+            Client
+        {{else}}
+            Artist
+        {{/if}}
       </p>
 
       <div class="info-row"><h2>Website:</h2></div>
@@ -38,10 +39,18 @@
       <p id="location">{{user.location}}</p>
 
       <div class="info-row"><h2>Bio:</h2></div>
-      <p id="bio">{{user.bio}}</p>
+      <p id="bio" style="white-space: pre-line;">{{user.bio}}</p>
 
       {{#if isOwnerOrClient}} 
-      <p>Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p>
+        <p>
+        Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a>
+        {{#if isOwner}}
+            <span class="info-icon">
+            <img src="resources/img/info.png" alt="Info" style="width: 20px; height: 20px; vertical-align: middle;">
+            <span class="info-text">Contact me info is only visible to yourself and clients.</span>
+            </span>
+        {{/if}}
+        </p>
       {{/if}}
     </div>
   </section>
@@ -62,25 +71,23 @@
     {{/if}}
   </section>
 
+
   <div id="editModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
       <h2>Edit Profile</h2>
       <form action="/profile/update" method="post">
         <label for="edit-profile-pic">Profile Picture:</label>
-        <input type="text" id="edit-profile-pic" name="profilePic"><br><br>
-
-        <label for="edit-display-name">Display Name:</label>
-        <input type="text" id="edit-display-name" name="displayName"><br><br>
+        <input type="text" id="edit-profile-pic" name="profilePic" value="{{user.profilePic}}"><br><br>
 
         <label for="edit-website">Website:</label>
-        <input type="text" id="edit-website" name="website"><br><br>
+        <input type="text" id="edit-website" name="website" value="{{user.website}}"><br><br>
 
         <label for="edit-location">Location:</label>
-        <input type="text" id="edit-location" name="location"><br><br>
+        <input type="text" id="edit-location" name="location" value="{{user.location}}"><br><br>
 
         <label for="edit-bio">Bio:</label><br>
-        <textarea id="edit-bio" rows="4" cols="50" name="bio"></textarea><br><br>
+        <textarea id="edit-bio" rows="4" cols="50" name="bio">{{user.bio}}</textarea><br><br>
 
         <button id="save-profile-changes" type="submit">Save Changes</button>
       </form>

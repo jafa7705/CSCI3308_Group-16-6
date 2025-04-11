@@ -84,12 +84,12 @@ app.post('/submit', async (req, res) => {
 
 // Profile page
 app.get('/profile', async (req, res) => {
-  const userID = 1;
-  const profileUserID = 1;
+  const userID = 1;            //Id of user viewing Page     TODO: Make this work with login
+  const profileUserID = 1;     //ID of profile page
 
   try {
     const user = await db.one(
-      'SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1',
+      'SELECT user_id, username, email, isClient AS "isClient", bio, website, location FROM users WHERE user_id = $1',
       [profileUserID]
     );
 
