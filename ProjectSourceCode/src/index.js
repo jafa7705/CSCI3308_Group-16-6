@@ -4,7 +4,6 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
-const hbs = require('hbs'); // ✅ To register and use partials
 const exphbs = require('express-handlebars');
 
 // Setup database connection using environment variables
@@ -40,10 +39,6 @@ app.set('views', path.join(__dirname, 'views'));
 // Change by Jiaye, Wait for test
 // Register partials
 const hbs = require('hbs');
-hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
-
-// Static files
-// ✅ Register partials directory
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
 // ------------------ Static Files ------------------
