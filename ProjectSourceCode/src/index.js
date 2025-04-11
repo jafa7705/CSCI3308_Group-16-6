@@ -4,7 +4,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
-const hbs = require('hbs'); // ✅ To register and use partials
+const hbs = require('hbs');
+hbs.registerHelper('eq', (a, b) => a === b);
 
 // ------------------ Database Connection ------------------
 const db = pgp({
@@ -24,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
-// ✅ Register partials directory
+// Register partials directory
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
 // ------------------ Static Files ------------------
@@ -121,6 +122,18 @@ app.post('/register', async (req, res) => {
 
     return res.redirect('/login');
   } catch (error) {
+    if (error.code === '23505' && error.constraint === 'users_username_key') {
+      return res.render('pages/register', {
+        message: 'That username is already taken.',
+      });
+    }
+
+    if (error.code === '23505' && error.constraint === 'users_email_key') {
+      return res.render('pages/register', {
+        message: 'That email address is already registered.',
+      });
+    }
+
     console.error('Registration error:', error);
     return res.status(500).render('pages/register', { message: 'Registration failed. Try again.' });
   }
