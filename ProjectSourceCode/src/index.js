@@ -5,8 +5,9 @@ const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
 const hbs = require('hbs'); // ✅ To register and use partials
+const exphbs = require('express-handlebars');
 
-// ------------------ Database Connection ------------------
+// Setup database connection using environment variables
 const db = pgp({
   host: 'db',
   port: 5432,
@@ -15,6 +16,16 @@ const db = pgp({
   password: process.env.POSTGRES_PASSWORD || 'pwd',
 });
 
+
+// Setup view engine
+app.engine('hbs', exphbs.engine({
+  extname: 'hbs',
+  defaultLayout: 'main',
+  layoutsDir: path.join(__dirname, 'views/layouts'),
+  partialsDir: path.join(__dirname, 'views/partials'),
+}));
+
+// Middleware setup
 // ------------------ Middleware Setup ------------------
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -24,6 +35,14 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
+
+
+// Change by Jiaye, Wait for test
+// Register partials
+const hbs = require('hbs');
+hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
+
+// Static files
 // ✅ Register partials directory
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
