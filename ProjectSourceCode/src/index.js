@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
 const exphbs = require('express-handlebars');
+const session = require('express-session');
 
 // Setup database connection using environment variables
 const db = pgp({
@@ -38,6 +39,15 @@ app.set('views', path.join(__dirname, 'views'));
 const hbs = require('hbs');
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
+// session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    saveUninitialized: false,
+    resave: false
+  })
+);
+
 // ------------------ Static Files ------------------
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
 
@@ -52,7 +62,7 @@ app.get('/', async (req, res) => {
       JOIN users u ON p.user_id = u.user_id
       ORDER BY p.date_created DESC
     `);
-    res.render('pages/home', { posts });
+    res.render('pages/home', { posts, user: req.session.user });
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).send('Error loading posts.');
@@ -61,13 +71,19 @@ app.get('/', async (req, res) => {
 
 // Post form
 app.get('/post', (req, res) => {
-  res.render('pages/post');
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+    res.render('pages/post', { user: req.session.user });
 });
 
 // Submit post (automatically sets current timestamp)
 app.post('/submit', async (req, res) => {
   const { title, description, category } = req.body;
-  const userID = 1; // TODO: Replace with session-based user ID
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  const userID = req.session.user.user_id;
 
   try {
     await db.none(
@@ -84,8 +100,8 @@ app.post('/submit', async (req, res) => {
 
 // Profile page
 app.get('/profile', async (req, res) => {
-  const userID = 1;            //Id of user viewing Page     TODO: Make this work with login
-  const profileUserID = 1;     //ID of profile page
+  const userID = req.session.user ? req.session.user.user_id : null;
+  const profileUserID = req.query.user_id ? parseInt(req.query.user_id) : (req.session.user ? req.session.user.user_id : 1);
 
   try {
     const user = await db.one(
@@ -95,33 +111,41 @@ app.get('/profile', async (req, res) => {
 
     const posts = await db.any(
       `SELECT title, description, date_created, category 
-       FROM posts 
-       WHERE user_id = $1 
-       ORDER BY date_created DESC`,
+      FROM posts 
+      WHERE user_id = $1 
+      ORDER BY date_created DESC`,
       [profileUserID]
     );
 
     let viewingUser;
-    try {
-      viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
-    } catch (err) {
-      console.error("Viewing user not found:", err);
-      viewingUser = { isClient: false };
+    if (userID) {
+      try {
+        viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
+      } catch (err) {
+        console.error("Viewing user not found:", err);
+        viewingUser = { isClient: false };
+      }
+    } else {
+        viewingUser = {isClient:false};
     }
 
     const isOwner = userID === profileUserID;
     const isOwnerOrClient = isOwner || viewingUser.isClient;
 
-    res.render('pages/profile', { user, posts, isOwner, isOwnerOrClient });
+    res.render('pages/profile', { user, posts, isOwner, isOwnerOrClient, sessionUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('ERROR: Could not get profile');
   }
 });
 
+
 // Update profile
 app.post('/profile/update', async (req, res) => {
-  const userID = 1;
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  const userID = req.session.user.user_id;
   const { website, location, bio } = req.body;
 
   try {
@@ -142,23 +166,24 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password, confirmPassword } = req.body;
+  const { username, password, confirmPassword, isClientHidden } = req.body;
+  const isClient = isClientHidden === 'true';
 
   if (!username || !password || !confirmPassword) {
-    return res.status(400).json({ message: 'All fields are required.' });
+      return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
+      return res.status(400).render('pages/register', { message: 'Passwords do not match' });
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await db.none('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
-    return res.status(200).json({ message: 'Registration successful' });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await db.none('INSERT INTO users (username, password, isClient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
+      return res.render('pages/register', { success: 'Registration successful!' });
   } catch (err) {
-    console.error('Error inserting user:', err);
-    return res.status(500).json({ message: 'Internal server error' });
+      console.error('Error inserting user:', err);
+      return res.status(500).render('pages/register', { message: 'Internal server error' });
   }
 });
 
@@ -167,8 +192,6 @@ app.get('/login', (req, res) => {
   res.render('pages/login');
 });
 
-// (Optional) Login handling
-/*
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -178,17 +201,29 @@ app.post('/login', async (req, res) => {
     const user = await db.one(searchQuery, [username]);
     const match = await bcrypt.compare(password, user.password);
     if (match) {
+      req.session.user = {
+        user_id: user.user_id,
+        username: user.username,
+        isClient: user.isClient,
+      };
       res.redirect('/');
     } else {
-      res.status(400);
-      res.render('pages/login', { message: 'Wrong username or password' });
+      res.status(400).render('pages/login', { message: 'Wrong username or password' });
     }
   } catch (err) {
-    console.error(err);
     res.status(400).render('pages/login', { message: 'Wrong username or password' });
   }
 });
-*/
+
+// Logout route
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+    }
+    res.redirect('/login');
+  });
+});
 
 // ---------------- START SERVER ----------------
 module.exports = app.listen(3000, () => {

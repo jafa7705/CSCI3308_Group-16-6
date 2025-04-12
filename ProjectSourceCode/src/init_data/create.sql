@@ -1,3 +1,5 @@
+CREATE EXTENSION pgcrypto;
+
 -- Drop existing tables if they exist (safe for re-runs during dev)
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
