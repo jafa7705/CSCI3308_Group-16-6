@@ -218,21 +218,20 @@ app.post('/login', async (req, res) => {
 //Search
 app.get('/search', async (req, res) => {
   const searchQuery = req.query.searchQuery || '';
+  const userQuery = `SELECT username, bio FROM users WHERE LOWER(username) LIKE LOWER($1);`;
+  //LOWER - converts username to all lower case
+  //LIKE SQL functionality(ex): %john, john%, %john% all will return for username hjohnward
+
 
   try {
-    const result = await db.any(
-      `SELECT username FROM users WHERE LOWER(username) LIKE LOWER($1)`,
-      [`%${searchQuery}%`]
-    );
-    //LOWER - converts username to all lower case
+    const result = await db.any(userQuery, [`%${searchQuery}%`]);
 
     console.log(result);
 
     res.render('pages/search', {
       searchQuery: searchQuery,
       items: result,
-      //array of users containing the username
-      //eg - %john, john%, %john% all will return
+      //array of users containing the username 
     });
 
   } catch (err) {
