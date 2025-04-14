@@ -1,13 +1,11 @@
-<h1>Search Results for "{{searchQuery}}"</h1>
-
 {{#if items.length}}
-    <h2>Search Results for "{{searchQuery}}"</h2>
+    <h2>Search Results for "{{username}}"</h2>
     <ul>
         {{#each items}}
             <li>
                 <div class="profile-card" style="display: flex; align-items: center; margin-bottom: 20px; border: 1px solid #ddd; padding: 10px;">
-                    <img src="\src\resources\defaultProfilePic.png" alt="Profile Picture" width="60" height="60" style="border-radius: 50%; margin-right: 15px;">
-                    <div class="username">@{{user.username}}</div>
+                    <img src="resources/defaultProfilePic.png" alt="Profile Picture" width="60" height="60" style="border-radius: 50%; margin-right: 15px;">
+                    <div class="username">@{{username}}</div>
                 </div>
             </li>
         {{/each}}
