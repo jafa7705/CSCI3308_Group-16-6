@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
 const exphbs = require('express-handlebars');
+const session = require('express-session');
 
 // Setup database connection using environment variables
 const db = pgp({
@@ -28,9 +29,6 @@ app.engine('hbs', exphbs.engine({
 // ------------------ Middleware Setup ------------------
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
-
-// ------------------ View Engine Setup ------------------
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -41,53 +39,120 @@ app.set('views', path.join(__dirname, 'views'));
 const hbs = require('hbs');
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
+// session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    saveUninitialized: false,
+    resave: false
+  })
+);
+
 // ------------------ Static Files ------------------
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
 
-// ------------------ Routes ------------------
+// ---------------- ROUTES ----------------
 
-// Home
-app.get('/', (req, res) => {
-  res.render('pages/home');
+// Home with posts
+app.get('/', async (req, res) => {
+  try {
+    const posts = await db.any(`
+      SELECT p.title, p.description, p.date_created, p.category, u.username
+      FROM posts p
+      JOIN users u ON p.user_id = u.user_id
+      ORDER BY p.date_created DESC
+    `);
+    res.render('pages/home', { posts, user: req.session.user });
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    res.status(500).send('Error loading posts.');
+  }
 });
 
-// Profile
-app.get('/profile', async (req, res) => {
-  const userID = 1;           // TODO: Replace with session-based user ID
-  const profileUserID = 1;    // TODO: Replace with route param or session
+// Post form
+app.get('/post', (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+    res.render('pages/post', { user: req.session.user });
+});
+
+// Submit post (automatically sets current timestamp)
+app.post('/submit', async (req, res) => {
+  const { title, description, category } = req.body;
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  const userID = req.session.user.user_id;
 
   try {
-    const user = await db.one('SELECT user_id, username, email, isClient, bio, website, location FROM users WHERE user_id = $1', [profileUserID]);
-    let viewingUser;
+    await db.none(
+      `INSERT INTO posts (user_id, title, description, date_created, category) 
+       VALUES ($1, $2, $3, NOW(), $4)`,
+      [userID, title, description, category]
+    );
+    res.redirect('/');
+  } catch (err) {
+    console.error('Error submitting post:', err);
+    res.status(500).send('Error submitting post.');
+  }
+});
 
-    try {
-      viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
-    } catch (err) {
-      console.error("Viewing user not found:", err);
-      viewingUser = { isClient: false };
+// Profile page
+app.get('/profile', async (req, res) => {
+  const userID = req.session.user ? req.session.user.user_id : null;
+  const profileUserID = req.query.user_id ? parseInt(req.query.user_id) : (req.session.user ? req.session.user.user_id : 1);
+
+  try {
+    const user = await db.one(
+      'SELECT user_id, username, email, isClient AS "isClient", bio, website, location FROM users WHERE user_id = $1',
+      [profileUserID]
+    );
+
+    const posts = await db.any(
+      `SELECT title, description, date_created, category 
+      FROM posts 
+      WHERE user_id = $1 
+      ORDER BY date_created DESC`,
+      [profileUserID]
+    );
+
+    let viewingUser;
+    if (userID) {
+      try {
+        viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
+      } catch (err) {
+        console.error("Viewing user not found:", err);
+        viewingUser = { isClient: false };
+      }
+    } else {
+        viewingUser = {isClient:false};
     }
 
     const isOwner = userID === profileUserID;
     const isOwnerOrClient = isOwner || viewingUser.isClient;
 
-    res.render('pages/profile', { user, isOwner, isOwnerOrClient });
+    res.render('pages/profile', { user, posts, isOwner, isOwnerOrClient, sessionUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('ERROR: Could not get profile');
   }
 });
 
+
+// Update profile
 app.post('/profile/update', async (req, res) => {
-  const userID = 1; // TODO: Replace with session-based user ID
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  const userID = req.session.user.user_id;
   const { website, location, bio } = req.body;
 
   try {
-    await db.none('UPDATE users SET website = $1, location = $2, bio = $3 WHERE user_id = $4', [
-      website,
-      location,
-      bio,
-      userID,
-    ]);
+    await db.none(
+      'UPDATE users SET website = $1, location = $2, bio = $3 WHERE user_id = $4',
+      [website, location, bio, userID]
+    );
     res.redirect('/profile');
   } catch (err) {
     console.error(err);
@@ -95,54 +160,34 @@ app.post('/profile/update', async (req, res) => {
   }
 });
 
-// Register
+// Registration
 app.get('/register', (req, res) => {
   res.render('pages/register');
 });
 
 app.post('/register', async (req, res) => {
-  console.log('> POST /register body:', req.body);
+  const { username, password, confirmPassword, isClientHidden } = req.body;
+  const isClient = isClientHidden === 'true';
 
-  const {
-    accountType,
-    username,
-    email,
-    password,
-    confirmPassword
-  } = req.body;
-
-  if (!accountType || !username || !email || !password || !confirmPassword) {
-    console.log('Missing fields');
-    return res.status(400).render('pages/register', { message: 'All fields are required.' });
+  if (!username || !password || !confirmPassword) {
+      return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-    console.log('Passwords do not match');
-    return res.status(400).render('pages/register', { message: 'Passwords do not match.' });
+      return res.status(400).render('pages/register', { message: 'Passwords do not match' });
   }
 
-  const isClient = accountType === 'personal';
-
   try {
-    const hash = await bcrypt.hash(password, 10);
-
-    await db.none(
-      `INSERT INTO users (username, password, email, isClient)
-       VALUES ($1, $2, $3, $4)`,
-      [username, hash, email, isClient]
-    );
-    console.log('User inserted into DB');
-
-    return res.redirect('/login');
-  } catch (error) {
-    console.error('Registration error:', error);
-    return res.status(500).render('pages/register', { message: 'Registration failed. Try again.' });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await db.none('INSERT INTO users (username, password, isClient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
+      return res.render('pages/register', { success: 'Registration successful!' });
+  } catch (err) {
+      console.error('Error inserting user:', err);
+      return res.status(500).render('pages/register', { message: 'Internal server error' });
   }
 });
 
-
-
-// --------------------------Login Routes
+// Login page
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
@@ -156,13 +201,16 @@ app.post('/login', async (req, res) => {
     const user = await db.one(searchQuery, [username]);
     const match = await bcrypt.compare(password, user.password);
     if (match) {
+      req.session.user = {
+        user_id: user.user_id,
+        username: user.username,
+        isClient: user.isClient,
+      };
       res.redirect('/');
     } else {
-      res.status(400);
-      res.render('pages/login', { message: 'Wrong username or password' });
+      res.status(400).render('pages/login', { message: 'Wrong username or password' });
     }
   } catch (err) {
-    console.error(err);
     res.status(400).render('pages/login', { message: 'Wrong username or password' });
   }
 });
@@ -193,16 +241,17 @@ app.get('/search', async (req, res) => {
   }
 });
 
-// Welcome test route
-app.get('/welcome', (req, res) => {
-  res.status(200).json({ status: 'success', message: 'Welcome!' });
+// Logout route
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+    }
+    res.redirect('/login');
+  });
 });
 
-app.get('/post', (req, res) => {
-  res.render('pages/post');
-});
-
-// ------------------ Start Server ------------------
+// ---------------- START SERVER ----------------
 module.exports = app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
