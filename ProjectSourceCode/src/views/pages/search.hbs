@@ -1,10 +1,10 @@
 {{#if items.length}}
-    <h2>Search Results for "{{username}}"</h2>
-    <ul>
+    <h4 style= "margin: 10px 0px 10px 30px">Search results for "{{searchQuery}}":</h4>
+    <ul style="list-style: none; padding-left: 0;">
         {{#each items}}
             <li>
-                <div class="profile-card" style="display: flex; align-items: center; margin-bottom: 20px; border: 1px solid #ddd; padding: 10px;">
-                    <img src="resources/defaultProfilePic.png" alt="Profile Picture" width="60" height="60" style="border-radius: 50%; margin-right: 15px;">
+                <div class="profile-card" style="display: flex; align-items: center; margin: 20px 30px 20px 30px; border: 1px solid #ddd; padding: 10px;">
+                    <img src="/resources/img/defaultProfilePic.png" alt="Profile Picture" width="45" height="45" style="border-radius: 50%; margin-right: 15px;">
                     <div class="username">@{{username}}</div>
                 </div>
             </li>

@@ -217,7 +217,7 @@ app.post('/login', async (req, res) => {
 
 //Search
 app.get('/search', async (req, res) => {
-  const searchQuery = req.query.searchQuery;
+  const searchQuery = req.query.searchQuery || '';
 
   try {
     const result = await db.any(
@@ -229,7 +229,7 @@ app.get('/search', async (req, res) => {
     console.log(result);
 
     res.render('pages/search', {
-      search_query: searchQuery,
+      searchQuery: searchQuery,
       items: result,
       //array of users containing the username
       //eg - %john, john%, %john% all will return
