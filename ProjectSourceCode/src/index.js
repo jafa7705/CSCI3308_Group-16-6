@@ -237,6 +237,7 @@ app.get('/search', async (req, res) => {
     res.render('pages/search', {
       searchQuery: searchQuery,
       items: result,
+      user: req.session.user // added this line so nav bar stays changed when users are logged in
       //array of users containing the username
       //eg - %john, john%, %john% all will return
     });
