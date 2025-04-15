@@ -62,6 +62,25 @@ app.engine('hbs', exphbs.engine({
   partialsDir: path.join(__dirname, 'views/partials'),
 }));
 
+// ------------------ Firebase Setup -------------------
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "firebase/database";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDmd22V0O0fcYcuAzL5Go7T6YwbIRtCWis",
+  authDomain: "csci3308group16-6.firebaseapp.com",
+  projectId: "csci3308group16-6",
+  storageBucket: "csci3308group16-6.firebasestorage.app",
+  messagingSenderId: "626233172851",
+  appId: "1:626233172851:web:1f3b00bcc115bb964c5b06",
+  measurementId: "G-KCF918HXMH"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const database = getDatabase(firebaseApp);
+const messagesRef = ref(database, 'messages');
+
+
 // Middleware setup
 // ------------------ Middleware Setup ------------------
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -84,6 +103,31 @@ app.use(
     resave: false
   })
 );
+
+
+// ------------------- Messaging Functions --------------------
+function sendMessage(sender, text) {
+  push(messagesRef, {
+    sender: sender,
+    text: text,
+    timestamp: serverTimestamp()
+  });
+}
+
+onChildAdded(messagesRef, (snapshot) => {
+  const message = snapshot.val();
+  displayMessage(message);
+});
+
+function displayMessage(message) {
+  const messagesDiv = document.getElementById('messages');
+  const messageElement = document.createElement('p');
+  messageElement.textContent = `${message.sender}: ${message.text}`;
+  messagesDiv.appendChild(messageElement);
+}
+
+
+
 
 // ------------------ Static Files ------------------
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
