@@ -16,6 +16,43 @@ const db = pgp({
   password: process.env.POSTGRES_PASSWORD || 'pwd',
 });
 
+/* Images part */
+const fs = require('fs');
+const multer = require('multer');
+
+// Create uploads directory if it doesn't exist
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log('Created uploads directory');
+}
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(uploadDir));
+
+// Configure Multer storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname); // Unique filename
+  }
+});
+
+// Filters out non images
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only images are allowed!'), false);
+  }
+};
+
+// Limits filesize
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter
+});
 
 // Setup view engine
 app.engine('hbs', exphbs.engine({
@@ -56,12 +93,13 @@ app.use('/resources', express.static(path.join(__dirname, 'resources')));
 // Home with posts
 app.get('/', async (req, res) => {
   try {
-    const posts = await db.any(`
-      SELECT p.title, p.description, p.date_created, p.category, u.username
-      FROM posts p
-      JOIN users u ON p.user_id = u.user_id
-      ORDER BY p.date_created DESC
-    `);
+    const posts = await db.any(
+      `SELECT p.title, p.description, p.date_created, p.category, p.image, u.username
+       FROM posts p
+       JOIN users u ON p.user_id = u.user_id
+       ORDER BY p.date_created DESC`
+    );
+    
     res.render('pages/home', { posts, user: req.session.user });
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -78,7 +116,7 @@ app.get('/post', (req, res) => {
 });
 
 // Submit post (automatically sets current timestamp)
-app.post('/submit', async (req, res) => {
+app.post('/submit', upload.single('postImage'), async (req, res) => {
   const { title, description, category } = req.body;
   if (!req.session.user) {
     return res.redirect('/login');
@@ -86,10 +124,12 @@ app.post('/submit', async (req, res) => {
   const userID = req.session.user.user_id;
 
   try {
+    const imagePath = req.file ? req.file.filename : null; // added post image path
+
     await db.none(
-      `INSERT INTO posts (user_id, title, description, date_created, category) 
-       VALUES ($1, $2, $3, NOW(), $4)`,
-      [userID, title, description, category]
+      `INSERT INTO posts (user_id, title, description, date_created, category, image) 
+       VALUES ($1, $2, $3, NOW(), $4, $5)`,
+      [userID, title, description, category, imagePath]
     );
     res.redirect('/');
   } catch (err) {
@@ -256,6 +296,15 @@ app.get('/logout', (req, res) => {
     }
     res.redirect('/login');
   });
+});
+
+// Error handling for images
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    res.status(400).render('error', { message: 'File upload error: ' + err.message });
+  } else {
+    next(err);
+  }
 });
 
 // ---------------- START SERVER ----------------
