@@ -180,8 +180,14 @@ app.post('/register', async (req, res) => {
   try {
       const hashedPassword = await bcrypt.hash(password, 10);
       await db.none('INSERT INTO users (username, password, isClient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
-      return res.render('pages/register', { success: 'Registration successful!' });
+      return res.render('pages/login', { success: 'Registration successful!' });
   } catch (err) {
+      if (err.code === '23505' && err.constraint === 'users_username_key') {
+        return res.render('pages/register', {
+          message: 'That username is already taken.',
+        });
+      }
+
       console.error('Error inserting user:', err);
       return res.status(500).render('pages/register', { message: 'Internal server error' });
   }
