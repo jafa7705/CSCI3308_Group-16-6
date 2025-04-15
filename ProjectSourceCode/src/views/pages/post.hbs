@@ -9,7 +9,13 @@
   <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
     <h1 style="text-align: center;">Create a New Post</h1>
     
-    <form action="/submit" method="POST">
+    <form action="/submit" method="post" enctype="multipart/form-data">
+      
+      <div style="margin-bottom: 15px;">
+        <label for="image" style="font-weight: bold;">Upload Image:</label>
+        <input type="file" name="postImage" accept="image/*">
+      </div>
+
       <div style="margin-bottom: 15px;">
         <label for="title" style="font-weight: bold;">Title:</label>
         <input type="text" name="title" id="title" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">

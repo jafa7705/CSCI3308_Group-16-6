@@ -13,7 +13,8 @@ CREATE TABLE users (
   isClient BOOLEAN DEFAULT FALSE,
   bio TEXT,
   website TEXT,
-  location TEXT
+  location TEXT,
+  profile_image VARCHAR(200)
 );
 
 -- Create posts table with TIMESTAMP for full date + time
@@ -23,5 +24,6 @@ CREATE TABLE posts (
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  category TEXT NOT NULL
+  category TEXT NOT NULL,
+  image VARCHAR(200)
 );
