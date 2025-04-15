@@ -200,6 +200,39 @@ app.post('/profile/update', async (req, res) => {
   }
 });
 
+app.get('/profile/:username', async (req, res) => {
+  //TODO profile photo as well
+  const username = req.params.username;
+
+  try {
+    const userProfile = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+
+    if (!userProfile) {
+      return res.status(404).send('User not found');
+    }
+
+    const userPosts = await db.any('SELECT * FROM posts WHERE user_id = $1', [userProfile.user_id]);
+
+    //checks if the logged-in user is the owner of the profile
+    const isOwner = req.session.user && req.session.user.username === username;
+    const isOwnerOrClient = req.session.user && (isOwner || req.session.user.isClient);
+
+    res.render('pages/profile', {
+      user: userProfile,
+      posts: userPosts,
+      isOwner, 
+      isOwnerOrClient 
+      //checks if the logged-in user is the owner or a client
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Database error: ' + err.message);
+  }
+});
+
+
+
 // Registration
 app.get('/register', (req, res) => {
   res.render('pages/register');
@@ -267,7 +300,6 @@ app.get('/search', async (req, res) => {
   const userQuery = `SELECT username, bio FROM users WHERE LOWER(username) LIKE LOWER($1);`;
   //LOWER - converts username to all lower case
   //LIKE SQL functionality(ex): %john, john%, %john% all will return for username hjohnward
-
 
   try {
     const result = await db.any(userQuery, [`%${searchQuery}%`]);

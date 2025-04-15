@@ -3,12 +3,12 @@
     <ul style="list-style: none; padding-left: 0;">
         {{#each items}}
             <li>
-                <a href = "/profile" style="text-decoration: none; color: inherit; display: block;">
+                <a href = "/profile/{{username}}" style="text-decoration: none; color: inherit; display: block;">
                     <div class="profile-card" style="display: flex; align-items: center; margin: 20px 30px 20px 30px; border: 1px solid #ddd; padding: 10px;">
                         <img src="/resources/img/defaultProfilePic.png" alt="Profile Picture" width="45" height="45" style="border-radius: 50%; margin-right: 15px;">
                     <!-- for orientating information in a consistent row -->
                     <div style="display: flex; flex-direction: row; gap: 15px;">
-                        <div class="username">@{{username}}</div>
+                        <div class="username">{{username}}</div>
                         <div class="bio" style = "margin: 0px 0px 10px 0px">{{bio}}</div>
                     </div>
                 </a>
