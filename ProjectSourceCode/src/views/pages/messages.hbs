@@ -1,0 +1,186 @@
+<div class="messages-container">
+  <div class="user-list">
+    <h2>Messages</h2>
+    <ul id="user-conversations">
+      {{#each conversations}}
+        <li class="conversation-item" data-user-id="{{this.user_id}}">
+          <img src="/resources/img/defaultProfilePic.png" alt="Profile" class="profile-pic">  {{! TODO: Fix it to profile photos}}
+          <span>{{this.username}}</span>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+
+  <div class="message-area">
+    <div id="messages">
+    </div>
+    <div class="message-input">
+      <textarea id="message-text" placeholder="Type your message..." rows="3"></textarea>
+      <button id="send-button">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const sendButton = document.getElementById('send-button');
+  const messageText = document.getElementById('message-text');
+  const messagesDiv = document.getElementById('messages');
+  const userConversations = document.getElementById('user-conversations');
+  let selectedUserId = null;
+
+  function addMessage(sender, text) {
+    const messageElement = document.createElement('p');
+    messageElement.innerHTML = `${sender}: ${text.replace(/\n/g, '<br>')}`;
+    messagesDiv.appendChild(messageElement);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  userConversations.addEventListener('click', (event) => {
+    const conversationItem = event.target.closest('.conversation-item');
+    if (conversationItem) {
+      selectedUserId = conversationItem.dataset.userId;
+      messagesDiv.innerHTML = '';
+      fetch(`/get-messages?recipientId=${selectedUserId}`)
+        .then(response => response.json())
+        .then(messages => {
+          messages.forEach(message => {
+            addMessage(message.sender, message.message_text);
+          });
+        })
+        .catch(error => console.error("Error retrieving messages:", error));
+    }
+  });
+
+  sendButton.addEventListener('click', () => {
+    sendMessage();
+  });
+
+  messageText.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
+      } else {
+        sendMessage();
+        event.preventDefault();
+      }
+    }
+  });
+
+  function sendMessage() {
+    const text = messageText.value.trim();
+    if (text && selectedUserId) {
+      fetch('/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipientId: selectedUserId,
+          messageText: text,
+        }),
+      })
+      .then(response => {
+          if(response.ok) {
+              addMessage('You', text);
+              messageText.value = '';
+          } else {
+              console.error('Failed to send message:', response.statusText);
+              alert("message failed to send");
+          }
+      })
+      .catch(error => console.error('Error sending message:', error));
+    }
+  }
+});
+</script>
+
+<style> /*Can replace with css but this is a good example :)*/
+  .messages-container {
+    display: flex;
+    height: 500px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .user-list {
+    width: 200px;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+  }
+
+  .user-list h2 {
+    margin-top: 0;
+    font-size: 1.2em;
+  }
+
+  #user-conversations {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .conversation-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+  }
+
+  .conversation-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+  }
+
+  .message-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #messages {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    border-bottom: 1px solid #ccc;
+    word-break: break-word;
+  }
+
+  .message-input {
+    display: flex;
+    padding: 10px;
+  }
+
+  #message-text {
+      flex-grow:1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 8px;
+      resize: vertical;
+      overflow-y:auto;
+      white-space: pre-wrap;
+  }
+
+  #send-button {
+    padding: 8px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #send-button:hover {
+    background-color: #0056b3;
+  }
+</style>
