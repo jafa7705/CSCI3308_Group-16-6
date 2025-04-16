@@ -6,6 +6,7 @@ const pgp = require('pg-promise')();
 const bcrypt = require('bcryptjs');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
+const apiKey = process.env.API_KEY;
 
 // Setup database connection using environment variables
 const db = pgp({
@@ -63,22 +64,44 @@ app.engine('hbs', exphbs.engine({
 }));
 
 // ------------------ Firebase Setup -------------------
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "firebase/database";
+async function setupFirebase() {
+  const { initializeApp } = await import("firebase/app");
+  const { getDatabase, ref, push, onChildAdded, serverTimestamp } = await import("firebase/database");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDmd22V0O0fcYcuAzL5Go7T6YwbIRtCWis",
-  authDomain: "csci3308group16-6.firebaseapp.com",
-  projectId: "csci3308group16-6",
-  storageBucket: "csci3308group16-6.firebasestorage.app",
-  messagingSenderId: "626233172851",
-  appId: "1:626233172851:web:1f3b00bcc115bb964c5b06",
-  measurementId: "G-KCF918HXMH"
-};
+  const firebaseConfig = {
+    apiKey: apiKey,
+    authDomain: "csci3308group16-6.firebaseapp.com",
+    projectId: "csci3308group16-6",
+    storageBucket: "csci3308group16-6.firebasestorage.app",
+    messagingSenderId: "626233172851",
+    appId: "1:626233172851:web:1f3b00bcc115bb964c5b06",
+    measurementId: "G-KCF918HXMH",
+    databaseURL: "https://csci3308group16-6-default-rtdb.firebaseio.com/"
+  };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const database = getDatabase(firebaseApp);
-const messagesRef = ref(database, 'messages');
+  const firebaseApp = initializeApp(firebaseConfig);
+  const database = getDatabase(firebaseApp);
+  const messagesRef = ref(database, 'messages');
+
+  return { database, messagesRef, push, onChildAdded, serverTimestamp };
+}
+
+let database, messagesRef, push, onChildAdded, serverTimestamp;
+
+setupFirebase().then((firebaseModules) => {
+  database = firebaseModules.database;
+  messagesRef = firebaseModules.messagesRef;
+  push = firebaseModules.push;
+  onChildAdded = firebaseModules.onChildAdded;
+  serverTimestamp = firebaseModules.serverTimestamp;
+
+  if(onChildAdded && messagesRef) {
+    onChildAdded(messagesRef, (snapshot) => {
+      const message = snapshot.val();
+    });
+  }
+
+});
 
 
 // Middleware setup
@@ -107,26 +130,14 @@ app.use(
 
 // ------------------- Messaging Functions --------------------
 function sendMessage(sender, text) {
-  push(messagesRef, {
-    sender: sender,
-    text: text,
-    timestamp: serverTimestamp()
-  });
+  if (push && messagesRef && serverTimestamp) {
+    push(messagesRef, {
+      sender: sender,
+      text: text,
+      timestamp: serverTimestamp()
+    });
+  }
 }
-
-onChildAdded(messagesRef, (snapshot) => {
-  const message = snapshot.val();
-  displayMessage(message);
-});
-
-function displayMessage(message) {
-  const messagesDiv = document.getElementById('messages');
-  const messageElement = document.createElement('p');
-  messageElement.textContent = `${message.sender}: ${message.text}`;
-  messagesDiv.appendChild(messageElement);
-}
-
-
 
 
 // ------------------ Static Files ------------------
@@ -329,6 +340,84 @@ app.get('/search', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('database error' + err.message);
+  }
+});
+
+// Messages Routes
+app.get('/messages', async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+    try{
+        const conversations = await db.any(
+            `SELECT DISTINCT u.user_id, u.username
+             FROM users u
+             JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_id)
+             WHERE $1 IN (m.sender_id, m.receiver_id) AND u.user_id != $1`,
+            [req.session.user.user_id]
+        );
+        res.render('pages/messages', { user: req.session.user, conversations: conversations });
+    } catch (error) {
+        console.error("Error retrieving conversations:", error);
+        res.status(500).send("Error retrieving conversations");
+    }
+
+});
+
+app.post('/send-message', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    const { recipientId, messageText } = req.body;
+    const senderId = req.session.user.user_id;
+
+    try {
+        const recipient = await db.oneOrNone('SELECT user_id FROM users WHERE user_id = $1', [recipientId]);
+        if (!recipient) {
+            return res.status(400).send('Recipient not found');
+        }
+
+        sendMessage(req.session.user.username, messageText);
+
+        await db.none(
+            `INSERT INTO messages (sender_id, receiver_id, message_text, timestamp)
+             VALUES ($1, $2, $3, NOW())`,
+            [senderId, recipientId, messageText]
+        );
+        res.status(200).send('Message sent successfully');
+
+    } catch (error) {
+        console.error('Error sending message:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.get('/get-messages', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const { recipientId } = req.query;
+  const senderId = req.session.user.user_id;
+
+  try {
+    const messages = await db.any(
+      `SELECT message_text, timestamp, 
+       CASE 
+         WHEN m.sender_id = $1 THEN 'You' 
+         ELSE u.username 
+       END as sender
+       FROM messages m
+       JOIN users u ON m.sender_id = u.user_id
+       WHERE (m.sender_id = $1 AND m.receiver_id = $2) OR (m.sender_id = $2 AND m.receiver_id = $1)
+       ORDER BY timestamp ASC`,
+      [senderId, recipientId]
+    );
+    res.json(messages);
+  } catch (error) {
+    console.error("Error retrieving messages:", error);
+    res.status(500).send("Internal server error");
   }
 });
 
