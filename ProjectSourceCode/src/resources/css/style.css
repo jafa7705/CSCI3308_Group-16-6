@@ -1,0 +1,26 @@
+.profile-sections {
+    display: flex;           /* Flex container */
+    justify-content: space-between; /* Space out the sections */
+    gap: 20px;               /* Add space between the two sections */
+    margin-top: 40px;        /* Optional: Adds margin on top */
+  }
+  
+  .connections, .posts {
+    flex: 1;                 /* Both sections take equal width */
+    max-width: 48%;          /* Optional: Limits the maximum width of each section */
+  }
+  
+  .connections {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+  }
+  
+  .posts {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+  }
+  

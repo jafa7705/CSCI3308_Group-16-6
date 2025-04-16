@@ -37,3 +37,16 @@ CREATE TABLE messages (
     message_text TEXT NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- Connection Requests Table
+CREATE TABLE connections (
+  connection_id SERIAL PRIMARY KEY,
+  employer_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  -- defines foreign key relationship to users table
+  artist_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  -- same as before but through artist instead
+  status TEXT CHECK (status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+  -- CHECK sees that status only has one of the three values
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -116,6 +116,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Change by Jiaye, Wait for test
 // Register partials
 const hbs = require('hbs');
+const { connect } = require('http2');
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
 // session middleware
@@ -193,10 +194,17 @@ app.post('/submit', upload.single('postImage'), async (req, res) => {
   }
 });
 
+
+
 // Profile page
 app.get('/profile', async (req, res) => {
-  const userID = req.session.user ? req.session.user.user_id : null;
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
   const profileUserID = req.query.user_id ? parseInt(req.query.user_id) : (req.session.user ? req.session.user.user_id : 1);
+
+  const isOwner = true; // always the logged-in user's own profile
+  const isOwnerOrClient = req.session.user && req.session.user.isClient;
 
   try {
     const user = await db.one(
@@ -212,28 +220,36 @@ app.get('/profile', async (req, res) => {
       [profileUserID]
     );
 
-    let viewingUser;
-    if (userID) {
-      try {
-        viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
-      } catch (err) {
-        console.error("Viewing user not found:", err);
-        viewingUser = { isClient: false };
-      }
-    } else {
-        viewingUser = {isClient:false};
+    let connections = [];
+    if (user.isClient) {
+      //return all artists the employer (client) is connected with
+      connections = await db.any(
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1',
+        [user.user_id]
+      );
+    } else if (!user.isClient) {
+      //return all employers the artist is connected with
+      connections = await db.any(
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1',
+        [user.user_id]
+      );
     }
 
-    const isOwner = userID === profileUserID;
-    const isOwnerOrClient = isOwner || viewingUser.isClient;
+    res.render('pages/profile', {
+      user,
+      posts,                 
+      connections,
+      sessionUser: req.session.user,
+      isOwner,
+      isOwnerOrClient,
+      canConnect: user.isClient,
+    });
 
-    res.render('pages/profile', { user, posts, isOwner, isOwnerOrClient, sessionUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('ERROR: Could not get profile');
   }
 });
-
 
 // Update profile
 app.post('/profile/update', async (req, res) => {
@@ -255,29 +271,73 @@ app.post('/profile/update', async (req, res) => {
   }
 });
 
+
+
 app.get('/profile/:username', async (req, res) => {
-  //TODO profile photo as well
+  // Profile username parameter from the URL
   const username = req.params.username;
 
-  try {
-    const userProfile = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+  // The currently logged-in user (viewer)
+  const viewer = req.session.user;
 
-    if (!userProfile) {
+  try {
+    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+
+    if (!user) {
       return res.status(404).send('User not found');
     }
 
-    const userPosts = await db.any('SELECT * FROM posts WHERE user_id = $1', [userProfile.user_id]);
+    const userPosts = await db.any('SELECT * FROM posts WHERE user_id = $1', [user.user_id]);
 
-    //checks if the logged-in user is the owner of the profile
-    const isOwner = req.session.user && req.session.user.username === username;
-    const isOwnerOrClient = req.session.user && (isOwner || req.session.user.isClient);
+    // Check if the logged-in user is the owner of the profile
+    const isOwner = viewer && viewer.username === username;
+    const isOwnerOrClient = viewer && (isOwner || viewer.isClient);
 
+    let canConnect = false;
+    let connectionExists = false;
+    
+    // Only clients can connect to artists
+    if (
+      viewer &&
+      viewer.isClient &&  // Viewer is an employer
+      !user.isClient && // Profile being viewed is an artist
+      !isOwner // Not the owner's profile
+    ) {
+      canConnect = true;
+
+      // Check if a connection already exists between the viewer (employer) and the userProfile (artist)
+      const existingConnection = await db.oneOrNone('SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2', [viewer.user_id, user.user_id]);
+      if (existingConnection) {
+        connectionExists = true;
+      }
+    }
+
+    // Fetch connections for the user profile based on whether they are an employer or artist
+    let connections = [];
+    if (user.isClient) {
+      // If the profile is an employer, fetch all artists they are connected with
+      connections = await db.any(
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1',
+        [user.user_id]
+      );
+    } else if (!user.isClient) {
+      // If the profile is an artist, fetch all employers they are connected with
+      connections = await db.any(
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1',
+        [user.user_id]
+      );
+    }
+
+    // Render the profile page with user data, posts, and connections
     res.render('pages/profile', {
-      user: userProfile,
+      user: user,
       posts: userPosts,
-      isOwner, 
-      isOwnerOrClient 
-      //checks if the logged-in user is the owner or a client
+      isOwner,
+      isOwnerOrClient,
+      sessionUser: viewer,
+      canConnect,
+      connectionExists,
+      connections, // Include connections in the response
     });
 
   } catch (err) {

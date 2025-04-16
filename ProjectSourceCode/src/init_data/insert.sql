@@ -66,3 +66,30 @@ INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 (8, 7, 'Grace, thank you, I am working on a new one', '2024-03-23 15:10:00'),
 (9, 10, 'Jack, do you know of any galleries that might be interested in my work?', '2024-03-24 17:00:00'),
 (10, 9, 'Irene, I might know of a few, send me some photos', '2024-03-24 17:10:00');
+
+
+
+
+-- Bob (employer) connects with Alice (artist)
+INSERT INTO connections (employer_id, artist_id) 
+VALUES ((SELECT user_id FROM users WHERE username = 'bob'), (SELECT user_id FROM users WHERE username = 'alice'));
+
+-- Eva (employer) connects with Carla (artist)
+INSERT INTO connections (employer_id, artist_id) 
+VALUES ((SELECT user_id FROM users WHERE username = 'eva'), (SELECT user_id FROM users WHERE username = 'carla'));
+
+-- Jack (employer) connects with Carla (artist)
+INSERT INTO connections (employer_id, artist_id) 
+VALUES ((SELECT user_id FROM users WHERE username = 'jack'), (SELECT user_id FROM users WHERE username = 'carla'));
+
+-- Jack (employer) connects with Frank (artist)
+INSERT INTO connections (employer_id, artist_id) 
+VALUES ((SELECT user_id FROM users WHERE username = 'jack'), (SELECT user_id FROM users WHERE username = 'frank'));
+
+-- Eva (employer) connects with Frank (artist)
+INSERT INTO connections (employer_id, artist_id) 
+VALUES ((SELECT user_id FROM users WHERE username = 'eva'), (SELECT user_id FROM users WHERE username = 'frank'));
+
+-- Irene (employer) connects with Grace (artist)
+INSERT INTO connections (employer_id, artist_id) 
+VALUES ((SELECT user_id FROM users WHERE username = 'irene'), (SELECT user_id FROM users WHERE username = 'grace'));
