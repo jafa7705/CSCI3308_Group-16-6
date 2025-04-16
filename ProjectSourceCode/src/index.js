@@ -421,6 +421,7 @@ app.get('/get-messages', async (req, res) => {
   }
 });
 
+
 // Logout route
 app.get('/logout', (req, res) => {
   req.session.destroy((err) => {

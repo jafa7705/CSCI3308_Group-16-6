@@ -4,7 +4,7 @@
     <ul id="user-conversations">
       {{#each conversations}}
         <li class="conversation-item" data-user-id="{{this.user_id}}">
-          <img src="/resources/img/defaultProfilePic.png" alt="Profile" class="profile-pic">
+          <img src="/resources/img/defaultProfilePic.png" alt="Profile" class="profile-pic">  {{! TODO: Fix it to profile photos}}
           <span>{{this.username}}</span>
         </li>
       {{/each}}
