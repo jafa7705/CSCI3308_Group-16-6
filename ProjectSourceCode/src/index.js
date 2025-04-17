@@ -430,7 +430,7 @@ app.post('/connect/:username', async (req, res) => {
 app.post('/connection/:id/accept', async (req, res) => {
   const artistID = req.session.user?.user_id;
 
-  try {
+  try { 
     await db.none(
       'UPDATE connections SET status = $1 WHERE connection_id = $2 AND artist_id = $3',
       ['accepted', req.params.id, artistID]
