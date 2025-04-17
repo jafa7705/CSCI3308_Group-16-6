@@ -200,7 +200,7 @@ app.post('/submit', upload.single('postImage'), async (req, res) => {
 
 
 
-// Profile page
+// ---------------- PROFILE ROUTES  ----------------//
 //view your own profile
 app.get('/profile', async (req, res) => {
   if (!req.session.user) {
@@ -219,8 +219,7 @@ app.get('/profile', async (req, res) => {
   try {
     const user = await db.one(
       'SELECT user_id, username, email, isclient, bio, website, location FROM users WHERE user_id = $1',
-      [profileUserID]
-    );
+      [profileUserID]);
     //returns basic user information
 
     const posts = await db.any(
@@ -228,33 +227,66 @@ app.get('/profile', async (req, res) => {
       FROM posts  
       WHERE user_id = $1 
       ORDER BY date_created DESC`,
-      [profileUserID]
-    );
+      [profileUserID]);
     //returns user posts
 
+    // let connections = [];
+    // if (user.isclient) {
+    //   //return all artists the employer (isClient = T) is connected with
+    //   connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+    //     [user.user_id, 'accepted']);
+
+    // } else if (!user.isclient) {
+    //   //return all employers the artist is connected with
+    //   connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+    //     [user.user_id, 'accepted']);
+    // }
+
+    // let pendingRequests = [];
+    // if (req.session.user && !req.session.user.isclient) {
+    //   pendingRequests = await db.any(
+    //     `SELECT c.connection_id, u.username AS client_username
+    //     FROM connections c
+    //     JOIN users u ON u.user_id = c.employer_id
+    //     WHERE c.artist_id = $1 AND c.status = 'pending'`,
+    //     [req.session.user.user_id]
+    //   );
+    // }
+
     let connections = [];
+    let pendingRequests = [];
+
     if (user.isclient) {
-      //return all artists the employer (isClient = T) is connected with
+      //return all accepted connections for the client
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1',
-        [user.user_id]
-      );
-    } else if (!user.isclient) {
-      //return all employers the artist is connected with
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        [user.user_id, 'accepted']);
+
+      //return all pending connection requests made by the current client
+      pendingRequests = await db.any(
+        'SELECT c.connection_id, u.username AS artist_username FROM connections c JOIN users u ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        [user.user_id, 'pending']);
+
+    } else {
+      //if user is artist, return their accepted connections
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1',
-        [user.user_id]
-      );
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        [user.user_id, 'accepted']);
+
+      pendingRequests = await db.any(
+        'SELECT c.connection_id, u.username AS client_username FROM connections c JOIN users u ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        [req.session.user.user_id, 'pending']);
     }
 
     res.render('pages/profile', {
       user,
       posts,                 
       connections,
+      pendingRequests,
       sessionUser: req.session.user,
       isOwner,
-      isOwnerOrClient: isOwnerOrClient,
-      canConnect: canConnect,
+      isOwnerOrClient,
+      canConnect,
     });
 
   } catch (err) {
@@ -302,7 +334,8 @@ app.get('/profile/:username', async (req, res) => {
   //if it is the users own profile, switch to /profile route
 
   try {
-    const user = await db.oneOrNone(`SELECT user_id, username, email, isclient, bio, website, location, profile_image FROM users WHERE username = $1`, 
+    const user = await db.oneOrNone(
+      `SELECT user_id, username, email, isclient, bio, website, location, profile_image FROM users WHERE username = $1`, 
       [username]);
 
     console.log('Fetched user', user);
@@ -312,7 +345,9 @@ app.get('/profile/:username', async (req, res) => {
       return res.status(404).send('User not found');
     }
 
-    const userPosts = await db.any('SELECT * FROM posts WHERE user_id = $1', [user.user_id]);
+    const userPosts = await db.any(
+      'SELECT * FROM posts WHERE user_id = $1', 
+      [user.user_id]);
 
     // Check if the logged-in user is the owner of the profile
     const isOwner = false; //is the user the owner of this profile
@@ -325,13 +360,19 @@ app.get('/profile/:username', async (req, res) => {
       //profile being viewed is an artist
     let canConnect = false;
     let connectionExists = false;
+    let isPending = false; //for button control 
+
     if (viewer && viewer.isclient &&  !user.isclient && !isOwner ) {
       canConnect = true;
 
       //check if a connection already exists between the viewer (employer) and the user(artist)
-      const existingConnection = await db.oneOrNone('SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2', [viewer.user_id, user.user_id]);
+      const existingConnection = await db.oneOrNone('SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2 AND status IN ($3, $4)', 
+        [viewer.user_id, user.user_id, 'pending', 'accepted']);
       if (existingConnection) {
         connectionExists = true;
+        if (existingConnection.status === 'pending') {
+          isPending = true;
+        }
       }
     }
 
@@ -339,15 +380,13 @@ app.get('/profile/:username', async (req, res) => {
     if (user.isclient) {
       //if profile is employer, return all artists they are connected with
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1',
-        [user.user_id]
-      );
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        [user.user_id, 'accepted']);
+  
     } else if (!user.isclient) {
       //if profile is an artist, return all employers they are connected with
-      connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1',
-        [user.user_id]
-      );
+      connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        [user.user_id, 'accepted']);
     }
 
     console.log('viewer:', viewer);
@@ -365,6 +404,7 @@ app.get('/profile/:username', async (req, res) => {
       isOwnerOrClient,
       canConnect,
       connectionExists,
+      isPending
     });
 
   } catch (err) {
@@ -374,40 +414,80 @@ app.get('/profile/:username', async (req, res) => {
 });
 
 
-app.post('/connect/:user_id', async (req, res) => {
+// ---------------- CONNECTION ROUTES ----------------
+//after client clicks request connection
+app.post('/connect/:username', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
-  }  
-  const employer_id = req.session.user.user_id;
-  const artist_id = req.params.user_id;
+  }
+  const viewer = req.session.user;
+  const artistUsername = req.params.username;
+
+  if (!viewer || !viewer.isclient) {
+    return res.status(403).send('Only clients can request connections.');
+  }
 
   try {
-    //check if a connection already exists
-    const existingConnection = await db.oneOrNone(
-      'SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2',
-      [employer_id, artist_id]);
+    const artist = await db.one(
+      'SELECT user_id FROM users WHERE username = $1 AND isclient = false', 
+      [artistUsername]);
+    //artist trying to connect with
 
-    if (existingConnection) {
-      return res.status(400).send('Connection already exists.');
+    //does this exist
+    const existing = await db.oneOrNone(
+      'SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2',
+      [viewer.user_id, artist.user_id]);
+
+    if (existing) {
+      return res.send('Connection already exists or is pending.');
     }
 
-    // Insert new connection into the database
     await db.none(
-      'INSERT INTO connections (employer_id, artist_id) VALUES ($1, $2)',
-      [employer_id, artist_id]
-    );
+      'INSERT INTO connections (employer_id, artist_id, status) VALUES ($1, $2, $3)',
+      [viewer.user_id, artist.user_id, 'pending']);
 
-    //redirect or respond with success
-    res.redirect('/profile/' + artist_id); // or another appropriate route
+  
+    res.redirect(`/profile/${artistUsername}`);
   } catch (err) {
-    console.error('Error connecting:', err);
-    res.status(500).send('Error creating connection');
+    console.error(err);
+    res.status(500).send('Could not request connection');
+  }
+});
+
+//if artist accepts the connection
+app.post('/connection/:id/accept', async (req, res) => {
+  const artistID = req.session.user?.user_id;
+
+  try {
+    await db.none(
+      'UPDATE connections SET status = $1 WHERE connection_id = $2 AND artist_id = $3',
+      ['accepted', req.params.id, artistID]
+    );
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Could not accept connection');
+  }
+});
+
+//if artist rejects the connection
+app.post('/connection/:id/reject', async (req, res) => {
+  const artistID = req.session.user?.user_id;
+
+  try {
+    await db.none(
+      'UPDATE connections SET status = $1 WHERE connection_id = $2 AND artist_id = $3',
+      ['rejected', req.params.id, artistID]
+    );
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Could not reject connection');
   }
 });
 
 
-
-
+// ---------------- LOGIN HANDLING ----------------
 // Registration
 app.get('/register', (req, res) => {
   res.render('pages/register');
@@ -469,6 +549,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// ---------------- SEARCH ROUTES ----------------
 //Search
 app.get('/search', async (req, res) => {
   const searchQuery = req.query.searchQuery || '';
@@ -495,7 +576,8 @@ app.get('/search', async (req, res) => {
   }
 });
 
-// Messages Routes
+
+// ---------------- MESSAGE ROUTES ----------------
 app.get('/messages', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');

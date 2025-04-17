@@ -48,5 +48,7 @@ CREATE TABLE connections (
   -- same as before but through artist instead
   status TEXT CHECK (status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
   -- CHECK sees that status only has one of the three values
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (employer_id, artist_id)
+  --avoids duplicate connections
 );

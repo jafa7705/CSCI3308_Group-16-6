@@ -15,6 +15,28 @@
         <img src="resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
         Edit Profile
       </button>
+      {{#unless user.isclient}}
+        <section class="pending-connections">
+          <h3>Pending Requests</h3>
+          {{#if pendingRequests.length}}
+            <ul>
+              {{#each pendingRequests}}
+                <li>
+                  {{this.client_username}}
+                  <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
+                    <button type="submit">Accept</button>
+                  </form>
+                  <form action="/connection/{{this.connection_id}}/reject" method="POST" style="display:inline;">
+                    <button type="submit">Reject</button>
+                  </form>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p>No pending requests.</p>
+          {{/if}}
+        </section>
+      {{/unless}}
     {{/if}}
 
     <div class="profile-info">
@@ -55,7 +77,11 @@
       {{#if canConnect}}
         <div class="connect-section" style="margin-top: 20px;">
           {{#if connectionExists}}
-            <button disabled>Already Connected</button>
+            {{#if isPending}}
+              <button disabled style="background-color: gray; color: white;">Pending Request</button>
+            {{else}}
+              <button disabled style="background-color: #ccc;">Already Connected</button>
+            {{/if}}
           {{else}}
             <form action="/connect/{{user.username}}" method="POST">
               <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
