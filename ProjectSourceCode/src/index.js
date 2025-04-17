@@ -201,28 +201,36 @@ app.get('/profile', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
   }
-  const profileUserID = req.query.user_id ? parseInt(req.query.user_id) : (req.session.user ? req.session.user.user_id : 1);
+  //if not signed in
 
-  const isOwner = true; // always the logged-in user's own profile
-  const isOwnerOrClient = req.session.user && req.session.user.isClient;
+  const profileUserID = req.query.user_id ? parseInt(req.query.user_id) : (req.session.user ? req.session.user.user_id : 1);
+  //converts string query to an integer
+
+  const isOwner = req.session.user; //should always be true anyways
+  const canConnect = false; //user cannot connect with their own profile
+  const isOwnerOrClient = req.session.user && (req.session.user.user_id === profileUserID || req.session.user.isClient);
+  //for contact me information
 
   try {
     const user = await db.one(
       'SELECT user_id, username, email, isClient AS "isClient", bio, website, location FROM users WHERE user_id = $1',
       [profileUserID]
     );
+    //AS "isClient" ensures it matches the string in the database exactly, since it is camelcase
+    //returns basic user information
 
     const posts = await db.any(
       `SELECT title, description, date_created, category 
-      FROM posts 
+      FROM posts  
       WHERE user_id = $1 
       ORDER BY date_created DESC`,
       [profileUserID]
     );
+    //returns user posts
 
     let connections = [];
     if (user.isClient) {
-      //return all artists the employer (client) is connected with
+      //return all artists the employer (isClient = T) is connected with
       connections = await db.any(
         'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1',
         [user.user_id]
@@ -241,8 +249,8 @@ app.get('/profile', async (req, res) => {
       connections,
       sessionUser: req.session.user,
       isOwner,
-      isOwnerOrClient,
-      canConnect: user.isClient,
+      isOwnerOrClient: isOwnerOrClient,
+      canConnect: canConnect,
     });
 
   } catch (err) {
@@ -272,16 +280,19 @@ app.post('/profile/update', async (req, res) => {
 });
 
 
-
 app.get('/profile/:username', async (req, res) => {
-  // Profile username parameter from the URL
   const username = req.params.username;
-
-  // The currently logged-in user (viewer)
+  //profile of user viewing, retrieved from url
   const viewer = req.session.user;
+  //user currently logged in
+
+  if (viewer.username === username){
+    res.redirect('/profile');
+  }
 
   try {
     const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+    //user we are trying to view
 
     if (!user) {
       return res.status(404).send('User not found');
@@ -290,38 +301,37 @@ app.get('/profile/:username', async (req, res) => {
     const userPosts = await db.any('SELECT * FROM posts WHERE user_id = $1', [user.user_id]);
 
     // Check if the logged-in user is the owner of the profile
-    const isOwner = viewer && viewer.username === username;
-    const isOwnerOrClient = viewer && (isOwner || viewer.isClient);
+    const isOwner = viewer && viewer.username === username; //is the user the owner of this profile
+    const isOwnerOrClient = viewer && (isOwner || viewer.isClient); //for contact me info
 
     let canConnect = false;
     let connectionExists = false;
+    //default to false
     
-    // Only clients can connect to artists
-    if (
-      viewer &&
-      viewer.isClient &&  // Viewer is an employer
-      !user.isClient && // Profile being viewed is an artist
-      !isOwner // Not the owner's profile
-    ) {
+    //employees only clients can connect to artists
+    //CONDITIONS:
+      //viewer is an employer 
+      //not owner's profile
+      //profile being viewed is an artist
+    if (viewer && viewer.isClient &&  !user.isClient && !isOwner ) {
       canConnect = true;
 
-      // Check if a connection already exists between the viewer (employer) and the userProfile (artist)
+      //check if a connection already exists between the viewer (employer) and the user(artist)
       const existingConnection = await db.oneOrNone('SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2', [viewer.user_id, user.user_id]);
       if (existingConnection) {
         connectionExists = true;
       }
     }
 
-    // Fetch connections for the user profile based on whether they are an employer or artist
-    let connections = [];
+    let connections = []; //return connections for the user profile
     if (user.isClient) {
-      // If the profile is an employer, fetch all artists they are connected with
+      //if profile is employer, return all artists they are connected with
       connections = await db.any(
         'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1',
         [user.user_id]
       );
     } else if (!user.isClient) {
-      // If the profile is an artist, fetch all employers they are connected with
+      //if profile is an artist, return all employers they are connected with
       connections = await db.any(
         'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1',
         [user.user_id]
@@ -332,12 +342,12 @@ app.get('/profile/:username', async (req, res) => {
     res.render('pages/profile', {
       user: user,
       posts: userPosts,
+      connections,
+      sessionUser: req.session.user,
       isOwner,
       isOwnerOrClient,
-      sessionUser: viewer,
       canConnect,
       connectionExists,
-      connections, // Include connections in the response
     });
 
   } catch (err) {
@@ -345,6 +355,37 @@ app.get('/profile/:username', async (req, res) => {
     res.status(500).send('Database error: ' + err.message);
   }
 });
+
+
+app.post('/connect/:user_id', async (req, res) => {
+  const employer_id = req.session.user.user_id;
+  const artist_id = req.params.user_id;
+
+  try {
+    //check if a connection already exists
+    const existingConnection = await db.oneOrNone(
+      'SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2',
+      [employer_id, artist_id]
+    );
+
+    if (existingConnection) {
+      return res.status(400).send('Connection already exists.');
+    }
+
+    // Insert new connection into the database
+    await db.none(
+      'INSERT INTO connections (employer_id, artist_id) VALUES ($1, $2)',
+      [employer_id, artist_id]
+    );
+
+    //redirect or respond with success
+    res.redirect('/profile/' + artist_id); // or another appropriate route
+  } catch (err) {
+    console.error('Error connecting:', err);
+    res.status(500).send('Error creating connection');
+  }
+});
+
 
 
 
