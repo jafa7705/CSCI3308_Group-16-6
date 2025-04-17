@@ -554,20 +554,49 @@ app.get('/messages', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
   }
-    try{
-        const conversations = await db.any(
-            `SELECT DISTINCT u.user_id, u.username
-             FROM users u
-             JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_id)
-             WHERE $1 IN (m.sender_id, m.receiver_id) AND u.user_id != $1`,
-            [req.session.user.user_id]
+  const currentUserId = req.session.user.user_id;
+  const selectedRecipientId = req.query.recipientId ? parseInt(req.query.recipientId) : null;
+
+  try {
+    const conversations = await db.any(
+      `SELECT DISTINCT u.user_id, u.username
+       FROM users u
+       JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_id)
+       WHERE $1 IN (m.sender_id, m.receiver_id) AND u.user_id != $1`,
+      [currentUserId]
+    );
+
+    let messagesWithRecipient = [];
+    let selectedRecipient = null;
+
+    if (selectedRecipientId) {
+      selectedRecipient = await db.oneOrNone('SELECT user_id, username FROM users WHERE user_id = $1', [selectedRecipientId]);
+      if (selectedRecipient) {
+        messagesWithRecipient = await db.any(
+          `SELECT message_text, timestamp,
+           CASE
+             WHEN m.sender_id = $1 THEN 'You'
+             ELSE u.username
+           END as sender
+           FROM messages m
+           JOIN users u ON m.sender_id = u.user_id
+           WHERE (m.sender_id = $1 AND m.receiver_id = $2) OR (m.sender_id = $2 AND m.receiver_id = $1)
+           ORDER BY timestamp ASC`,
+          [currentUserId, selectedRecipientId]
         );
-        res.render('pages/messages', { user: req.session.user, conversations: conversations });
-    } catch (error) {
-        console.error("Error retrieving conversations:", error);
-        res.status(500).send("Error retrieving conversations");
+      }
     }
 
+    res.render('pages/messages', {
+      user: req.session.user,
+      conversations: conversations,
+      selectedRecipient: selectedRecipient,
+      messages: messagesWithRecipient
+    });
+  } catch (error) {
+    console.error("Error retrieving conversations/messages:", error);
+    res.status(500).send("Error retrieving conversations/messages");
+  }
 });
 
 app.post('/send-message', async (req, res) => {

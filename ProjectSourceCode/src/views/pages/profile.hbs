@@ -62,18 +62,6 @@
       <div class="info-row"><h2>Bio:</h2></div>
       <p id="bio" style="white-space: pre-line;">{{user.bio}}</p>
 
-      {{#if isOwnerOrClient}} 
-        <p>
-        Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a>
-        {{#if isOwner}}
-            <span class="info-icon">
-            <img src="resources/img/info.png" alt="Info" style="width: 20px; height: 20px; vertical-align: middle;">
-            <span class="info-text">Contact me info is only visible to yourself and clients.</span>
-            </span>
-        {{/if}}
-        </p>
-      {{/if}}
-
       {{#if canConnect}}
         <div class="connect-section" style="margin-top: 20px;">
           {{#if connectionExists}}
@@ -104,6 +92,7 @@
       <ul>
         {{#each connections}}
           <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
+          <button class="start-message-btn" data-recipient-id="{{this.user_id}}" style="margin-left: 10px;">Message</button>
         {{/each}}
       </ul>
     {{else}}
@@ -177,5 +166,16 @@
       };
     });
   </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const messageButtons = document.querySelectorAll('.start-message-btn');
+    messageButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const recipientId = this.getAttribute('data-recipient-id');
+        window.location.href = `/messages?recipientId=${recipientId}`;
+      });
+    });
+  });
+ </script>
 </body>
 </html>
