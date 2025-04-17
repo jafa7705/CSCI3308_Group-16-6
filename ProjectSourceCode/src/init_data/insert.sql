@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 DO $$
 DECLARE
     hashedPassword TEXT;
@@ -33,23 +35,23 @@ BEGIN
     INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('jack', hashedPassword, 'jack@example.com', true, 'Gallery owner', NULL, 'San Francisco');
 END $$;
 
-INSERT INTO posts (user_id, title, date_created, description, category) VALUES
-(1, 'Sunset Dreams', '2024-01-05 15:00:00', 'An abstract sunset with warm tones.', 'Painting'),
-(2, 'City Reflections', '2023-11-12 09:30:00', 'Nighttime reflections in LA streets.', 'Photography'),
-(3, 'Fragments of Thought', '2024-02-20 11:15:00', 'A chaotic composition of shapes.', 'Digital Art'),
-(4, 'Bloom', '2024-03-10 14:45:00', 'Detailed study of a blooming flower.', 'Illustration'),
-(5, 'The Last Light', '2023-12-01 17:20:00', 'A lonely mountain at dusk.', 'Painting'),
-(6, 'Pixel Storm', '2024-01-18 08:00:00', 'A colorful digital storm.', 'Digital Art'),
-(7, 'Form in Space', '2023-10-27 13:35:00', 'A 3D sculpture playing with shadows.', 'Sculpture'),
-(8, 'Collapse', '2024-02-14 10:10:00', 'Installation of falling chairs.', 'Installation'),
-(9, 'The Alleyway', '2023-11-30 19:00:00', 'Candid moment from city backstreets.', 'Photography'),
-(10, 'Waves of Color', '2024-03-05 16:40:00', 'Experimental visual series.', 'Painting');
+INSERT INTO posts (user_id, title, date_created, description, category, tags) VALUES
+(1, 'Sunset Dreams', '2024-01-05 15:00:00', 'An abstract sunset with warm tones.', 'Painting', 'sunset, abstract, warm'),
+(2, 'City Reflections', '2023-11-12 09:30:00', 'Nighttime reflections in LA streets.', 'Photography', 'urban, night, reflections'),
+(3, 'Fragments of Thought', '2024-02-20 11:15:00', 'A chaotic composition of shapes.', 'Digital Art', 'chaotic, geometric, experimental'),
+(4, 'Bloom', '2024-03-10 14:45:00', 'Detailed study of a blooming flower.', 'Illustration', 'flowers, nature, spring'),
+(5, 'The Last Light', '2023-12-01 17:20:00', 'A lonely mountain at dusk.', 'Painting', 'mountains, dusk, solitude'),
+(6, 'Pixel Storm', '2024-01-18 08:00:00', 'A colorful digital storm.', 'Digital Art', 'pixel, color, glitch'),
+(7, 'Form in Space', '2023-10-27 13:35:00', 'A 3D sculpture playing with shadows.', 'Sculpture', '3D, shadows, modern'),
+(8, 'Collapse', '2024-02-14 10:10:00', 'Installation of falling chairs.', 'Installation', 'chairs, installation, gravity'),
+(9, 'The Alleyway', '2023-11-30 19:00:00', 'Candid moment from city backstreets.', 'Photography', 'street, candid, black-and-white'),
+(10, 'Waves of Color', '2024-03-05 16:40:00', 'Experimental visual series.', 'Painting', 'waves, experimental, vibrant');
 
 INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 (1, 2, 'Hi Bob, I loved your collection!', '2024-03-15 10:00:00'),
 (2, 1, 'Thanks Alice! Your paintings are amazing.', '2024-03-15 10:05:00'),
 (3, 4, 'Dan, check out my latest digital piece.', '2024-03-16 12:00:00'),
-(4, 3, 'Carla, it\''s fantastic!', '2024-03-16 12:10:00'),
+(4, 3, 'Carla, it''s fantastic!', '2024-03-16 12:10:00'),
 (5, 10, 'Jack, do you have any openings this week?', '2024-03-17 14:00:00'),
 (10, 5, 'Eva, I have a slot on Thursday.', '2024-03-17 14:05:00'),
 (6, 7, 'Grace, your work is inspiring!', '2024-03-18 16:00:00'),
@@ -67,29 +69,21 @@ INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 (9, 10, 'Jack, do you know of any galleries that might be interested in my work?', '2024-03-24 17:00:00'),
 (10, 9, 'Irene, I might know of a few, send me some photos', '2024-03-24 17:10:00');
 
-
-
-
--- Bob (employer) connects with Alice (artist)
+-- Connections
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'bob'), (SELECT user_id FROM users WHERE username = 'alice'));
 
--- Eva (employer) connects with Carla (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'eva'), (SELECT user_id FROM users WHERE username = 'carla'));
 
--- Jack (employer) connects with Carla (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'jack'), (SELECT user_id FROM users WHERE username = 'carla'));
 
--- Jack (employer) connects with Frank (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'jack'), (SELECT user_id FROM users WHERE username = 'frank'));
 
--- Eva (employer) connects with Frank (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'eva'), (SELECT user_id FROM users WHERE username = 'frank'));
 
--- Irene (employer) connects with Grace (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'irene'), (SELECT user_id FROM users WHERE username = 'grace'));

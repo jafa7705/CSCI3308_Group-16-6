@@ -154,7 +154,7 @@ app.use('/resources', express.static(path.join(__dirname, 'resources')));
 app.get('/', async (req, res) => {
   try {
     const posts = await db.any(
-      `SELECT p.title, p.description, p.date_created, p.category, p.image, u.username
+      `SELECT p.title, p.description, p.date_created, p.category, p.image, p.tags, u.username
        FROM posts p
        JOIN users u ON p.user_id = u.user_id
        ORDER BY p.date_created DESC`
