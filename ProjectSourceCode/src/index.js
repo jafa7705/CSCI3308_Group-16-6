@@ -230,29 +230,6 @@ app.get('/profile', async (req, res) => {
       [profileUserID]);
     //returns user posts
 
-    // let connections = [];
-    // if (user.isclient) {
-    //   //return all artists the employer (isClient = T) is connected with
-    //   connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
-    //     [user.user_id, 'accepted']);
-
-    // } else if (!user.isclient) {
-    //   //return all employers the artist is connected with
-    //   connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
-    //     [user.user_id, 'accepted']);
-    // }
-
-    // let pendingRequests = [];
-    // if (req.session.user && !req.session.user.isclient) {
-    //   pendingRequests = await db.any(
-    //     `SELECT c.connection_id, u.username AS client_username
-    //     FROM connections c
-    //     JOIN users u ON u.user_id = c.employer_id
-    //     WHERE c.artist_id = $1 AND c.status = 'pending'`,
-    //     [req.session.user.user_id]
-    //   );
-    // }
-
     let connections = [];
     let pendingRequests = [];
 
@@ -388,11 +365,6 @@ app.get('/profile/:username', async (req, res) => {
       connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
     }
-
-    console.log('viewer:', viewer);
-    console.log('user:', user);
-    console.log('isOwner:', isOwner);
-    console.log('canConnect:', canConnect);
 
     // Render the profile page with user data, posts, and connections
     res.render('pages/profile', {
