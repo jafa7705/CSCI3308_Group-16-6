@@ -11,7 +11,7 @@ CREATE TABLE users (
   username TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
   email TEXT,
-  isClient BOOLEAN DEFAULT FALSE,
+  isclient BOOLEAN DEFAULT FALSE,
   bio TEXT,
   website TEXT,
   location TEXT,

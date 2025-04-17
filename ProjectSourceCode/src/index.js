@@ -124,7 +124,11 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
-    resave: false
+    resave: false,
+    cookie: {
+      secure: false, // Set to true in production with HTTPS
+      maxAge: 1000 * 60 * 60 * 2, // 2 hours
+    },
   })
 );
 
@@ -197,6 +201,7 @@ app.post('/submit', upload.single('postImage'), async (req, res) => {
 
 
 // Profile page
+//view your own profile
 app.get('/profile', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -206,17 +211,16 @@ app.get('/profile', async (req, res) => {
   const profileUserID = req.query.user_id ? parseInt(req.query.user_id) : (req.session.user ? req.session.user.user_id : 1);
   //converts string query to an integer
 
-  const isOwner = req.session.user; //should always be true anyways
+  const isOwner = req.session.user.user_id === profileUserID; //should always be true anyways
   const canConnect = false; //user cannot connect with their own profile
-  const isOwnerOrClient = req.session.user && (req.session.user.user_id === profileUserID || req.session.user.isClient);
+  const isOwnerOrClient = req.session.user && (req.session.user.user_id === profileUserID || req.session.user.isclient);
   //for contact me information
 
   try {
     const user = await db.one(
-      'SELECT user_id, username, email, isClient AS "isClient", bio, website, location FROM users WHERE user_id = $1',
+      'SELECT user_id, username, email, isclient, bio, website, location FROM users WHERE user_id = $1',
       [profileUserID]
     );
-    //AS "isClient" ensures it matches the string in the database exactly, since it is camelcase
     //returns basic user information
 
     const posts = await db.any(
@@ -229,13 +233,13 @@ app.get('/profile', async (req, res) => {
     //returns user posts
 
     let connections = [];
-    if (user.isClient) {
+    if (user.isclient) {
       //return all artists the employer (isClient = T) is connected with
       connections = await db.any(
         'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1',
         [user.user_id]
       );
-    } else if (!user.isClient) {
+    } else if (!user.isclient) {
       //return all employers the artist is connected with
       connections = await db.any(
         'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1',
@@ -260,6 +264,7 @@ app.get('/profile', async (req, res) => {
 });
 
 // Update profile
+//update your own profile
 app.post('/profile/update', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -279,19 +284,28 @@ app.post('/profile/update', async (req, res) => {
   }
 });
 
-
+// Other profile
+//view someone elses profile
 app.get('/profile/:username', async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+
   const username = req.params.username;
   //profile of user viewing, retrieved from url
   const viewer = req.session.user;
   //user currently logged in
 
-  if (viewer.username === username){
+  if (viewer && viewer.username === username){
     res.redirect('/profile');
   }
+  //if it is the users own profile, switch to /profile route
 
   try {
-    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+    const user = await db.oneOrNone(`SELECT user_id, username, email, isclient, bio, website, location, profile_image FROM users WHERE username = $1`, 
+      [username]);
+
+    console.log('Fetched user', user);
     //user we are trying to view
 
     if (!user) {
@@ -301,19 +315,17 @@ app.get('/profile/:username', async (req, res) => {
     const userPosts = await db.any('SELECT * FROM posts WHERE user_id = $1', [user.user_id]);
 
     // Check if the logged-in user is the owner of the profile
-    const isOwner = viewer && viewer.username === username; //is the user the owner of this profile
-    const isOwnerOrClient = viewer && (isOwner || viewer.isClient); //for contact me info
-
-    let canConnect = false;
-    let connectionExists = false;
-    //default to false
+    const isOwner = false; //is the user the owner of this profile
+    const isOwnerOrClient = viewer && (isOwner || viewer.isclient); //for contact me info
     
     //employees only clients can connect to artists
     //CONDITIONS:
       //viewer is an employer 
       //not owner's profile
       //profile being viewed is an artist
-    if (viewer && viewer.isClient &&  !user.isClient && !isOwner ) {
+    let canConnect = false;
+    let connectionExists = false;
+    if (viewer && viewer.isclient &&  !user.isclient && !isOwner ) {
       canConnect = true;
 
       //check if a connection already exists between the viewer (employer) and the user(artist)
@@ -324,19 +336,24 @@ app.get('/profile/:username', async (req, res) => {
     }
 
     let connections = []; //return connections for the user profile
-    if (user.isClient) {
+    if (user.isclient) {
       //if profile is employer, return all artists they are connected with
       connections = await db.any(
         'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1',
         [user.user_id]
       );
-    } else if (!user.isClient) {
+    } else if (!user.isclient) {
       //if profile is an artist, return all employers they are connected with
       connections = await db.any(
         'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1',
         [user.user_id]
       );
     }
+
+    console.log('viewer:', viewer);
+    console.log('user:', user);
+    console.log('isOwner:', isOwner);
+    console.log('canConnect:', canConnect);
 
     // Render the profile page with user data, posts, and connections
     res.render('pages/profile', {
@@ -358,6 +375,9 @@ app.get('/profile/:username', async (req, res) => {
 
 
 app.post('/connect/:user_id', async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }  
   const employer_id = req.session.user.user_id;
   const artist_id = req.params.user_id;
 
@@ -365,8 +385,7 @@ app.post('/connect/:user_id', async (req, res) => {
     //check if a connection already exists
     const existingConnection = await db.oneOrNone(
       'SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2',
-      [employer_id, artist_id]
-    );
+      [employer_id, artist_id]);
 
     if (existingConnection) {
       return res.status(400).send('Connection already exists.');
@@ -408,7 +427,7 @@ app.post('/register', async (req, res) => {
 
   try {
       const hashedPassword = await bcrypt.hash(password, 10);
-      await db.none('INSERT INTO users (username, password, isClient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
+      await db.none('INSERT INTO users (username, password, isclient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
       return res.render('pages/login', { success: 'Registration successful!' });
   } catch (err) {
       if (err.code === '23505' && err.constraint === 'users_username_key') {
@@ -439,7 +458,7 @@ app.post('/login', async (req, res) => {
       req.session.user = {
         user_id: user.user_id,
         username: user.username,
-        isClient: user.isClient,
+        isclient: user.isclient,
       };
       res.redirect('/');
     } else {
