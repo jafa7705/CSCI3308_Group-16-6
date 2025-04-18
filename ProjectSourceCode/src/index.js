@@ -468,28 +468,32 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
   const { username, password, confirmPassword, isClientHidden } = req.body;
   const isClient = isClientHidden === 'true';
+  const defaultProfilePic = '/resources/img/defaultProfilePic.png';
 
   if (!username || !password || !confirmPassword) {
-      return res.status(400).render('pages/register', { message: 'All fields are required.' });
+    return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-      return res.status(400).render('pages/register', { message: 'Passwords do not match' });
+    return res.status(400).render('pages/register', { message: 'Passwords do not match' });
   }
 
   try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await db.none('INSERT INTO users (username, password, isclient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
-      return res.render('pages/login', { success: 'Registration successful!' });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.none(
+      'INSERT INTO users (username, password, isclient, profile_image) VALUES ($1, $2, $3, $4)',
+      [username, hashedPassword, isClient, defaultProfilePic]
+    );
+    return res.render('pages/login', { success: 'Registration successful!' });
   } catch (err) {
-      if (err.code === '23505' && err.constraint === 'users_username_key') {
-        return res.render('pages/register', {
-          message: 'That username is already taken.',
-        });
-      }
+    if (err.code === '23505' && err.constraint === 'users_username_key') {
+      return res.render('pages/register', {
+        message: 'That username is already taken.',
+      });
+    }
 
-      console.error('Error inserting user:', err);
-      return res.status(500).render('pages/register', { message: 'Internal server error' });
+    console.error('Error inserting user:', err);
+    return res.status(500).render('pages/register', { message: 'Internal server error' });
   }
 });
 
