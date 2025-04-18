@@ -1,3 +1,121 @@
+
+/* Global font and base colors */
+body {
+  color: #e0e0e0;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Top navigation bar */
+header.site-header {
+  width: 100%;
+  background-color: #f5f5f5;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e0e0e0;
+  box-shadow: none !important;
+  gap: 12px;
+  padding-right: 16px;
+}
+
+/* Home icon container */
+.site-header .home-icon a {
+  font-size: 20px;
+  color: #f0f0f0;
+  text-decoration: none;
+  margin-right: 16px;
+}
+
+/* Search bar area */
+.search-container {
+  background-color: #2a2a2d;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-container input[type="text"] {
+  background-color: #1e1e1f;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+  width: 180px;
+}
+
+.search-container input::placeholder {
+  color: #aaa;
+}
+
+.search-container button {
+  background-color: #3a3a3c;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-container button:hover {
+  background-color: #5a5a5c;
+}
+
+/* Login / Register link style */
+.auth-links a {
+  color: #f0f0f0;
+  margin-left: 16px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.auth-links a:hover {
+  color: #ffffff;
+}
+
+/* Remove navbar shadow, keep subtle bottom border */
+.navbar {
+  box-shadow: none !important;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #ffffff !important;
+}
+
+.navbar a {
+  color: #1c1c1c !important;
+}
+
+/* Labels and form text color */
+form label,
+form small,
+form .form-text {
+  color: #212529 !important;
+}
+
+/* Placeholder text color */
+::placeholder {
+  color: #6c757d;
+  opacity: 1;
+}
+
+/* Force input text color */
+form label,
+form small,
+form .form-text,
+form input,
+form select,
+form textarea {
+  color: #000 !important;
+}
+
 .profile-sections {
     display: flex;           /* Flex container */
     justify-content: space-between; /* Space out the sections */
