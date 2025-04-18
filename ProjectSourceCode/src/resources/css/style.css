@@ -1,9 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap');
+
+select,
+select option {
+  font-family: 'Gowun Batang', serif;
+}
+
 /* Reset and base styles */
 body, h1, h2, h3, p, ul, li, a, button, input, textarea {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Gowun Batang', serif;
 }
 
 body {
@@ -95,7 +102,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f5f5f5;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Top navigation bar */
