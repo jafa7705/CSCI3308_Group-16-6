@@ -1,87 +1,116 @@
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap');
 
-/* Global Font */
-body, h1, h2, h3, p, ul, li, a, button, input, textarea, select, option {
+/* Base Font */
+body, h1, h2, h3, p, ul, li, a, button, input, textarea, select {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Gowun Batang', serif;
 }
 
-/* Body base styles */
+/* Global Variables */
+:root {
+  --cu-gold: #CFB87C;
+  --dark-bg: #121212;
+  --text-light: #e0e0e0;
+  --input-bg: #1f1f1f;
+  --border-color: #444;
+}
+
+/* Body Styles (Always Dark) */
 body {
-  background-color: #f4f4f4;
-  color: #111;
+  background-color: var(--dark-bg);
+  color: var(--text-light);
   line-height: 1.6;
   padding: 0;
-  transition: background-color 0.3s, color 0.3s;
 }
 
-/* Dark mode base */
-body.dark-mode {
-  background-color: #121212;
-  color: #e0e0e0;
-}
-
-/* Header (CU gold) */
+/* Header */
 header {
+  background-color: var(--cu-gold);
+  padding: 12px 24px;
   width: 100%;
-  background-color: #CFB87C;
-  padding: 10px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 1;
-  margin-bottom: 30px;
+  z-index: 10;
+  box-shadow: none;
+  border: none;
 }
 
-/* Navbar (ensures CU gold remains in dark mode) */
+/* Navbar */
 .navbar {
-  background-color: #CFB87C !important;
-  border-bottom: 1px solid #bca666;
-  box-shadow: none !important;
+  background-color: var(--cu-gold) !important;
+  padding: 0;
+  border: none;
 }
 
-.navbar a {
-  color: #1c1c1c !important;
+.navbar .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
-/* Search + Dropdown */
-input[type="search"],
-input[type="text"],
-textarea,
-select {
-  padding: 6px 12px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  color: #000;
+.navbar-brand img {
+  width: 40px;
+  height: 40px;
 }
 
-/* Force white fields during dark mode */
-body.dark-mode input[type="search"],
-body.dark-mode input[type="text"],
-body.dark-mode textarea,
-body.dark-mode select,
-body.dark-mode select option {
-  background-color: #ffffff;
-  color: #000000;
-  border: 1px solid #ccc;
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-/* Placeholder text */
-::placeholder {
-  color: #888;
-  opacity: 1;
+.navbar-nav .nav-link {
+  font-size: 16px;
+  color: #000 !important;
 }
 
-/* Dark mode modal */
-body.dark-mode .modal-content {
-  background-color: #1f1f1f;
-  color: white;
+/* Search Section */
+.input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+  max-height: 42px;
 }
 
-/* Profile section */
+.input-group select,
+.input-group input[type="search"],
+.input-group button {
+  height: 42px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.input-group select {
+  border-right: 1px solid #ccc;
+  padding: 0 12px;
+  background-color: white;
+  color: black;
+}
+
+.input-group input[type="search"] {
+  flex: 1;
+  padding: 0 12px;
+  color: black;
+  background-color: white;
+}
+
+.input-group button {
+  background-color: var(--cu-gold);
+  border-left: 1px solid #333;
+  padding: 0 18px;
+  font-weight: bold;
+  cursor: pointer;
+  color: black;
+}
+
+/* Profile Section */
 .profile {
   text-align: center;
   padding: 20px;
@@ -95,7 +124,7 @@ body.dark-mode .modal-content {
   border: 2px solid #ccc;
 }
 
-/* Profile info block */
+/* Profile Info */
 .profile-info {
   max-width: 600px;
   margin: 20px auto;
@@ -111,7 +140,7 @@ body.dark-mode .modal-content {
   white-space: pre-line;
 }
 
-/* Connect button */
+/* Connect Buttons */
 .connect-section button {
   padding: 10px 20px;
   border-radius: 4px;
@@ -126,7 +155,7 @@ body.dark-mode .modal-content {
   cursor: not-allowed;
 }
 
-/* Profile-sections layout */
+/* Profile Sections */
 .profile-sections {
   display: flex;
   flex-wrap: wrap;
@@ -140,38 +169,40 @@ body.dark-mode .modal-content {
 /* Connections + Posts containers */
 .connections, .posts {
   flex: 1 1 48%;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 25px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .connections h2, .posts h2 {
   font-size: 1.4em;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #666;
   margin-bottom: 15px;
   padding-bottom: 10px;
 }
 
 .posts article {
-  background-color: #fefefe;
-  border: 1px solid #e2e2e2;
+  background-color: #2a2a2a;
+  border: 1px solid #555;
   border-radius: 6px;
   padding: 15px;
   margin-bottom: 20px;
 }
 
-/* Dark mode adjustments */
-body.dark-mode .connections,
-body.dark-mode .posts {
-  background-color: #1e1e1e;
-  border-color: #444;
+/* Forms & Inputs */
+input, textarea, select {
+  background-color: white;
+  color: black;
+  border: 1px solid #999;
+  border-radius: 4px;
+  padding: 8px;
+  width: 100%;
 }
 
-body.dark-mode .posts article {
-  background-color: #2a2a2a;
-  border-color: #444;
+/* Placeholder */
+::placeholder {
+  color: #666;
 }
 
 /* Modal */
@@ -187,7 +218,8 @@ body.dark-mode .posts article {
 }
 
 .modal-content {
-  background-color: #fff;
+  background-color: var(--input-bg);
+  color: white;
   margin: 10% auto;
   padding: 20px;
   border-radius: 6px;
@@ -195,22 +227,15 @@ body.dark-mode .posts article {
   max-width: 600px;
 }
 
-/* Theme toggle button */
-#theme-toggle {
-  padding: 5px 10px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border: 1px solid #444;
-  background-color: #eee;
-  color: #222;
-  border-radius: 4px;
-  transition: background-color 0.3s, color 0.3s;
+/* Auth Forms */
+form {
+  color: black;
 }
 
-body.dark-mode #theme-toggle {
-  background-color: #444;
-  color: #eee;
-  border-color: #666;
+form label,
+form .form-text,
+form small {
+  color: black !important;
 }
 /* Force login, register, and post forms to stay light in dark mode */
 body.dark-mode .form-light,
