@@ -1,26 +1,42 @@
 {{#if items.length}}
-    <h4 style= "margin: 10px 0px 10px 30px">Search results for "{{searchQuery}}":</h4>
-    <ul style="list-style: none; padding-left: 0;">
-        {{#each items}}
-            <li>
-                <a href = "/profile/{{username}}" style="text-decoration: none; color: inherit; display: block;">
-                    <div class="profile-card" style="display: flex; align-items: center; margin: 20px 30px 20px 30px; border: 1px solid #ddd; padding: 10px;">
-                        <img src="/resources/img/defaultProfilePic.png" alt="Profile Picture" width="45" height="45" style="border-radius: 50%; margin-right: 15px;">
-                    <!-- for orientating information in a consistent row -->
-                    <div style="display: flex; flex-direction: row; gap: 15px;">
-                        <div class="username">{{username}}</div>
-                        <div class="bio" style = "margin: 0px 0px 10px 0px">{{bio}}</div>
-                    </div>
-                </a>
-            </li>
-        {{/each}}
-    </ul>
-{{else}}
-    {{#if searchQuery}}
-        <h4>No users found for "{{searchQuery}}".</h4>
+  <h4 style="margin: 10px 0px 10px 30px">
+    Search results for "{{searchQuery}}" ({{searchType}}):
+  </h4>
+  <ul style="list-style: none; padding-left: 0;">
+    {{#if isUserSearch}}
+      {{! Show user profiles }}
+      {{#each items}}
+        <li>
+          <a href="/profile/{{username}}" style="text-decoration: none; color: inherit; display: block;">
+            <div class="profile-card" style="display: flex; align-items: center; margin: 20px 30px 20px 30px; border: 1px solid #ddd; padding: 10px;">
+              <img src="/resources/img/defaultProfilePic.png" alt="Profile Picture" width="45" height="45" style="border-radius: 50%; margin-right: 15px;">
+              <div style="display: flex; flex-direction: row; gap: 15px;">
+                <div class="username">{{username}}</div>
+                <div class="bio" style="margin: 0px 0px 10px 0px">{{bio}}</div>
+              </div>
+            </div>
+          </a>
+        </li>
+      {{/each}}
     {{else}}
-        <h4>Please enter a search query.</h4>
+      {{! Show posts }}
+      {{#each items}}
+        <li style="margin: 20px 30px; border: 1px solid #ddd; padding: 15px;">
+          <h4>{{title}}</h4>
+          <p><strong>Category:</strong> {{category}}</p>
+          <p><strong>Date:</strong> {{date_created}}</p>
+          <p>{{description}}</p>
+          {{#if tags}}
+            <p><strong>Tags:</strong> {{tags}}</p>
+          {{/if}}
+        </li>
+      {{/each}}
     {{/if}}
+  </ul>
+{{else}}
+  {{#if searchQuery}}
+    <h4 style="margin: 10px 0px 10px 30px">No {{searchType}} found for "{{searchQuery}}".</h4>
+  {{else}}
+    <h4 style="margin: 10px 0px 10px 30px">Please enter a search query.</h4>
+  {{/if}}
 {{/if}}
-
-

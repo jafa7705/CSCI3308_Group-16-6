@@ -4,47 +4,70 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Create a New Post</title>
+  <style>
+    body {
+      background-color: white;
+      margin: 0;
+      font-family: 'Gowun Batang', serif;
+    }
+    .post-container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      color: black;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-family: 'Gowun Batang', serif;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
+  <div class="post-container">
     <h1 style="text-align: center;">Create a New Post</h1>
-    
     <form action="/submit" method="post" enctype="multipart/form-data">
-      
-      <div style="margin-bottom: 15px;">
-        <label for="image" style="font-weight: bold;">Upload Image:</label>
-        <input type="file" name="postImage" accept="image/*">
-      </div>
+      <label for="image"><strong>Upload Image:</strong></label>
+      <input type="file" name="postImage" accept="image/*">
 
-      <div style="margin-bottom: 15px;">
-        <label for="title" style="font-weight: bold;">Title:</label>
-        <input type="text" name="title" id="title" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
-      </div>
-      
-      <div style="margin-bottom: 15px;">
-        <label for="description" style="font-weight: bold;">Description:</label>
-        <textarea name="description" id="description" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; height: 100px;"></textarea>
-      </div>
+      <label for="title"><strong>Title:</strong></label>
+      <input type="text" name="title" id="title" required>
 
-      <div style="margin-bottom: 15px;">
-        <label for="category" style="font-weight: bold;">Category:</label>
-        <select name="category" id="category" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
-          <option value="painting">Painting</option>
-          <option value="sculpture">Sculpture</option>
-          <option value="photography">Photography</option>
-          <option value="drawing">Drawing</option>
-          <option value="pottery">Pottery</option>
-          <option value="film">Film</option>
-          <option value="digital_art">Digital Art</option>
-          <option value="animation">Animation</option>
-          <option value="architecture">Architecture</option>
-        </select>
-      </div>
+      <label for="description"><strong>Description:</strong></label>
+      <textarea name="description" id="description" required></textarea>
 
-      <div style="text-align: center;">
-        <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Submit
-        </button>
+      <label for="category"><strong>Category:</strong></label>
+      <select name="category" id="category" required>
+        <option value="painting">Painting</option>
+        <option value="sculpture">Sculpture</option>
+        <option value="photography">Photography</option>
+        <option value="drawing">Drawing</option>
+        <option value="pottery">Pottery</option>
+        <option value="film">Film</option>
+        <option value="digital_art">Digital Art</option>
+        <option value="animation">Animation</option>
+        <option value="architecture">Architecture</option>
+      </select>
+
+      <label for="tags"><strong>Tags (comma-separated):</strong></label>
+      <input type="text" name="tags" id="tags" placeholder="e.g. nature, surreal, black-and-white">
+
+      <div style="text-align: center; margin-top: 20px;">
+        <button type="submit">Submit</button>
       </div>
     </form>
   </div>
