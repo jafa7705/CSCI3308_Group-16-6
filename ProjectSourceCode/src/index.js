@@ -10,7 +10,7 @@ const apiKey = process.env.API_KEY;
 
 // Setup database connection using environment variables
 const db = pgp({
-  host: 'db',
+  host: process.env.HOST || 'db',
   port: 5432,
   database: process.env.POSTGRES_DB || 'users_db',
   user: process.env.POSTGRES_USER || 'postgres',
