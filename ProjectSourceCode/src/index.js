@@ -218,7 +218,7 @@ app.get('/profile', async (req, res) => {
 
   try {
     const user = await db.one(
-      'SELECT user_id, username, email, isclient, bio, website, location FROM users WHERE user_id = $1',
+      'SELECT user_id, username, email, isclient, bio, website, location, profile_image FROM users WHERE user_id = $1',
       [profileUserID]);
     //returns basic user information
 
@@ -563,7 +563,7 @@ app.get('/messages', async (req, res) => {
 
   try {
     const conversations = await db.any(
-      `SELECT DISTINCT u.user_id, u.username
+      `SELECT DISTINCT u.user_id, u.username, u.profile_image
        FROM users u
        JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_id)
        WHERE $1 IN (m.sender_id, m.receiver_id) AND u.user_id != $1`,

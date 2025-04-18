@@ -8,11 +8,11 @@
 </head>
 <body>
   <section class="profile">
-    <img src="resources/img/defaultProfilePic.png" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
+    <img src="/uploads/{{user.profile_image}}" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
 
     {{#if isOwner}}
       <button id="edit-profile-button" style="display:;">
-        <img src="resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
+        <img src="/resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
         Edit Profile
       </button>
       {{#unless user.isclient}}
@@ -89,14 +89,19 @@
   <section class="connections">
     <h2>Connections:</h2>
     {{#if connections.length}}
-      <ul>
-        {{#each connections}}
-          <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
-          <button class="start-message-btn" data-recipient-id="{{this.user_id}}" style="margin-left: 10px;">Message</button>
-        {{/each}}
-      </ul>
+        <ul>
+            {{#each connections}}
+                <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
+                {{#if ../isOwner}}
+                    <button class="start-message-btn" data-recipient-id="{{this.user_id}}" style="margin-left: 10px;">
+                        <img src="resources/img/messages.png" alt="Message" style="vertical-align: middle; margin-right: 5px; width: 20px; height: 20px;">
+                        Message
+                    </button>
+                {{/if}}
+            {{/each}}
+        </ul>
     {{else}}
-      <p>No connections yet.</p>
+        <p>No connections yet.</p>
     {{/if}}
   </section>
 
