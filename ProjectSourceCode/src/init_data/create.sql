@@ -26,9 +26,8 @@ CREATE TABLE posts (
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  category TEXT NOT NULL,
-  image VARCHAR(200),
-  tags TEXT
+  tags TEXT NOT NULL,
+  image VARCHAR(200)
 );
 
 -- Messages Table

@@ -5,47 +5,47 @@ DECLARE
     hashedPassword TEXT;
 BEGIN
     hashedPassword := crypt('hashedpassword1', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('alice', hashedPassword, 'alice@example.com', false, 'Painter based in NYC', 'http://aliceart.com', 'New York');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Alice_Wonder', hashedPassword, 'alice@example.com', false, 'Painter based in NYC', 'http://aliceart.com', 'New York');
 
     hashedPassword := crypt('hashedpassword2', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('bob', hashedPassword, 'bob@example.com', true, 'Art collector', NULL, 'Los Angeles');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Bob_Marley', hashedPassword, 'bob@example.com', true, 'Art collector', NULL, 'Los Angeles');
 
     hashedPassword := crypt('hashedpassword3', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('carla', hashedPassword, 'carla@example.com', false, 'Digital artist', 'http://carladraws.io', 'Austin');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Carla_Gugino', hashedPassword, 'carla@example.com', false, 'Digital artist', 'http://carladraws.io', 'Austin');
 
     hashedPassword := crypt('hashedpassword4', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('dan', hashedPassword, 'dan@example.com', false, NULL, NULL, 'Chicago');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Dan_Stan', hashedPassword, 'dan@example.com', false, NULL, NULL, 'Chicago');
 
     hashedPassword := crypt('hashedpassword5', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('eva', hashedPassword, 'eva@example.com', true, NULL, NULL, 'Miami');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Eva_Steller', hashedPassword, 'eva@example.com', true, NULL, NULL, 'Miami');
 
     hashedPassword := crypt('hashedpassword6', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('frank', hashedPassword, 'frank@example.com', false, 'Sculptor', NULL, 'Denver');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Frank_Devito', hashedPassword, 'frank@example.com', false, 'Sculptor', NULL, 'Denver');
 
     hashedPassword := crypt('hashedpassword7', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('grace', hashedPassword, 'grace@example.com', false, NULL, NULL, 'Seattle');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Grace_Kennedy', hashedPassword, 'grace@example.com', false, NULL, NULL, 'Seattle');
 
     hashedPassword := crypt('hashedpassword8', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('henry', hashedPassword, 'henry@example.com', false, 'Animator', NULL, 'Boston');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Henry_Haden', hashedPassword, 'henry@example.com', false, 'Animator', NULL, 'Boston');
 
     hashedPassword := crypt('hashedpassword9', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('irene', hashedPassword, 'irene@example.com', false, 'Pottery artist', NULL, 'San Diego');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Demo_Artist', hashedPassword, 'artist@example.com', false, 'I’m a ceramic artist crafting functional, earthy pottery inspired by nature and simple moments. Each piece is handmade with care — designed to be used, loved, and part of your daily rituals.', NULL, 'San Diego');
 
     hashedPassword := crypt('hashedpassword10', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('jack', hashedPassword, 'jack@example.com', true, 'Gallery owner', NULL, 'San Francisco');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Demo_Employer', hashedPassword, 'employer@example.com', true, 'I’m the owner and curator of Lumen Gallery, a space dedicated to showcasing emerging and established artists across a range of mediums. With a passion for storytelling through visual art, I strive to create exhibitions that inspire conversation, connection, and curiosity.', NULL, 'San Francisco');
 END $$;
 
-INSERT INTO posts (user_id, title, date_created, description, category, image, tags) VALUES
+INSERT INTO posts (user_id, title, date_created, description, tags, image) VALUES
 (1, 'A Cloud Study, Sunset', '2024-01-05 15:00:00', 'By John Constable, ca.1821 ', 'Oil Painting', 'sunset.png'),
 (2, 'Buffalo Trail', '2023-11-12 09:30:00', 'The Impending Storm, 1869, by Albert Bierstadt', 'Oil Painting', 'buffalo.png'),
 (3, 'Nepal Tiger Tops', '2024-02-20 11:15:00', 'By George Silk, 1972', 'Photography', 'nepal.png'),
 (4, 'Poseidon, Apollo, and Artemis, east Parthenon Frieze', '2024-03-10 14:45:00', 'Greek sculpture by Phidias, 447-32 BC', 'Sculpture', 'greek.jpg'),
-(5, 'The Last Light', '2023-12-01 17:20:00', 'A lonely mountain at dusk.', 'Painting'),
-(6, 'Pixel Storm', '2024-01-18 08:00:00', 'A colorful digital storm.', 'Digital Art'),
-(7, 'Form in Space', '2023-10-27 13:35:00', 'A 3D sculpture playing with shadows.', 'Sculpture'),
-(8, 'Collapse', '2024-02-14 10:10:00', 'Installation of falling chairs.', 'Installation'),
-(9, 'The Alleyway', '2023-11-30 19:00:00', 'Candid moment from city backstreets.', 'Photography'),
-(10, 'Waves of Color', '2024-03-05 16:40:00', 'Experimental visual series.', 'Painting');
+(5, 'The Last Light', '2023-12-01 17:20:00', 'A lonely mountain at dusk.', 'Painting', 'nepal.png'),
+(6, 'Pixel Storm', '2024-01-18 08:00:00', 'A colorful digital storm.', 'Digital Art', 'nepal.png'),
+(7, 'Snowy', '2023-10-27 13:35:00', 'A 3D sculpture playing with shadows.', 'Digital Art', 'snowy.png'),
+(8, 'Caipira', '2024-02-14 10:10:00', 'Installation of falling chairs.', 'Painting', 'caipira.png'),
+(9, 'Amaryllis Twists Ceramic Pottery Vase', '2023-11-30 19:00:00', 'The Amaryllis Twists Vase reinterprets the twisting buds and elegant form of the long-retired Ephraim Pottery Perennial Vase.', 'Pottery', 'leaf.png'),
+(9, 'Acorn and Oak Ceramic Pottery Vase', '2024-03-05 16:40:00', 'A simple bowing oak branch bends at the rim of this sweet vase.', 'Pottery', 'vase.png');
 
 INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 (1, 2, 'Hi Bob, I loved your collection!', '2024-03-15 10:00:00'),
@@ -71,19 +71,19 @@ INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 
 -- Connections
 INSERT INTO connections (employer_id, artist_id) 
-VALUES ((SELECT user_id FROM users WHERE username = 'bob'), (SELECT user_id FROM users WHERE username = 'alice'));
+VALUES ((SELECT user_id FROM users WHERE username = 'Bob_Marley'), (SELECT user_id FROM users WHERE username = 'Alice_Wonder'));
 
 INSERT INTO connections (employer_id, artist_id) 
-VALUES ((SELECT user_id FROM users WHERE username = 'eva'), (SELECT user_id FROM users WHERE username = 'carla'));
+VALUES ((SELECT user_id FROM users WHERE username = 'Bob_Marley'), (SELECT user_id FROM users WHERE username = 'Carla_Gugino'));
 
 INSERT INTO connections (employer_id, artist_id) 
-VALUES ((SELECT user_id FROM users WHERE username = 'jack'), (SELECT user_id FROM users WHERE username = 'carla'));
+VALUES ((SELECT user_id FROM users WHERE username = 'Eva_Steller'), (SELECT user_id FROM users WHERE username = 'Carla_Gugino'));
 
 INSERT INTO connections (employer_id, artist_id) 
-VALUES ((SELECT user_id FROM users WHERE username = 'jack'), (SELECT user_id FROM users WHERE username = 'frank'));
+VALUES ((SELECT user_id FROM users WHERE username = 'Demo_Employer'), (SELECT user_id FROM users WHERE username = 'Frank_Devito'));
 
 INSERT INTO connections (employer_id, artist_id) 
-VALUES ((SELECT user_id FROM users WHERE username = 'eva'), (SELECT user_id FROM users WHERE username = 'frank'));
+VALUES ((SELECT user_id FROM users WHERE username = 'Demo_Employer'), (SELECT user_id FROM users WHERE username = 'Alice_Wonder'));
 
 INSERT INTO connections (employer_id, artist_id) 
-VALUES ((SELECT user_id FROM users WHERE username = 'irene'), (SELECT user_id FROM users WHERE username = 'grace'));
+VALUES ((SELECT user_id FROM users WHERE username = 'Demo_Employer'), (SELECT user_id FROM users WHERE username = 'Demo_Artist'));

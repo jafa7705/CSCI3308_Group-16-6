@@ -154,7 +154,7 @@ app.use('/resources', express.static(path.join(__dirname, 'resources')));
 app.get('/', async (req, res) => {
   try {
     const posts = await db.any(
-      `SELECT p.title, p.description, p.date_created, p.category, p.image, p.tags, u.username
+      `SELECT p.title, p.description, p.date_created, p.image, p.tags, u.username
        FROM posts p
        JOIN users u ON p.user_id = u.user_id
        ORDER BY p.date_created DESC`
@@ -177,7 +177,7 @@ app.get('/post', (req, res) => {
 
 // Submit post (automatically sets current timestamp)
 app.post('/submit', upload.single('postImage'), async (req, res) => {
-  const { title, description, category } = req.body;
+  const { title, description, tags } = req.body;
   if (!req.session.user) {
     return res.redirect('/login');
   }
@@ -187,9 +187,9 @@ app.post('/submit', upload.single('postImage'), async (req, res) => {
     const imagePath = req.file ? req.file.filename : null; // added post image path
 
     await db.none(
-      `INSERT INTO posts (user_id, title, description, date_created, category, image) 
+      `INSERT INTO posts (user_id, title, description, date_created, tags, image) 
        VALUES ($1, $2, $3, NOW(), $4, $5)`,
-      [userID, title, description, category, imagePath]
+      [userID, title, description, tags, imagePath]
     );
     res.redirect('/');
   } catch (err) {
@@ -223,7 +223,7 @@ app.get('/profile', async (req, res) => {
     //returns basic user information
 
     const posts = await db.any(
-      `SELECT title, description, date_created, category 
+      `SELECT title, description, date_created, tags 
       FROM posts  
       WHERE user_id = $1 
       ORDER BY date_created DESC`,
@@ -536,14 +536,14 @@ app.get('/search', async (req, res) => {
       );
     } else if (searchType === 'titles') {
       result = await db.any(
-        `SELECT title, description, date_created, category, image, tags
+        `SELECT title, description, date_created, tags, image
          FROM posts
          WHERE LOWER(title) LIKE LOWER($1)`,
         [`%${searchQuery}%`]
       );
     } else if (searchType === 'tags') {
       result = await db.any(
-        `SELECT title, description, date_created, category, image, tags
+        `SELECT title, description, date_created, tags, image
          FROM posts
          WHERE LOWER(tags) LIKE LOWER($1)`,
         [`%${searchQuery}%`]
