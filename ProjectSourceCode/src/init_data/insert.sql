@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 DO $$
 DECLARE
     hashedPassword TEXT;
@@ -49,7 +51,7 @@ INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 (1, 2, 'Hi Bob, I loved your collection!', '2024-03-15 10:00:00'),
 (2, 1, 'Thanks Alice! Your paintings are amazing.', '2024-03-15 10:05:00'),
 (3, 4, 'Dan, check out my latest digital piece.', '2024-03-16 12:00:00'),
-(4, 3, 'Carla, it\''s fantastic!', '2024-03-16 12:10:00'),
+(4, 3, 'Carla, it''s fantastic!', '2024-03-16 12:10:00'),
 (5, 10, 'Jack, do you have any openings this week?', '2024-03-17 14:00:00'),
 (10, 5, 'Eva, I have a slot on Thursday.', '2024-03-17 14:05:00'),
 (6, 7, 'Grace, your work is inspiring!', '2024-03-18 16:00:00'),
@@ -67,29 +69,21 @@ INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 (9, 10, 'Jack, do you know of any galleries that might be interested in my work?', '2024-03-24 17:00:00'),
 (10, 9, 'Irene, I might know of a few, send me some photos', '2024-03-24 17:10:00');
 
-
-
-
--- Bob (employer) connects with Alice (artist)
+-- Connections
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'bob'), (SELECT user_id FROM users WHERE username = 'alice'));
 
--- Eva (employer) connects with Carla (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'eva'), (SELECT user_id FROM users WHERE username = 'carla'));
 
--- Jack (employer) connects with Carla (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'jack'), (SELECT user_id FROM users WHERE username = 'carla'));
 
--- Jack (employer) connects with Frank (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'jack'), (SELECT user_id FROM users WHERE username = 'frank'));
 
--- Eva (employer) connects with Frank (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'eva'), (SELECT user_id FROM users WHERE username = 'frank'));
 
--- Irene (employer) connects with Grace (artist)
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'irene'), (SELECT user_id FROM users WHERE username = 'grace'));

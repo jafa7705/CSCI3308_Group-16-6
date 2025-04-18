@@ -10,7 +10,7 @@ const apiKey = process.env.API_KEY;
 
 // Setup database connection using environment variables
 const db = pgp({
-  host: 'db',
+  host: process.env.POSTGRES_HOST || 'db',
   port: 5432,
   database: process.env.POSTGRES_DB || 'users_db',
   user: process.env.POSTGRES_USER || 'postgres',
@@ -154,7 +154,7 @@ app.use('/resources', express.static(path.join(__dirname, 'resources')));
 app.get('/', async (req, res) => {
   try {
     const posts = await db.any(
-      `SELECT p.title, p.description, p.date_created, p.category, p.image, u.username
+      `SELECT p.title, p.description, p.date_created, p.category, p.image, p.tags, u.username
        FROM posts p
        JOIN users u ON p.user_id = u.user_id
        ORDER BY p.date_created DESC`
@@ -522,32 +522,50 @@ app.post('/login', async (req, res) => {
 });
 
 // ---------------- SEARCH ROUTES ----------------
-//Search
 app.get('/search', async (req, res) => {
   const searchQuery = req.query.searchQuery || '';
-  const userQuery = `SELECT username, bio FROM users WHERE LOWER(username) LIKE LOWER($1);`;
-  //LOWER - converts username to all lower case
-  //LIKE SQL functionality(ex): %john, john%, %john% all will return for username hjohnward
+  const searchType = req.query.searchType || 'users'; // default to 'users' if none is selected
 
   try {
-    const result = await db.any(userQuery, [`%${searchQuery}%`]);
+    let result = [];
 
-    console.log(result);
+    if (searchType === 'users') {
+      result = await db.any(
+        `SELECT username, bio FROM users WHERE LOWER(username) LIKE LOWER($1)`,
+        [`%${searchQuery}%`]
+      );
+    } else if (searchType === 'titles') {
+      result = await db.any(
+        `SELECT title, description, date_created, category, image, tags
+         FROM posts
+         WHERE LOWER(title) LIKE LOWER($1)`,
+        [`%${searchQuery}%`]
+      );
+    } else if (searchType === 'tags') {
+      result = await db.any(
+        `SELECT title, description, date_created, category, image, tags
+         FROM posts
+         WHERE LOWER(tags) LIKE LOWER($1)`,
+        [`%${searchQuery}%`]
+      );
+    }
 
     res.render('pages/search', {
-      searchQuery: searchQuery,
+      searchQuery,
+      searchType,
       items: result,
-      user: req.session.user // added this line so nav bar stays changed when users are logged in
-      //array of users containing the username
-      //eg - %john, john%, %john% all will return
+      user: req.session.user,
+      isUserSearch: searchType === 'users',
+      isTitleSearch: searchType === 'titles',
+      isTagSearch: searchType === 'tags'
     });
+    
 
   } catch (err) {
-    console.error(err);
-    res.status(500).send('database error' + err.message);
+    console.error('Search error:', err);
+    res.status(500).send('Search failed: ' + err.message);
   }
 });
-
 
 // ---------------- MESSAGE ROUTES ----------------
 app.get('/messages', async (req, res) => {
