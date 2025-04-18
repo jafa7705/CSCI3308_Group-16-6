@@ -33,11 +33,11 @@ BEGIN
     INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('jack', hashedPassword, 'jack@example.com', true, 'Gallery owner', NULL, 'San Francisco');
 END $$;
 
-INSERT INTO posts (user_id, title, date_created, description, category) VALUES
-(1, 'Sunset Dreams', '2024-01-05 15:00:00', 'An abstract sunset with warm tones.', 'Painting', 'sunset.png'),
-(2, 'City Reflections', '2023-11-12 09:30:00', 'Nighttime reflections in LA streets.', 'Photography', 'nepal.png'),
-(3, 'Fragments of Thought', '2024-02-20 11:15:00', 'A chaotic composition of shapes.', 'Digital Art'),
-(4, 'Bloom', '2024-03-10 14:45:00', 'Detailed study of a blooming flower.', 'Illustration'),
+INSERT INTO posts (user_id, title, date_created, description, category, image) VALUES
+(1, 'A Cloud Study, Sunset', '2024-01-05 15:00:00', 'By John Constable, ca.1821 ', 'Oil Painting', 'sunset.png'),
+(2, 'Buffalo Trail', '2023-11-12 09:30:00', 'The Impending Storm, 1869, by Albert Bierstadt', 'Oil Painting', 'buffalo.png'),
+(3, 'Nepal Tiger Tops', '2024-02-20 11:15:00', 'By George Silk, 1972', 'Photography', 'nepal.png'),
+(4, 'Poseidon, Apollo, and Artemis, east Parthenon Frieze', '2024-03-10 14:45:00', 'Greek sculpture by Phidias, 447-32 BC', 'Sculpture', 'greek.jpg'),
 (5, 'The Last Light', '2023-12-01 17:20:00', 'A lonely mountain at dusk.', 'Painting'),
 (6, 'Pixel Storm', '2024-01-18 08:00:00', 'A colorful digital storm.', 'Digital Art'),
 (7, 'Form in Space', '2023-10-27 13:35:00', 'A 3D sculpture playing with shadows.', 'Sculpture'),
