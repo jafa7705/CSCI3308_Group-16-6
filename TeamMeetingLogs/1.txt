@@ -10,3 +10,22 @@ Implement database
 Finish Nav Bar/Header
 Finish Profile Frame (after database)
 Registration page direct access
+
+
+
+4/18 Group Meeting logs
+
+Done this week:
+Fixed the nav bar errors
+Added images to the post
+Added message setup and the functions
+Search profiles link working
+Create new database
+Design the overall css.style for the whole project
+Dark/light mode added
+
+TODO:
+Check the projects work on all functions
+Prepare for the presentation
+Clean all the stuff if don't need anymore, make the code clean and tidy.
+
