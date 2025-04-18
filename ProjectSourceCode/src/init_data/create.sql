@@ -1,9 +1,10 @@
-CREATE EXTENSION pgcrypto;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Drop existing tables if they exist (safe for re-runs during dev)
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS connections;
 
 -- Create users table
 CREATE TABLE users (
@@ -11,7 +12,7 @@ CREATE TABLE users (
   username TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
   email TEXT,
-  isClient BOOLEAN DEFAULT FALSE,
+  isclient BOOLEAN DEFAULT FALSE,
   bio TEXT,
   website TEXT,
   location TEXT,
@@ -26,14 +27,25 @@ CREATE TABLE posts (
   description TEXT NOT NULL,
   date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   category TEXT NOT NULL,
-  image VARCHAR(200)
+  image VARCHAR(200),
+  tags TEXT
 );
 
 -- Messages Table
 CREATE TABLE messages (
-    message_id SERIAL PRIMARY KEY,
-    sender_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
-    receiver_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
-    message_text TEXT NOT NULL,
-    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  message_id SERIAL PRIMARY KEY,
+  sender_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  receiver_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  message_text TEXT NOT NULL,
+  timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Connection Requests Table
+CREATE TABLE connections (
+  connection_id SERIAL PRIMARY KEY,
+  employer_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  artist_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  status TEXT CHECK (status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (employer_id, artist_id)
 );

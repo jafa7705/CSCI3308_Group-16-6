@@ -11,10 +11,32 @@
     <img src="resources/img/defaultProfilePic.png" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
 
     {{#if isOwner}}
-    <button id="edit-profile-button" style="display:;">
-      <img src="resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
-      Edit Profile
-    </button>
+      <button id="edit-profile-button" style="display:;">
+        <img src="resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
+        Edit Profile
+      </button>
+      {{#unless user.isclient}}
+        <section class="pending-connections">
+          <h3>Pending Requests</h3>
+          {{#if pendingRequests.length}}
+            <ul>
+              {{#each pendingRequests}}
+                <li>
+                  {{this.client_username}}
+                  <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
+                    <button type="submit">Accept</button>
+                  </form>
+                  <form action="/connection/{{this.connection_id}}/reject" method="POST" style="display:inline;">
+                    <button type="submit">Reject</button>
+                  </form>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p>No pending requests.</p>
+          {{/if}}
+        </section>
+      {{/unless}}
     {{/if}}
 
     <div class="profile-info">
@@ -24,7 +46,7 @@
       </div>
 
       <p id="user-role">
-        {{#if user.isClient}}
+        {{#if user.isclient}} 
             Client
         {{else}}
             Artist
@@ -51,9 +73,45 @@
         {{/if}}
         </p>
       {{/if}}
+
+      {{#if canConnect}}
+        <div class="connect-section" style="margin-top: 20px;">
+          {{#if connectionExists}}
+            {{#if isPending}}
+              <button disabled style="background-color: gray; color: white;">Pending Request</button>
+            {{else}}
+              <button disabled style="background-color: #ccc;">Already Connected</button>
+            {{/if}}
+          {{else}}
+            <form action="/connect/{{user.username}}" method="POST">
+              <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Request Connection
+              </button>
+            </form>
+          {{/if}}
+        {{/if}}
+        </div>
+      
     </div>
   </section>
 
+
+  <div class="profile-sections">
+  <!-- Connections Section -->
+  <section class="connections">
+    <h2>Connections:</h2>
+    {{#if connections.length}}
+      <ul>
+        {{#each connections}}
+          <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>No connections yet.</p>
+    {{/if}}
+  </section>
+
+  <!-- Posts Section -->
   <section class="posts" style="max-width: 800px; margin: 40px auto;">
     <h2 style="text-align: center;">Posts by {{user.username}}</h2>
     {{#if posts.length}}
@@ -69,7 +127,7 @@
       <p style="text-align: center;">No posts yet.</p>
     {{/if}}
   </section>
-
+</div>
 
   <div id="editModal" class="modal">
     <div class="modal-content">
@@ -93,7 +151,7 @@
     </div>
   </div>
 
-  <script src="/index.js"></script>
+  <script src="resources/js/index.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const modal = document.getElementById('editModal');

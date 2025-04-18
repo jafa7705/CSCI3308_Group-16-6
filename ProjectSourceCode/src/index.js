@@ -10,7 +10,7 @@ const apiKey = process.env.API_KEY;
 
 // Setup database connection using environment variables
 const db = pgp({
-  host: 'db',
+  host: process.env.POSTGRES_HOST || 'db',
   port: 5432,
   database: process.env.POSTGRES_DB || 'users_db',
   user: process.env.POSTGRES_USER || 'postgres',
@@ -116,6 +116,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Change by Jiaye, Wait for test
 // Register partials
 const hbs = require('hbs');
+const { connect } = require('http2');
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
 // session middleware
@@ -123,7 +124,11 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
-    resave: false
+    resave: false,
+    cookie: {
+      secure: false, // Set to true in production with HTTPS
+      maxAge: 1000 * 60 * 60 * 2, // 2 hours
+    },
   })
 );
 
@@ -149,7 +154,7 @@ app.use('/resources', express.static(path.join(__dirname, 'resources')));
 app.get('/', async (req, res) => {
   try {
     const posts = await db.any(
-      `SELECT p.title, p.description, p.date_created, p.category, p.image, u.username
+      `SELECT p.title, p.description, p.date_created, p.category, p.image, p.tags, u.username
        FROM posts p
        JOIN users u ON p.user_id = u.user_id
        ORDER BY p.date_created DESC`
@@ -193,49 +198,82 @@ app.post('/submit', upload.single('postImage'), async (req, res) => {
   }
 });
 
-// Profile page
+
+
+// ---------------- PROFILE ROUTES  ----------------//
+//view your own profile
 app.get('/profile', async (req, res) => {
-  const userID = req.session.user ? req.session.user.user_id : null;
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  //if not signed in
+
   const profileUserID = req.query.user_id ? parseInt(req.query.user_id) : (req.session.user ? req.session.user.user_id : 1);
+  //converts string query to an integer
+
+  const isOwner = req.session.user.user_id === profileUserID; //should always be true anyways
+  const canConnect = false; //user cannot connect with their own profile
+  const isOwnerOrClient = req.session.user && (req.session.user.user_id === profileUserID || req.session.user.isclient);
+  //for contact me information
 
   try {
     const user = await db.one(
-      'SELECT user_id, username, email, isClient AS "isClient", bio, website, location FROM users WHERE user_id = $1',
-      [profileUserID]
-    );
+      'SELECT user_id, username, email, isclient, bio, website, location FROM users WHERE user_id = $1',
+      [profileUserID]);
+    //returns basic user information
 
     const posts = await db.any(
       `SELECT title, description, date_created, category 
-      FROM posts 
+      FROM posts  
       WHERE user_id = $1 
       ORDER BY date_created DESC`,
-      [profileUserID]
-    );
+      [profileUserID]);
+    //returns user posts
 
-    let viewingUser;
-    if (userID) {
-      try {
-        viewingUser = await db.one('SELECT isClient AS "isClient" FROM users WHERE user_id = $1', [userID]);
-      } catch (err) {
-        console.error("Viewing user not found:", err);
-        viewingUser = { isClient: false };
-      }
+    let connections = [];
+    let pendingRequests = [];
+
+    if (user.isclient) {
+      //return all accepted connections for the client
+      connections = await db.any(
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        [user.user_id, 'accepted']);
+
+      //return all pending connection requests made by the current client
+      pendingRequests = await db.any(
+        'SELECT c.connection_id, u.username AS artist_username FROM connections c JOIN users u ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        [user.user_id, 'pending']);
+
     } else {
-        viewingUser = {isClient:false};
+      //if user is artist, return their accepted connections
+      connections = await db.any(
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        [user.user_id, 'accepted']);
+
+      pendingRequests = await db.any(
+        'SELECT c.connection_id, u.username AS client_username FROM connections c JOIN users u ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        [req.session.user.user_id, 'pending']);
     }
 
-    const isOwner = userID === profileUserID;
-    const isOwnerOrClient = isOwner || viewingUser.isClient;
+    res.render('pages/profile', {
+      user,
+      posts,                 
+      connections,
+      pendingRequests,
+      sessionUser: req.session.user,
+      isOwner,
+      isOwnerOrClient,
+      canConnect,
+    });
 
-    res.render('pages/profile', { user, posts, isOwner, isOwnerOrClient, sessionUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('ERROR: Could not get profile');
   }
 });
 
-
 // Update profile
+//update your own profile
 app.post('/profile/update', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -255,29 +293,90 @@ app.post('/profile/update', async (req, res) => {
   }
 });
 
+// Other profile
+//view someone elses profile
 app.get('/profile/:username', async (req, res) => {
-  //TODO profile photo as well
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+
   const username = req.params.username;
+  //profile of user viewing, retrieved from url
+  const viewer = req.session.user;
+  //user currently logged in
+
+  if (viewer && viewer.username === username){
+    res.redirect('/profile');
+  }
+  //if it is the users own profile, switch to /profile route
 
   try {
-    const userProfile = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+    const user = await db.oneOrNone(
+      `SELECT user_id, username, email, isclient, bio, website, location, profile_image FROM users WHERE username = $1`, 
+      [username]);
 
-    if (!userProfile) {
+    console.log('Fetched user', user);
+    //user we are trying to view
+
+    if (!user) {
       return res.status(404).send('User not found');
     }
 
-    const userPosts = await db.any('SELECT * FROM posts WHERE user_id = $1', [userProfile.user_id]);
+    const userPosts = await db.any(
+      'SELECT * FROM posts WHERE user_id = $1', 
+      [user.user_id]);
 
-    //checks if the logged-in user is the owner of the profile
-    const isOwner = req.session.user && req.session.user.username === username;
-    const isOwnerOrClient = req.session.user && (isOwner || req.session.user.isClient);
+    // Check if the logged-in user is the owner of the profile
+    const isOwner = false; //is the user the owner of this profile
+    const isOwnerOrClient = viewer && (isOwner || viewer.isclient); //for contact me info
+    
+    //employees only clients can connect to artists
+    //CONDITIONS:
+      //viewer is an employer 
+      //not owner's profile
+      //profile being viewed is an artist
+    let canConnect = false;
+    let connectionExists = false;
+    let isPending = false; //for button control 
 
+    if (viewer && viewer.isclient &&  !user.isclient && !isOwner ) {
+      canConnect = true;
+
+      //check if a connection already exists between the viewer (employer) and the user(artist)
+      const existingConnection = await db.oneOrNone('SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2 AND status IN ($3, $4)', 
+        [viewer.user_id, user.user_id, 'pending', 'accepted']);
+      if (existingConnection) {
+        connectionExists = true;
+        if (existingConnection.status === 'pending') {
+          isPending = true;
+        }
+      }
+    }
+
+    let connections = []; //return connections for the user profile
+    if (user.isclient) {
+      //if profile is employer, return all artists they are connected with
+      connections = await db.any(
+        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        [user.user_id, 'accepted']);
+  
+    } else if (!user.isclient) {
+      //if profile is an artist, return all employers they are connected with
+      connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        [user.user_id, 'accepted']);
+    }
+
+    // Render the profile page with user data, posts, and connections
     res.render('pages/profile', {
-      user: userProfile,
+      user: user,
       posts: userPosts,
-      isOwner, 
-      isOwnerOrClient 
-      //checks if the logged-in user is the owner or a client
+      connections,
+      sessionUser: req.session.user,
+      isOwner,
+      isOwnerOrClient,
+      canConnect,
+      connectionExists,
+      isPending
     });
 
   } catch (err) {
@@ -287,7 +386,80 @@ app.get('/profile/:username', async (req, res) => {
 });
 
 
+// ---------------- CONNECTION ROUTES ----------------
+//after client clicks request connection
+app.post('/connect/:username', async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  const viewer = req.session.user;
+  const artistUsername = req.params.username;
 
+  if (!viewer || !viewer.isclient) {
+    return res.status(403).send('Only clients can request connections.');
+  }
+
+  try {
+    const artist = await db.one(
+      'SELECT user_id FROM users WHERE username = $1 AND isclient = false', 
+      [artistUsername]);
+    //artist trying to connect with
+
+    //does this exist
+    const existing = await db.oneOrNone(
+      'SELECT * FROM connections WHERE employer_id = $1 AND artist_id = $2',
+      [viewer.user_id, artist.user_id]);
+
+    if (existing) {
+      return res.send('Connection already exists or is pending.');
+    }
+
+    await db.none(
+      'INSERT INTO connections (employer_id, artist_id, status) VALUES ($1, $2, $3)',
+      [viewer.user_id, artist.user_id, 'pending']);
+
+  
+    res.redirect(`/profile/${artistUsername}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Could not request connection');
+  }
+});
+
+//if artist accepts the connection
+app.post('/connection/:id/accept', async (req, res) => {
+  const artistID = req.session.user?.user_id;
+
+  try {
+    await db.none(
+      'UPDATE connections SET status = $1 WHERE connection_id = $2 AND artist_id = $3',
+      ['accepted', req.params.id, artistID]
+    );
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Could not accept connection');
+  }
+});
+
+//if artist rejects the connection
+app.post('/connection/:id/reject', async (req, res) => {
+  const artistID = req.session.user?.user_id;
+
+  try {
+    await db.none(
+      'UPDATE connections SET status = $1 WHERE connection_id = $2 AND artist_id = $3',
+      ['rejected', req.params.id, artistID]
+    );
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Could not reject connection');
+  }
+});
+
+
+// ---------------- LOGIN HANDLING ----------------
 // Registration
 app.get('/register', (req, res) => {
   res.render('pages/register');
@@ -307,7 +479,7 @@ app.post('/register', async (req, res) => {
 
   try {
       const hashedPassword = await bcrypt.hash(password, 10);
-      await db.none('INSERT INTO users (username, password, isClient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
+      await db.none('INSERT INTO users (username, password, isclient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
       return res.render('pages/login', { success: 'Registration successful!' });
   } catch (err) {
       if (err.code === '23505' && err.constraint === 'users_username_key') {
@@ -338,7 +510,7 @@ app.post('/login', async (req, res) => {
       req.session.user = {
         user_id: user.user_id,
         username: user.username,
-        isClient: user.isClient,
+        isclient: user.isclient,
       };
       res.redirect('/');
     } else {
@@ -349,33 +521,53 @@ app.post('/login', async (req, res) => {
   }
 });
 
-//Search
+// ---------------- SEARCH ROUTES ----------------
 app.get('/search', async (req, res) => {
   const searchQuery = req.query.searchQuery || '';
-  const userQuery = `SELECT username, bio FROM users WHERE LOWER(username) LIKE LOWER($1);`;
-  //LOWER - converts username to all lower case
-  //LIKE SQL functionality(ex): %john, john%, %john% all will return for username hjohnward
+  const searchType = req.query.searchType || 'users'; // default to 'users' if none is selected
 
   try {
-    const result = await db.any(userQuery, [`%${searchQuery}%`]);
+    let result = [];
 
-    console.log(result);
+    if (searchType === 'users') {
+      result = await db.any(
+        `SELECT username, bio FROM users WHERE LOWER(username) LIKE LOWER($1)`,
+        [`%${searchQuery}%`]
+      );
+    } else if (searchType === 'titles') {
+      result = await db.any(
+        `SELECT title, description, date_created, category, image, tags
+         FROM posts
+         WHERE LOWER(title) LIKE LOWER($1)`,
+        [`%${searchQuery}%`]
+      );
+    } else if (searchType === 'tags') {
+      result = await db.any(
+        `SELECT title, description, date_created, category, image, tags
+         FROM posts
+         WHERE LOWER(tags) LIKE LOWER($1)`,
+        [`%${searchQuery}%`]
+      );
+    }
 
     res.render('pages/search', {
-      searchQuery: searchQuery,
+      searchQuery,
+      searchType,
       items: result,
-      user: req.session.user // added this line so nav bar stays changed when users are logged in
-      //array of users containing the username
-      //eg - %john, john%, %john% all will return
+      user: req.session.user,
+      isUserSearch: searchType === 'users',
+      isTitleSearch: searchType === 'titles',
+      isTagSearch: searchType === 'tags'
     });
+    
 
   } catch (err) {
-    console.error(err);
-    res.status(500).send('database error' + err.message);
+    console.error('Search error:', err);
+    res.status(500).send('Search failed: ' + err.message);
   }
 });
 
-// Messages Routes
+// ---------------- MESSAGE ROUTES ----------------
 app.get('/messages', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
