@@ -11,15 +11,26 @@ body {
   color: #333;
   line-height: 1.6;
   transition: background-color 0.3s, color 0.3s;
-  padding: 20px;
+  padding: 0; /* remove top padding so it's not doubled */
 }
 
+/* Add margin below the header so it's not floating over content */
+header {
+  width: 100%;
+  background-color: #CFB87C; /* CU gold */
+  padding: 10px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative; /* Ensure it participates in normal flow */
+  z-index: 1;
+  margin-bottom: 30px; /* Push content below it */
+}
+
+/* Dark mode body */
 body.dark-mode {
   background-color: #121212;
   color: #e0e0e0;
 }
 
-/* Dark mode overrides */
 body.dark-mode .connections,
 body.dark-mode .posts {
   background-color: #1e1e1e;
@@ -255,22 +266,7 @@ body.dark-mode .modal-content {
   color: white;
 }
 
-/* Toggle Button */
-#darkModeToggle {
-  margin-left: 15px;
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  border-radius: 4px;
-  background-color: #222;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-body.dark-mode #darkModeToggle {
-  background-color: #ddd;
-  color: #111;
-}
+/* Theme toggle button */
 #theme-toggle {
   padding: 5px 10px;
   font-size: 0.9rem;
