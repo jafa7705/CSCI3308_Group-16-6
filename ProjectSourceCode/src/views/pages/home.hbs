@@ -10,11 +10,12 @@
     <h1 style="text-align: center;">Art Feed</h1>
 
     {{#if posts.length}}
+    <div class="posts-container"></div>
       {{#each posts}}
         <article class="post" style="margin-bottom: 40px; padding: 20px; border: 1px solid #ccc; border-radius: 6px;">
           <h2>{{title}}</h2>
           <p><strong>By:</strong> {{username}}</p>
-          <img src="/uploads/{{this.image}}" alt="Post Image">
+          <img src="/uploads/{{this.image}}" alt="Post Image" style="max-width: 100%; height: auto; display: block; margin: 1em 0;">
           <p><strong>Category:</strong> {{category}}</p>
           <p><strong>Date Posted:</strong> {{date_created}}</p>
           <p>{{description}}</p>
@@ -23,6 +24,7 @@
     {{else}}
       <p style="text-align: center;">No posts yet.</p>
     {{/if}}
+    </div>
   </div>
 </body>
 </html>
