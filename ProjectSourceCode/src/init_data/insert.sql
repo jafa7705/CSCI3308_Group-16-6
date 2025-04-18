@@ -35,7 +35,7 @@ BEGIN
     INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('jack', hashedPassword, 'jack@example.com', true, 'Gallery owner', NULL, 'San Francisco');
 END $$;
 
-INSERT INTO posts (user_id, title, date_created, description, category, image) VALUES
+INSERT INTO posts (user_id, title, date_created, description, category, image, tags) VALUES
 (1, 'A Cloud Study, Sunset', '2024-01-05 15:00:00', 'By John Constable, ca.1821 ', 'Oil Painting', 'sunset.png'),
 (2, 'Buffalo Trail', '2023-11-12 09:30:00', 'The Impending Storm, 1869, by Albert Bierstadt', 'Oil Painting', 'buffalo.png'),
 (3, 'Nepal Tiger Tops', '2024-02-20 11:15:00', 'By George Silk, 1972', 'Photography', 'nepal.png'),
