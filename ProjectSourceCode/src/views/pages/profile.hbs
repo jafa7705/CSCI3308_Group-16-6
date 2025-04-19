@@ -22,6 +22,7 @@
             <ul>
               {{#each pendingRequests}}
                 <li>
+                  <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
                   {{this.client_username}}
                   <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
                     <button type="submit">Accept</button>
@@ -42,7 +43,7 @@
     <div class="profile-info">
 
       <div class="info-row">
-        <h1>@{{user.username}}</h1>
+        <h1>{{user.username}}</h1>
       </div>
 
       <p id="user-role">
@@ -54,7 +55,9 @@
       </p>
 
       <div class="info-row"><h2>Website:</h2></div>
-      <p id="website">{{user.website}}</p>
+      <p id="website">
+        <a href="{{user.website}}" class="website-link" target="_blank" rel="noopener noreferrer">{{user.website}}</a>
+      </p>
 
       <div class="info-row"><h2>Location:</h2></div>
       <p id="location">{{user.location}}</p>
@@ -91,6 +94,7 @@
     {{#if connections.length}}
         <ul>
             {{#each connections}}
+            <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
                 <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
                 {{#if ../isOwner}}
                     <button class="start-message-btn" data-recipient-id="{{this.user_id}}" style="margin-left: 10px;">

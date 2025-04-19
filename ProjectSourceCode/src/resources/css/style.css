@@ -146,6 +146,16 @@ header {
   white-space: pre-line;
 }
 
+.website-link {
+  color: inherit; 
+  text-decoration: none; 
+  cursor: pointer; 
+}
+
+.website-link:hover {
+  color: #555;
+}
+
 /* Connect Buttons */
 .connect-section button {
   padding: 10px 20px;
