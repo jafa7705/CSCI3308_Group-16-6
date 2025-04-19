@@ -206,6 +206,30 @@ header {
   margin-bottom: 20px;
 }
 
+.connections li {
+  display: flex; /* Enable flexbox for list items */
+  align-items: center; /* Vertically align items in the center */
+  margin-bottom: 10px;
+}
+
+.connections li img {
+  margin-right: 10px;
+}
+
+.connections li a {
+  text-decoration: none;
+  color: var(--text-light);
+  margin-right: 10px;
+}
+
+.connections li a:hover {
+  color: #ccc;
+}
+
+.connections li .start-message-btn {
+  margin-left: auto; /* Push the message button to the right */
+}
+
 /* Forms & Inputs */
 input, textarea, select {
   background-color: white;
