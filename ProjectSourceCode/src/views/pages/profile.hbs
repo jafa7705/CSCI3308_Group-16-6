@@ -15,6 +15,33 @@
         <img src="/resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
         Edit Profile
       </button>
+    {{/if}}
+
+    <div class="profile-info">
+
+      <div class="info-row">
+        <h1>{{user.username}}</h1>
+      </div>
+
+      <p id="user-role">
+        {{#if user.isclient}} 
+            Client
+        {{else}}
+            Artist
+        {{/if}}
+      </p>
+
+      <div class="info-row"><h2>Website:</h2></div>
+      <p id="website">
+        <a href="{{user.website}}" class="website-link" target="_blank" rel="noopener noreferrer">{{user.website}}</a>
+      </p>
+
+      <div class="info-row"><h2>Location:</h2></div>
+      <p id="location">{{user.location}}</p>
+
+      <div class="info-row"><h2>Bio:</h2></div>
+      <p id="bio" style="white-space: pre-line;">{{user.bio}}</p>
+
       {{#unless user.isclient}}
         <section class="pending-connections">
           <h3>Pending Requests</h3>
@@ -22,6 +49,7 @@
             <ul>
               {{#each pendingRequests}}
                 <li>
+                  <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
                   {{this.client_username}}
                   <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
                     <button type="submit">Accept</button>
@@ -37,30 +65,6 @@
           {{/if}}
         </section>
       {{/unless}}
-    {{/if}}
-
-    <div class="profile-info">
-
-      <div class="info-row">
-        <h1>@{{user.username}}</h1>
-      </div>
-
-      <p id="user-role">
-        {{#if user.isclient}} 
-            Client
-        {{else}}
-            Artist
-        {{/if}}
-      </p>
-
-      <div class="info-row"><h2>Website:</h2></div>
-      <p id="website">{{user.website}}</p>
-
-      <div class="info-row"><h2>Location:</h2></div>
-      <p id="location">{{user.location}}</p>
-
-      <div class="info-row"><h2>Bio:</h2></div>
-      <p id="bio" style="white-space: pre-line;">{{user.bio}}</p>
 
       {{#if canConnect}}
         <div class="connect-section" style="margin-top: 20px;">
@@ -91,19 +95,22 @@
     {{#if connections.length}}
         <ul>
             {{#each connections}}
-                <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
-                {{#if ../isOwner}}
-                    <button class="start-message-btn" data-recipient-id="{{this.user_id}}" style="margin-left: 10px;">
-                        <img src="resources/img/messages.png" alt="Message" style="vertical-align: middle; margin-right: 5px; width: 20px; height: 20px;">
-                        Message
-                    </button>
-                {{/if}}
+                <li>
+                    <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
+                    <a href="/profile/{{this.username}}">{{this.username}}</a>
+                    {{#if ../isOwner}}
+                        <button class="start-message-btn" data-recipient-id="{{this.user_id}}" style="margin-left: auto;">
+                            <img src="resources/img/messages.png" alt="Message" style="vertical-align: middle; margin-right: 5px; width: 20px; height: 20px;">
+                            Message
+                        </button>
+                    {{/if}}
+                </li>
             {{/each}}
         </ul>
     {{else}}
         <p>No connections yet.</p>
     {{/if}}
-  </section>
+</section>
 
   <!-- Posts Section -->
   <section class="posts" style="max-width: 800px; margin: 40px auto;">

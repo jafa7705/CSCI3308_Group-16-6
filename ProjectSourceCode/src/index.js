@@ -236,22 +236,22 @@ app.get('/profile', async (req, res) => {
     if (user.isclient) {
       //return all accepted connections for the client
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        'SELECT u.username, u.user_id, u.profile_image FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
 
       //return all pending connection requests made by the current client
       pendingRequests = await db.any(
-        'SELECT c.connection_id, u.username AS artist_username FROM connections c JOIN users u ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        'SELECT c.connection_id, u.username AS artist_username, u.profile_image FROM connections c JOIN users u ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
         [user.user_id, 'pending']);
 
     } else {
       //if user is artist, return their accepted connections
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        'SELECT u.username, u.user_id, u.profile_image FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
 
       pendingRequests = await db.any(
-        'SELECT c.connection_id, u.username AS client_username FROM connections c JOIN users u ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        'SELECT c.connection_id, u.username AS client_username, u.profile_image FROM connections c JOIN users u ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
         [req.session.user.user_id, 'pending']);
     }
 
@@ -357,12 +357,12 @@ app.get('/profile/:username', async (req, res) => {
     if (user.isclient) {
       //if profile is employer, return all artists they are connected with
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        'SELECT u.username, u.user_id, u.profile_image FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
   
     } else if (!user.isclient) {
       //if profile is an artist, return all employers they are connected with
-      connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+      connections = await db.any('SELECT u.username, u.user_id, u.profile_image FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
     }
 
@@ -515,6 +515,7 @@ app.post('/login', async (req, res) => {
         user_id: user.user_id,
         username: user.username,
         isclient: user.isclient,
+        profile_image: user.profile_image,
       };
       res.redirect('/');
     } else {
