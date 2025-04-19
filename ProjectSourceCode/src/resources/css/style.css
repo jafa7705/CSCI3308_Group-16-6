@@ -19,6 +19,9 @@ body, h1, h2, h3, p, ul, li, a, button, input, textarea, select {
 
 /* Body Styles (Always Dark) */
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   background-color: var(--dark-bg);
   color: var(--text-light);
   line-height: 1.6;
@@ -31,89 +34,274 @@ header {
   padding: 12px 24px;
   width: 100%;
   position: relative;
-  z-index: 10;
+  z-index: 1000;
   box-shadow: none;
   border: none;
+}
+
+/* Login Page Styles */
+.login-container, .register-container {
+  background-color: var(--input-bg);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 40px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.login-container h1, .register-container h1 {
+  font-size: 2.5em;
+  color: var(--cu-gold);
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+/* Form Input Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+form label {
+  align-self: flex-start;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: var(--text-light) !important;
+  margin-bottom: 5px;
+}
+
+form select,
+form input {
+  background-color: var(--input-bg);
+  color: var(--text-light);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 10px;
+  width: 100%;
+  font-size: 1.1em;
+}
+
+form input:select,
+form input:focus {
+  outline: none;
+  border-color: var(--cu-gold);
+  box-shadow: 0 0 1px var(--cu-gold);
+}
+
+/* Submit Button */
+button[type="submit"] {
+  background-color: var(--cu-gold);
+  border: none;
+  color: black;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #bfa15b;
+  transform: scale(1.05);
+}
+
+/* Links */
+p {
+  margin-top: 15px;
+  font-size: 1em;
+}
+
+p a {
+  color: var(--cu-gold);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+p a:hover {
+  color: #bfa15b;
+  text-decoration: underline;
+}
+
+/* Error Message */
+.message {
+  background-color: #f44336;
+  color: white;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/*just for email*/
+form div {
+  font-size: 0.9em;
+  color: var(--text-light);
+  margin-top: 10px;
 }
 
 /* Navbar */
 .navbar {
   background-color: var(--cu-gold) !important;
-  padding: 0;
+  padding: 6px 0px;
   border: none;
+  border-bottom: 2px solid #333;
 }
 
 .navbar .container-fluid {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  width: 100%;  
 }
 
 .navbar-brand img {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
+  margin-right: 15px; /* Reduce margin to avoid pushing the content */
+  flex-shrink: 0;
 }
 
 .navbar-nav {
   display: flex;
-  align-items: center;
   gap: 20px;
+  align-items: center;
 }
 
 .navbar-nav .nav-link {
   font-size: 16px;
-  color: #000 !important;
+  font-weight: 600;
+  color: #333 !important;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+  padding: 6px 10px; /* Added padding for clickable space */
+  border-radius: 4px;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--dark-bg); /* Darkens on hover */
+  text-decoration: underline; /* Underlines the link when hovered */
+}
+
+.input-group select,
+.input-group input[type="search"],
+.input-group button {
+  height: 42px;  /* Make sure all elements in the group have equal height */
+  font-size: 16px;
 }
 
 /* Search Section */
 .input-group {
   display: flex;
   align-items: center;
-  border: 1px solid #333;
   border-radius: 8px;
+  border: 1px solid black;
   overflow: hidden;
   background-color: white;
   max-height: 42px;
 }
 
-.input-group select,
-.input-group input[type="search"],
-.input-group button {
-  height: 42px;
-  font-size: 16px;
-  border: none;
-  outline: none;
-  box-shadow: none;
-}
-
 .input-group select {
-  border-right: 1px solid #ccc;
-  padding: 0 12px;
+  display: flex;
+  padding: 6px 0px;
+  border-right: 2px solid black;
+  font-size: 16px;
   background-color: white;
   color: black;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
 
 .input-group input[type="search"] {
   flex: 1;
-  padding: 0 12px;
-  color: black;
+  padding: 6px 0px;
+  font-size: 16px;
+  border: none;
+  outline: none;
   background-color: white;
+  color: black;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .input-group button {
   background-color: var(--cu-gold);
-  border-left: 1px solid #333;
-  padding: 0 18px;
+  border:none;
+  border-left: 1px solid black;
+  padding: 6px 12px;
   font-weight: bold;
   cursor: pointer;
   color: black;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+
+/*styling for titles*/
+h1 {
+  font-size: 3em; 
+  font-weight: 800; 
+  padding: 15px 0; 
+  color: var(--cu-gold);
+  text-align: center; 
+  text-transform: uppercase; 
+  letter-spacing: 3px; 
+  border-bottom: 3px solid var(--border-color); 
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); 
+}
+
+.pending-connections {
+  background-color: var(--input-bg);
+  color: var(--text-light);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 400px;
+  margin: 20px auto 0 auto; /* center it horizontally */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+
+.pending-connections h2 {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  color: var(--cu-gold);
+  text-align: left;
+}
+
+.pending-connections button {
+  font-size: 0.85em;
+  padding: 5px 10px;
+  margin-left: 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: var(--cu-gold);
+  color: black;
+  transition: background-color 0.3s ease;
+}
+
+.pending-connections button:hover {
+  background-color: #bfa15b;
+}
+
+
+
+
 
 /* Profile Section */
 .profile {
+  position: relative;
   text-align: center;
   padding: 20px;
+  background-color: var(--input-bg); /* Use dark background */
+  color: var(--text-light); /* Use light text color */
+  border-radius: 8px;
 }
 
 .profile-photo {
@@ -121,7 +309,7 @@ header {
   height: 150px;
   border-radius: 50%;
   margin: 20px auto;
-  border: 2px solid #ccc;
+  border: 2px solid var(--border-color); 
 }
 
 /* Profile Info */
@@ -146,8 +334,13 @@ header {
   border-radius: 4px;
   border: none;
   cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--cu-gold);
+  color: black;
+  transition: background-color 0.3s ease;
+}
+
+.connect-section button:hover {
+  background-color: #bfa15b; /*darker gold on hover */
 }
 
 .connect-section button:disabled {
@@ -159,41 +352,209 @@ header {
 .profile-sections {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
   gap: 30px;
+  justify-content: space-between;
   margin: 40px auto;
-  max-width: 1000px;
+  max-width: 1200px;
   padding: 20px;
+  background-color: var(--input-bg);
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.05);
+}
+
+.posts-section {
+  flex: 2 1 65%;
+  background-color: var(--dark-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 20px;
+  color: var(--text-light);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
 /* Connections + Posts containers */
-.connections, .posts {
-  flex: 1 1 48%;
-  background-color: var(--input-bg);
+.connections-section {
+  flex: 1 1 30%;
+  background-color: var(--dark-bg);
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  padding: 25px;
+  padding: 20px;
+  color: var(--text-light);
 }
 
-.connections h2, .posts h2 {
+.connections-section h2 {
   font-size: 1.4em;
-  border-bottom: 1px solid #666;
+  color: var(--cu-gold);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.connections-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+.connections-section li {
   margin-bottom: 15px;
   padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.posts article {
-  background-color: #2a2a2a;
-  border: 1px solid #555;
+.connections-section a {
+  color: var(--cu-gold);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.connections-section a:hover {
+  text-decoration: underline;
+}
+
+.posts-section h2 {
+  font-size: 1.4em;
+  color: var(--cu-gold);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.post-prof {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 15px;
   margin-bottom: 20px;
 }
 
+.post-prof h3 {
+  color: var(--cu-gold);
+  font-size: 1.2em;
+  margin-bottom: 8px;
+}
+
+.post-prof p {
+  color: var(--text-light);
+  font-size: 0.95em;
+  margin-bottom: 8px;
+}
+
+.post-prof strong {
+  color: var(--cu-gold);
+}
+
+/* Styling for the tags in posts */
+.post-prof .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.post-prof .tags p {
+  background-color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.85em;
+}
+
+
+.edit-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--cu-gold);
+  color: black;
+  font-weight: bold;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 20px auto;
+  margin-left:10px;
+  font-size: 0.8em;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.edit-profile-btn img {
+  width: 12px;
+  height: 12px;
+}
+
+.edit-profile-btn:hover {
+  background-color: #bfa15b;
+  transform: scale(1.02);
+}
+
+
+
+
+
+
+.posts-container {
+  max-width: 800px; /* Set max-width to match the Art Feed title width */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 20px 0; /* Add vertical padding */
+}
+
+/* Individual Post Styling */
+.post {
+  background-color: rgb(36, 36, 36);
+  border: 1px solid #fff; /* white border around the post */
+  border-radius: 4px; /* rounded corners */
+  padding: 20px;
+  margin-bottom: 80px;
+  margin-top: 80px;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+/* Post Title */
+.post h2 {
+  font-size: 1.5em;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+/* Meta info (Author, Date) */
+.post p {
+  color: #e0e0e0;
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+
+/* Image in posts */
+.post img {
+  max-width: 80%;
+  height: auto;
+  display: block;
+  border-radius: 2px; /*rounded corners*/
+  margin: 10px 0;
+}
+
+/* Description and tags */
+.post p strong {
+  color: var(--cu-gold); /* Accent color for strong text */
+}
+
+/* Tags Section */
+.post .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.post .tags p {
+  background-color: #444;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #fff;
+  margin: 5px 0;
+}
+
+
 /* Forms & Inputs */
 input, textarea, select {
-  background-color: white;
-  color: black;
+  background-color: var(--input-bg);
+  color: var(--text-light);
   border: 1px solid #999;
   border-radius: 4px;
   padding: 8px;
@@ -235,24 +596,20 @@ form {
 form label,
 form .form-text,
 form small {
-  color: black !important;
-}
-/* Force login, register, and post forms to stay light in dark mode */
-body.dark-mode .form-light,
-body.dark-mode .form-light input,
-body.dark-mode .form-light select,
-body.dark-mode .form-light textarea,
-body.dark-mode .form-light label,
-body.dark-mode .form-light h1,
-body.dark-mode .form-light h2,
-body.dark-mode .form-light h3,
-body.dark-mode .form-light p {
-  background-color: #fff !important;
-  color: #000 !important;
-  border-color: #ccc !important;
+  color: var(--text-light) !important;
 }
 
-body.dark-mode .form-light input::placeholder,
-body.dark-mode .form-light textarea::placeholder {
-  color: #666 !important;
+
+footer {
+  background-color: var(--dark-bg); /* Dark footer background */
+  color: rgb(155, 155, 155); /* Light text color */
+  padding: 4px 0; /* Add some padding to the footer */
+  border-top: 1px solid #444;
 }
+
+.container {
+  padding-bottom: 50px; /* Add padding to the bottom of the content so footer won't overlap */
+  flex:1;
+}
+
+

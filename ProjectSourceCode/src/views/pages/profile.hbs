@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile</title>
   <link rel="stylesheet" href="../../resources/css/style.css">
 </head>
 <body>
@@ -11,13 +10,13 @@
     <img src="resources/img/defaultProfilePic.png" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
 
     {{#if isOwner}}
-      <button id="edit-profile-button" style="display:;">
-        <img src="resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
+      <button id="edit-profile-button" class="edit-profile-btn">
+        <img src="resources/img/edit.png" alt="Edit Profile">
         Edit Profile
       </button>
       {{#unless user.isclient}}
         <section class="pending-connections">
-          <h3>Pending Requests</h3>
+          <h2>Pending Requests</h2>
           {{#if pendingRequests.length}}
             <ul>
               {{#each pendingRequests}}
@@ -42,7 +41,7 @@
     <div class="profile-info">
 
       <div class="info-row">
-        <h1>@{{user.username}}</h1>
+        <h1>{{user.username}}</h1>
       </div>
 
       <p id="user-role">
@@ -63,28 +62,20 @@
       <p id="bio" style="white-space: pre-line;">{{user.bio}}</p>
 
       {{#if isOwnerOrClient}} 
-        <p>
-        Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a>
-        {{#if isOwner}}
-            <span class="info-icon">
-            <img src="resources/img/info.png" alt="Info" style="width: 20px; height: 20px; vertical-align: middle;">
-            <span class="info-text">Contact me info is only visible to yourself and clients.</span>
-            </span>
-        {{/if}}
-        </p>
+        <p> Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p>
       {{/if}}
 
       {{#if canConnect}}
         <div class="connect-section" style="margin-top: 20px;">
           {{#if connectionExists}}
             {{#if isPending}}
-              <button disabled style="background-color: gray; color: white;">Pending Request</button>
+              <button disabled>Pending Request</button>
             {{else}}
-              <button disabled style="background-color: #ccc;">Already Connected</button>
+              <button disabled>Already Connected</button>
             {{/if}}
           {{else}}
             <form action="/connect/{{user.username}}" method="POST">
-              <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              <button type="submit">
                 Request Connection
               </button>
             </form>
@@ -98,7 +89,7 @@
 
   <div class="profile-sections">
   <!-- Connections Section -->
-  <section class="connections">
+  <section class="connections-section">
     <h2>Connections:</h2>
     {{#if connections.length}}
       <ul>
@@ -112,22 +103,21 @@
   </section>
 
   <!-- Posts Section -->
-  <section class="posts" style="max-width: 800px; margin: 40px auto;">
-    <h2 style="text-align: center;">Posts by {{user.username}}</h2>
+  <section class="posts-section">
+    <h2>Posts by {{user.username}}</h2>
+
     {{#if posts.length}}
       {{#each posts}}
-    
-        <article class="post" style="margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 6px;">
+        <article class="post-prof">
          
           <h3>{{title}}</h3>
           <p><strong>Tags:</strong> {{tags}}</p>
           <p><strong>Date:</strong> {{date_created}}</p>
-          <p>{{description}}</p>
+          <p>{{description}}</p> 
         </article>
       {{/each}}
     {{else}}
-      <p style="text-align: center;">No posts yet.</p>
-    {{/if}}
+    <p style="text-align: center; color: var(--text-light); margin-top: 20px;">No posts yet.</p>    {{/if}}
   </section>
 </div>
 

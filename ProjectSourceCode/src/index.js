@@ -199,7 +199,6 @@ app.post('/submit', upload.single('postImage'), async (req, res) => {
 });
 
 
-
 // ---------------- PROFILE ROUTES  ----------------//
 //view your own profile
 app.get('/profile', async (req, res) => {
