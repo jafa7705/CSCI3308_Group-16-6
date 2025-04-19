@@ -36,16 +36,16 @@ BEGIN
 END $$;
 
 INSERT INTO posts (user_id, title, date_created, description, tags, image) VALUES
-(1, 'A Cloud Study, Sunset', '2024-01-05 15:00:00', 'By John Constable, ca.1821 ', 'Oil Painting', 'sunset.png'),
-(2, 'Buffalo Trail', '2023-11-12 09:30:00', 'The Impending Storm, 1869, by Albert Bierstadt', 'Oil Painting', 'buffalo.png'),
-(3, 'Nepal Tiger Tops', '2024-02-20 11:15:00', 'By George Silk, 1972', 'Photography', 'nepal.png'),
-(4, 'Poseidon, Apollo, and Artemis, east Parthenon Frieze', '2024-03-10 14:45:00', 'Greek sculpture by Phidias, 447-32 BC', 'Sculpture', 'greek.jpg'),
-(5, 'The Last Light', '2023-12-01 17:20:00', 'A lonely mountain at dusk.', 'Painting', 'nepal.png'),
-(6, 'Pixel Storm', '2024-01-18 08:00:00', 'A colorful digital storm.', 'Digital Art', 'nepal.png'),
-(7, 'Snowy', '2023-10-27 13:35:00', 'A 3D sculpture playing with shadows.', 'Digital Art', 'snowy.png'),
+(1, 'A Cloud Study, Sunset', '2024-03-10 14:45:00', 'By John Constable, ca.1821 ', 'Oil Painting', 'sunset.png'),
+(2, 'Buffalo Trail','2024-03-05 16:40:00', 'The Impending Storm, 1869, by Albert Bierstadt', 'Oil Painting', 'buffalo.png'),
+(3, 'Fujimigahara in Owari Province', '2024-02-20 11:15:00', 'By Katsushika Hokusai, ca. 1830-32,  from the series Thirty-six Views of Mount Fuji', 'Ink', 'owari.png'),
+(4, 'Poseidon, Apollo, and Artemis, east Parthenon Frieze', '2024-01-05 15:00:00', 'Greek sculpture by Phidias, 447-32 BC', 'Sculpture', 'greek.jpg'),
+(5, 'Nepal Tiger Tops','2023-11-12 09:30:00', 'By George Silk, 1972, Katmandu looking northeast to the Himalayas.', 'Photography', 'nepal.png'),
+(5, 'Untitled', '2024-01-18 08:00:00', 'By George Silk, 1962, Prince Philip at helm of his yawl, Bloodhound, during Cowes Regatta.', 'Photography', 'boat.png'),
+(7, 'Snowy', '2023-10-27 13:35:00', 'By Brian Edward Miller, a beautiful landscape of snowy ranges.', 'Digital Art', 'snowy.png'),
 (8, 'Caipira', '2024-02-14 10:10:00', 'Installation of falling chairs.', 'Painting', 'caipira.png'),
 (9, 'Amaryllis Twists Ceramic Pottery Vase', '2023-11-30 19:00:00', 'The Amaryllis Twists Vase reinterprets the twisting buds and elegant form of the long-retired Ephraim Pottery Perennial Vase.', 'Pottery', 'leaf.png'),
-(9, 'Acorn and Oak Ceramic Pottery Vase', '2024-03-05 16:40:00', 'A simple bowing oak branch bends at the rim of this sweet vase.', 'Pottery', 'vase.png');
+(9, 'Acorn and Oak Ceramic Pottery Vase', '2023-12-01 17:20:00', 'A simple bowing oak branch bends at the rim of this sweet vase.', 'Pottery', 'vase.png');
 
 INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 (1, 2, 'Hi Bob, I loved your collection!', '2024-03-15 10:00:00'),
