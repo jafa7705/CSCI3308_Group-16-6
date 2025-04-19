@@ -344,6 +344,9 @@ h1 {
 }
 
 .connect-section button:disabled {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: gray;
   cursor: not-allowed;
 }
