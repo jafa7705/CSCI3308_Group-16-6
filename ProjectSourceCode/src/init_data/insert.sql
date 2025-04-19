@@ -5,34 +5,34 @@ DECLARE
     hashedPassword TEXT;
 BEGIN
     hashedPassword := crypt('hashedpassword1', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('alice', hashedPassword, 'alice@example.com', false, 'Painter based in NYC', 'http://aliceart.com', 'New York');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('alice', hashedPassword, 'alice@example.com', false, 'Painter based in NYC', 'http://aliceart.com', 'New York', 'alicePic.jpg');
 
     hashedPassword := crypt('hashedpassword2', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('bob', hashedPassword, 'bob@example.com', true, 'Art collector', NULL, 'Los Angeles');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('bob', hashedPassword, 'bob@example.com', true, 'Art collector', NULL, 'Los Angeles', 'bobPic.jpg');
 
     hashedPassword := crypt('hashedpassword3', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('carla', hashedPassword, 'carla@example.com', false, 'Digital artist', 'http://carladraws.io', 'Austin');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('carla', hashedPassword, 'carla@example.com', false, 'Digital artist', 'http://carladraws.io', 'Austin', 'carlaPic.jpg');
 
     hashedPassword := crypt('hashedpassword4', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('dan', hashedPassword, 'dan@example.com', false, NULL, NULL, 'Chicago');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('dan', hashedPassword, 'dan@example.com', false, NULL, NULL, 'Chicago', 'defaultProfilePic.png');
 
     hashedPassword := crypt('hashedpassword5', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('eva', hashedPassword, 'eva@example.com', true, NULL, NULL, 'Miami');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('eva', hashedPassword, 'eva@example.com', true, NULL, NULL, 'Miami', 'defaultProfilePic.png');
 
     hashedPassword := crypt('hashedpassword6', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('frank', hashedPassword, 'frank@example.com', false, 'Sculptor', NULL, 'Denver');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('frank', hashedPassword, 'frank@example.com', false, 'Sculptor', NULL, 'Denver', 'defaultProfilePic.png');
 
     hashedPassword := crypt('hashedpassword7', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('grace', hashedPassword, 'grace@example.com', false, NULL, NULL, 'Seattle');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('grace', hashedPassword, 'grace@example.com', false, NULL, NULL, 'Seattle', 'defaultProfilePic.png');
 
     hashedPassword := crypt('hashedpassword8', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('henry', hashedPassword, 'henry@example.com', false, 'Animator', NULL, 'Boston');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('henry', hashedPassword, 'henry@example.com', false, 'Animator', NULL, 'Boston', 'defaultProfilePic.png');
 
     hashedPassword := crypt('hashedpassword9', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('irene', hashedPassword, 'irene@example.com', false, 'Pottery artist', NULL, 'San Diego');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('irene', hashedPassword, 'irene@example.com', false, 'Pottery artist', NULL, 'San Diego', 'defaultProfilePic.png');
 
     hashedPassword := crypt('hashedpassword10', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('jack', hashedPassword, 'jack@example.com', true, 'Gallery owner', NULL, 'San Francisco');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('jack', hashedPassword, 'jack@example.com', true, 'Gallery owner', NULL, 'San Francisco', 'defaultProfilePic.png');
 END $$;
 
 INSERT INTO posts (user_id, title, date_created, description, category, tags) VALUES

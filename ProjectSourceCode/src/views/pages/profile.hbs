@@ -8,11 +8,11 @@
 </head>
 <body>
   <section class="profile">
-    <img src="resources/img/defaultProfilePic.png" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
+    <img src="/uploads/{{user.profile_image}}" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
 
     {{#if isOwner}}
       <button id="edit-profile-button" style="display:;">
-        <img src="resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
+        <img src="/resources/img/edit.png" alt="Edit Profile" style="vertical-align: middle; margin-right: 5px;">
         Edit Profile
       </button>
       {{#unless user.isclient}}
@@ -62,18 +62,6 @@
       <div class="info-row"><h2>Bio:</h2></div>
       <p id="bio" style="white-space: pre-line;">{{user.bio}}</p>
 
-      {{#if isOwnerOrClient}} 
-        <p>
-        Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a>
-        {{#if isOwner}}
-            <span class="info-icon">
-            <img src="resources/img/info.png" alt="Info" style="width: 20px; height: 20px; vertical-align: middle;">
-            <span class="info-text">Contact me info is only visible to yourself and clients.</span>
-            </span>
-        {{/if}}
-        </p>
-      {{/if}}
-
       {{#if canConnect}}
         <div class="connect-section" style="margin-top: 20px;">
           {{#if connectionExists}}
@@ -101,13 +89,19 @@
   <section class="connections">
     <h2>Connections:</h2>
     {{#if connections.length}}
-      <ul>
-        {{#each connections}}
-          <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
-        {{/each}}
-      </ul>
+        <ul>
+            {{#each connections}}
+                <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
+                {{#if ../isOwner}}
+                    <button class="start-message-btn" data-recipient-id="{{this.user_id}}" style="margin-left: 10px;">
+                        <img src="resources/img/messages.png" alt="Message" style="vertical-align: middle; margin-right: 5px; width: 20px; height: 20px;">
+                        Message
+                    </button>
+                {{/if}}
+            {{/each}}
+        </ul>
     {{else}}
-      <p>No connections yet.</p>
+        <p>No connections yet.</p>
     {{/if}}
   </section>
 
@@ -120,6 +114,11 @@
         <article class="post" style="margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 6px;">
          
           <h3>{{title}}</h3>
+
+          {{#if image}}
+            <img src="/uploads/{{image}}" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+          {{/if}}
+          
           <p><strong>Category:</strong> {{category}}</p>
           <p><strong>Date:</strong> {{date_created}}</p>
           <p>{{description}}</p>
@@ -179,5 +178,16 @@
       };
     });
   </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const messageButtons = document.querySelectorAll('.start-message-btn');
+    messageButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const recipientId = this.getAttribute('data-recipient-id');
+        window.location.href = `/messages?recipientId=${recipientId}`;
+      });
+    });
+  });
+ </script>
 </body>
 </html>
