@@ -4,7 +4,7 @@
     <ul id="user-conversations">
       {{#each conversations}}
         <li class="conversation-item" data-user-id="{{this.user_id}}">
-          <img src="/resources/img/defaultProfilePic.png" alt="Profile" class="profile-pic">  {{! TODO: Fix it to profile photos}}
+          <img src="/uploads/{{this.profile_image}}" alt="Profile" class="profile-pic">
           <span>{{this.username}}</span>
         </li>
       {{/each}}
@@ -13,6 +13,19 @@
 
   <div class="message-area">
     <div id="messages">
+      {{#if initialMessages}}
+        {{#each initialMessages}}
+          <p><strong>{{sender}}:</strong> {{message_text}}</p>
+        {{else}}
+          {{#if initialRecipientId}}
+            <p>No messages yet with this user.</p>
+          {{else}}
+            <p>Select a conversation to view messages.</p>
+          {{/if}}
+        {{/each}}
+      {{else}}
+        <p>Select a conversation to view messages.</p>
+      {{/if}}
     </div>
     <div class="message-input">
       <textarea id="message-text" placeholder="Type your message..." rows="3"></textarea>
@@ -36,19 +49,31 @@ document.addEventListener('DOMContentLoaded', () => {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
 
+  function loadMessages(userId) {
+    selectedUserId = userId;
+    messagesDiv.innerHTML = '';
+    fetch(`/get-messages?recipientId=${userId}`)
+      .then(response => response.json())
+      .then(messages => {
+        messages.forEach(message => {
+          addMessage(message.sender, message.message_text);
+        });
+      })
+      .catch(error => console.error("Error retrieving messages:", error));
+
+    document.querySelectorAll('.conversation-item').forEach(item => {
+      item.classList.remove('selected');
+      if (item.dataset.userId === userId.toString()) {
+        item.classList.add('selected');
+      }
+    });
+  }
+
   userConversations.addEventListener('click', (event) => {
     const conversationItem = event.target.closest('.conversation-item');
     if (conversationItem) {
-      selectedUserId = conversationItem.dataset.userId;
-      messagesDiv.innerHTML = '';
-      fetch(`/get-messages?recipientId=${selectedUserId}`)
-        .then(response => response.json())
-        .then(messages => {
-          messages.forEach(message => {
-            addMessage(message.sender, message.message_text);
-          });
-        })
-        .catch(error => console.error("Error retrieving messages:", error));
+      const userId = conversationItem.dataset.userId;
+      loadMessages(userId);
     }
   });
 
@@ -57,12 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   messageText.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      if (event.shiftKey) {
-      } else {
-        sendMessage();
-        event.preventDefault();
-      }
+    if (event.key === 'Enter' && !event.shiftKey) {
+      sendMessage();
+      event.preventDefault();
     }
   });
 
@@ -80,16 +102,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }),
       })
       .then(response => {
-          if(response.ok) {
-              addMessage('You', text);
-              messageText.value = '';
-          } else {
-              console.error('Failed to send message:', response.statusText);
-              alert("message failed to send");
-          }
+        if(response.ok) {
+          addMessage('You', text);
+          messageText.value = '';
+        } else {
+          console.error('Failed to send message:', response.statusText);
+          alert("Message failed to send");
+        }
       })
       .catch(error => console.error('Error sending message:', error));
     }
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialRecipientId = urlParams.get('recipientId');
+  if (initialRecipientId) {
+    loadMessages(parseInt(initialRecipientId));
+
+    document.querySelectorAll('.conversation-item').forEach(item => {
+      if (item.dataset.userId === initialRecipientId) {
+        item.classList.add('selected');
+      }
+    });
   }
 });
 </script>

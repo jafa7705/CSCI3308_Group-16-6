@@ -7,35 +7,13 @@
 </head>
 <body>
   <section class="profile">
-    <img src="resources/img/defaultProfilePic.png" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
+    <img src="/uploads/{{user.profile_image}}" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
 
     {{#if isOwner}}
       <button id="edit-profile-button" class="edit-profile-btn">
         <img src="resources/img/edit.png" alt="Edit Profile">
         Edit Profile
       </button>
-      {{#unless user.isclient}}
-        <section class="pending-connections">
-          <h2>Pending Requests</h2>
-          {{#if pendingRequests.length}}
-            <ul>
-              {{#each pendingRequests}}
-                <li>
-                  {{this.client_username}}
-                  <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
-                    <button type="submit">Accept</button>
-                  </form>
-                  <form action="/connection/{{this.connection_id}}/reject" method="POST" style="display:inline;">
-                    <button type="submit">Reject</button>
-                  </form>
-                </li>
-              {{/each}}
-            </ul>
-          {{else}}
-            <p>No pending requests.</p>
-          {{/if}}
-        </section>
-      {{/unless}}
     {{/if}}
 
     <div class="profile-info">
@@ -53,7 +31,9 @@
       </p>
 
       <div class="info-row"><h2>Website:</h2></div>
-      <p id="website">{{user.website}}</p>
+      <p id="website">
+        <a href="{{user.website}}" class="website-link" target="_blank" rel="noopener noreferrer">{{user.website}}</a>
+      </p>
 
       <div class="info-row"><h2>Location:</h2></div>
       <p id="location">{{user.location}}</p>
@@ -61,9 +41,29 @@
       <div class="info-row"><h2>Bio:</h2></div>
       <p id="bio" style="white-space: pre-line;">{{user.bio}}</p>
 
-      {{#if isOwnerOrClient}} 
-        <p> Contact me: <a href="mailto:{{user.email}}">{{user.email}}</a></p>
-      {{/if}}
+      {{#unless user.isclient}}
+        <section class="pending-connections">
+          <h2>Pending Requests</h2>
+          {{#if pendingRequests.length}}
+            <ul>
+              {{#each pendingRequests}}
+                <li>
+                  <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
+                  {{this.client_username}}
+                  <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
+                    <button type="submit">Accept</button>
+                  </form>
+                  <form action="/connection/{{this.connection_id}}/reject" method="POST" style="display:inline;">
+                    <button type="submit">Reject</button>
+                  </form>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p>No pending requests.</p>
+          {{/if}}
+        </section>
+      {{/unless}}
 
       {{#if canConnect}}
         <div class="connect-section" style="margin-top: 20px;">
@@ -92,15 +92,24 @@
   <section class="connections-section">
     <h2>Connections:</h2>
     {{#if connections.length}}
-      <ul>
-        {{#each connections}}
-          <li><a href="/profile/{{this.username}}">{{this.username}}</a></li>
-        {{/each}}
-      </ul>
+        <ul>
+            {{#each connections}}
+                <li>
+                    <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
+                    <a href="/profile/{{this.username}}">{{this.username}}</a>
+                    {{#if ../isOwner}}
+                        <button class="start-message-btn" data-recipient-id="{{this.user_id}}" style="margin-left: auto;">
+                            <img src="resources/img/messages.png" alt="Message" style="vertical-align: middle; margin-right: 5px; width: 20px; height: 20px;">
+                            Message
+                        </button>
+                    {{/if}}
+                </li>
+            {{/each}}
+        </ul>
     {{else}}
-      <p>No connections yet.</p>
+        <p>No connections yet.</p>
     {{/if}}
-  </section>
+</section>
 
   <!-- Posts Section -->
   <section class="posts-section">
@@ -111,7 +120,12 @@
         <article class="post-prof">
          
           <h3>{{title}}</h3>
-          <p><strong>Tags:</strong> {{tags}}</p>
+
+          {{#if image}}
+            <img src="/uploads/{{image}}" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+          {{/if}}
+          
+          <p><strong>Category:</strong> {{category}}</p>
           <p><strong>Date:</strong> {{date_created}}</p>
           <p>{{description}}</p> 
         </article>
@@ -169,5 +183,16 @@
       };
     });
   </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const messageButtons = document.querySelectorAll('.start-message-btn');
+    messageButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const recipientId = this.getAttribute('data-recipient-id');
+        window.location.href = `/messages?recipientId=${recipientId}`;
+      });
+    });
+  });
+ </script>
 </body>
 </html>

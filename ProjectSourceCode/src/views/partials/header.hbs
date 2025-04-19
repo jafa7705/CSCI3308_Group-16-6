@@ -30,9 +30,21 @@
                 <img src="/resources/img/messages.png" alt="Messages" width="30" height="30">
               </a>
             </li>
-            <li class="nav-item"><a class="nav-link" href="/post">Post</a></li>
-            <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
-            <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="/post">
+                <img src="/resources/img/add.png" alt="Post" width="30" height="30">
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/profile">
+                <img src="/uploads/{{user.profile_image}}" alt="Profile" width="30" height="30" class="profile-pic-header">
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">
+                <img src="/resources/img/logout.png" alt="Logout" width="30" height="30">
+              </a>
+            </li>
           {{else}}
             <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
             <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>

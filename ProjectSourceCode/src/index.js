@@ -217,7 +217,7 @@ app.get('/profile', async (req, res) => {
 
   try {
     const user = await db.one(
-      'SELECT user_id, username, email, isclient, bio, website, location FROM users WHERE user_id = $1',
+      'SELECT user_id, username, email, isclient, bio, website, location, profile_image FROM users WHERE user_id = $1',
       [profileUserID]);
     //returns basic user information
 
@@ -235,22 +235,22 @@ app.get('/profile', async (req, res) => {
     if (user.isclient) {
       //return all accepted connections for the client
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        'SELECT u.username, u.user_id, u.profile_image FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
 
       //return all pending connection requests made by the current client
       pendingRequests = await db.any(
-        'SELECT c.connection_id, u.username AS artist_username FROM connections c JOIN users u ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        'SELECT c.connection_id, u.username AS artist_username, u.profile_image FROM connections c JOIN users u ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
         [user.user_id, 'pending']);
 
     } else {
       //if user is artist, return their accepted connections
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        'SELECT u.username, u.user_id, u.profile_image FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
 
       pendingRequests = await db.any(
-        'SELECT c.connection_id, u.username AS client_username FROM connections c JOIN users u ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+        'SELECT c.connection_id, u.username AS client_username, u.profile_image FROM connections c JOIN users u ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
         [req.session.user.user_id, 'pending']);
     }
 
@@ -356,12 +356,12 @@ app.get('/profile/:username', async (req, res) => {
     if (user.isclient) {
       //if profile is employer, return all artists they are connected with
       connections = await db.any(
-        'SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
+        'SELECT u.username, u.user_id, u.profile_image FROM users u INNER JOIN connections c ON u.user_id = c.artist_id WHERE c.employer_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
   
     } else if (!user.isclient) {
       //if profile is an artist, return all employers they are connected with
-      connections = await db.any('SELECT u.username, u.user_id FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
+      connections = await db.any('SELECT u.username, u.user_id, u.profile_image FROM users u INNER JOIN connections c ON u.user_id = c.employer_id WHERE c.artist_id = $1 AND c.status = $2',
         [user.user_id, 'accepted']);
     }
 
@@ -467,28 +467,32 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
   const { username, password, confirmPassword, isClientHidden } = req.body;
   const isClient = isClientHidden === 'true';
+  const defaultProfilePic = '/resources/img/defaultProfilePic.png';
 
   if (!username || !password || !confirmPassword) {
-      return res.status(400).render('pages/register', { message: 'All fields are required.' });
+    return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
   if (password !== confirmPassword) {
-      return res.status(400).render('pages/register', { message: 'Passwords do not match' });
+    return res.status(400).render('pages/register', { message: 'Passwords do not match' });
   }
 
   try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await db.none('INSERT INTO users (username, password, isclient) VALUES ($1, $2, $3)', [username, hashedPassword, isClient]);
-      return res.render('pages/login', { success: 'Registration successful!' });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.none(
+      'INSERT INTO users (username, password, isclient, profile_image) VALUES ($1, $2, $3, $4)',
+      [username, hashedPassword, isClient, defaultProfilePic]
+    );
+    return res.render('pages/login', { success: 'Registration successful!' });
   } catch (err) {
-      if (err.code === '23505' && err.constraint === 'users_username_key') {
-        return res.render('pages/register', {
-          message: 'That username is already taken.',
-        });
-      }
+    if (err.code === '23505' && err.constraint === 'users_username_key') {
+      return res.render('pages/register', {
+        message: 'That username is already taken.',
+      });
+    }
 
-      console.error('Error inserting user:', err);
-      return res.status(500).render('pages/register', { message: 'Internal server error' });
+    console.error('Error inserting user:', err);
+    return res.status(500).render('pages/register', { message: 'Internal server error' });
   }
 });
 
@@ -510,6 +514,7 @@ app.post('/login', async (req, res) => {
         user_id: user.user_id,
         username: user.username,
         isclient: user.isclient,
+        profile_image: user.profile_image,
       };
       res.redirect('/');
     } else {
@@ -571,20 +576,49 @@ app.get('/messages', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
   }
-    try{
-        const conversations = await db.any(
-            `SELECT DISTINCT u.user_id, u.username
-             FROM users u
-             JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_id)
-             WHERE $1 IN (m.sender_id, m.receiver_id) AND u.user_id != $1`,
-            [req.session.user.user_id]
+  const currentUserId = req.session.user.user_id;
+  const selectedRecipientId = req.query.recipientId ? parseInt(req.query.recipientId) : null;
+
+  try {
+    const conversations = await db.any(
+      `SELECT DISTINCT u.user_id, u.username, u.profile_image
+       FROM users u
+       JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_id)
+       WHERE $1 IN (m.sender_id, m.receiver_id) AND u.user_id != $1`,
+      [currentUserId]
+    );
+
+    let messagesWithRecipient = [];
+    let selectedRecipient = null;
+
+    if (selectedRecipientId) {
+      selectedRecipient = await db.oneOrNone('SELECT user_id, username FROM users WHERE user_id = $1', [selectedRecipientId]);
+      if (selectedRecipient) {
+        messagesWithRecipient = await db.any(
+          `SELECT message_text, timestamp,
+           CASE
+             WHEN m.sender_id = $1 THEN 'You'
+             ELSE u.username
+           END as sender
+           FROM messages m
+           JOIN users u ON m.sender_id = u.user_id
+           WHERE (m.sender_id = $1 AND m.receiver_id = $2) OR (m.sender_id = $2 AND m.receiver_id = $1)
+           ORDER BY timestamp ASC`,
+          [currentUserId, selectedRecipientId]
         );
-        res.render('pages/messages', { user: req.session.user, conversations: conversations });
-    } catch (error) {
-        console.error("Error retrieving conversations:", error);
-        res.status(500).send("Error retrieving conversations");
+      }
     }
 
+    res.render('pages/messages', {
+      user: req.session.user,
+      conversations: conversations,
+      selectedRecipient: selectedRecipient,
+      messages: messagesWithRecipient
+    });
+  } catch (error) {
+    console.error("Error retrieving conversations/messages:", error);
+    res.status(500).send("Error retrieving conversations/messages");
+  }
 });
 
 app.post('/send-message', async (req, res) => {
