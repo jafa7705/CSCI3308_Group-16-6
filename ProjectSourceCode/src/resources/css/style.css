@@ -36,6 +36,12 @@ header {
   border: none;
 }
 
+/* Header Profile Picture */
+.profile-pic-header {
+  border-radius: 50%; 
+  object-fit: cover; 
+}
+
 /* Navbar */
 .navbar {
   background-color: var(--cu-gold) !important;

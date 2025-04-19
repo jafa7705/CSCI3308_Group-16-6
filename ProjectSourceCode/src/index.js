@@ -515,6 +515,7 @@ app.post('/login', async (req, res) => {
         user_id: user.user_id,
         username: user.username,
         isclient: user.isclient,
+        profile_image: user.profile_image,
       };
       res.redirect('/');
     } else {
