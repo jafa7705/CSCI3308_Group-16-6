@@ -116,7 +116,9 @@
     <h2 style="text-align: center;">Posts by {{user.username}}</h2>
     {{#if posts.length}}
       {{#each posts}}
+    
         <article class="post" style="margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 6px;">
+         
           <h3>{{title}}</h3>
           <p><strong>Tags:</strong> {{tags}}</p>
           <p><strong>Date:</strong> {{date_created}}</p>
