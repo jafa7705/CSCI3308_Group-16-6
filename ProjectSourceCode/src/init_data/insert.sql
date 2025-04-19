@@ -29,10 +29,10 @@ BEGIN
     INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('henry', hashedPassword, 'henry@example.com', false, 'Animator', NULL, 'Boston', 'defaultProfilePic.png');
 
     hashedPassword := crypt('hashedpassword9', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('irene', hashedPassword, 'irene@example.com', false, 'Pottery artist', NULL, 'San Diego', 'defaultProfilePic.png');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Demo_Artist', hashedPassword, 'irene@example.com', false, 'Pottery artist', NULL, 'San Diego', 'defaultProfilePic.png');
 
     hashedPassword := crypt('hashedpassword10', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('jack', hashedPassword, 'jack@example.com', true, 'Gallery owner', NULL, 'San Francisco', 'defaultProfilePic.png');
+    INSERT INTO users (username, password, email, isClient, bio, website, location) VALUES ('Demo_Employer', hashedPassword, 'jack@example.com', true, 'Gallery owner', NULL, 'San Francisco', 'defaultProfilePic.png');
 END $$;
 
 INSERT INTO posts (user_id, title, date_created, description, tags, image) VALUES
