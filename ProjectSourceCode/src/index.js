@@ -222,7 +222,7 @@ app.get('/profile', async (req, res) => {
     //returns basic user information
 
     const posts = await db.any(
-      `SELECT title, description, date_created, tags 
+      `SELECT title, description, date_created, tags, image
       FROM posts  
       WHERE user_id = $1 
       ORDER BY date_created DESC`,
