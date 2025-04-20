@@ -21,6 +21,7 @@
             <ul>
               {{#each pendingRequests}}
                 <li>
+                  <img src="/uploads/{{this.profile_image}}" alt="{{this.client_username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
                   {{this.client_username}}
                   <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
                     <button type="submit">Accept</button>
@@ -124,7 +125,7 @@
           {{/if}}
           
           <p><strong>Category:</strong> {{category}}</p>
-          <p><strong>Date:</strong> {{date_created}}</p>
+          <p><strong>Date:</strong> {{simpleDate date_created}}</p>
           <p>{{description}}</p> 
         </article>
       {{/each}}
