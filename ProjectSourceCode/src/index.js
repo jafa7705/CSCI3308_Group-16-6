@@ -597,7 +597,7 @@ app.get('/messages', async (req, res) => {
   const selectedRecipientId = req.query.recipientId ? parseInt(req.query.recipientId) : null;
 
   try {
-    const conversations = await db.any(
+    const conversations = await db.any( // get data from db
       `SELECT DISTINCT u.user_id, u.username, u.profile_image
        FROM users u
        JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_id)
@@ -608,13 +608,13 @@ app.get('/messages', async (req, res) => {
     let messagesWithRecipient = [];
     let selectedRecipient = null;
 
-    if (selectedRecipientId) {
+    if (selectedRecipientId) {  // for recipient 
       selectedRecipient = await db.oneOrNone('SELECT user_id, username FROM users WHERE user_id = $1', [selectedRecipientId]);
-      if (selectedRecipient) {
-        messagesWithRecipient = await db.any(
+      if (selectedRecipient) {  // makes sure recpeeint exists
+        messagesWithRecipient = await db.any(  // gets messages and replaces yout name with 'You'
           `SELECT message_text, timestamp,
            CASE
-             WHEN m.sender_id = $1 THEN 'You'
+             WHEN m.sender_id = $1 THEN 'You' 
              ELSE u.username
            END as sender
            FROM messages m
@@ -652,9 +652,9 @@ app.post('/send-message', async (req, res) => {
             return res.status(400).send('Recipient not found');
         }
 
-        sendMessage(req.session.user.username, messageText);
+        sendMessage(req.session.user.username, messageText); // uses Firebase to send message with the function
 
-        await db.none(
+        await db.none( // inserts the message into function
             `INSERT INTO messages (sender_id, receiver_id, message_text, timestamp)
              VALUES ($1, $2, $3, NOW())`,
             [senderId, recipientId, messageText]
@@ -688,7 +688,7 @@ app.get('/get-messages', async (req, res) => {
        ORDER BY timestamp ASC`,
       [senderId, recipientId]
     );
-    res.json(messages);
+    res.json(messages); // gets the messages from Firebase and puts it into json form
   } catch (error) {
     console.error("Error retrieving messages:", error);
     res.status(500).send("Internal server error");
