@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
 const apiKey = process.env.API_KEY;
+const Handlebars = require('handlebars');  //for date, is different than express
 
 // Setup database connection using environment variables
 const db = pgp({
@@ -55,12 +56,28 @@ const upload = multer({
   fileFilter
 });
 
+// Handlebars Date helper, converts GMT stuff to normal time stuff
+Handlebars.registerHelper('simpleDate', function(dateString) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const day = ('0' + date.getDate()).slice(-2);
+  const hours = ('0' + date.getHours()).slice(-2);
+  const minutes = ('0' + date.getMinutes()).slice(-2);
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+});
+
+
 // Setup view engine
 app.engine('hbs', exphbs.engine({
   extname: 'hbs',
   defaultLayout: 'main',
   layoutsDir: path.join(__dirname, 'views/layouts'),
   partialsDir: path.join(__dirname, 'views/partials'),
+  helpers: {
+    simpleDate: Handlebars.helpers.simpleDate,  // for date
+  },
 }));
 
 // ------------------ Firebase Setup -------------------
@@ -97,7 +114,7 @@ setupFirebase().then((firebaseModules) => {
 
   if(onChildAdded && messagesRef) {
     onChildAdded(messagesRef, (snapshot) => {
-      const message = snapshot.val();
+      const message = snapshot.val();  // for messages
     });
   }
 
@@ -263,7 +280,7 @@ app.get('/profile', async (req, res) => {
       isOwner,
       isOwnerOrClient,
       canConnect,
-    });
+    }); 
 
   } catch (err) {
     console.error(err);
