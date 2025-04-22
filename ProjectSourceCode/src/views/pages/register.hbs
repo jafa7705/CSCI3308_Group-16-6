@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="../../resources/css/style.css">
 </head>
-<body>
+<body class="register-page">
   <div class="register-container">
     <h1 style="text-align: center;">Register</h1>
 
@@ -18,24 +18,24 @@
     {{/if}}
 
     <form action="/register" method="POST">
-      <label for="accountType"style="color: white;"><strong>Account Type</strong></label>
+      <label for="accountType" style="color: white;"><strong>Account Type</strong></label>
       <select name="accountType" required>
         <option value="">Select account type</option>
         <option value="user">Artist</option>
         <option value="client">Client</option>
       </select>
 
-      <label for="username"style="color: white;"><strong>Username</strong></label>
+      <label for="username" style="color: white;"><strong>Username</strong></label>
       <input type="text" name="username" required>
 
-      <label for="email"style="color: white;"><strong>Email Address</strong></label>
+      <label for="email" style="color: white;"><strong>Email Address</strong></label>
       <input type="email" name="email" required>
       <div style="font-size: 0.9em;">We’ll never share your email.</div>
 
-      <label for="password"style="color: white;"><strong>Password</strong></label>
+      <label for="password" style="color: white;"><strong>Password</strong></label>
       <input type="password" name="password" required>
 
-      <label for="confirmPassword"style="color: white;"><strong>Confirm Password</strong></label>
+      <label for="confirmPassword" style="color: white;"><strong>Confirm Password</strong></label>
       <input type="password" name="confirmPassword" required>
 
       <input type="hidden" name="isClientHidden" value="false">
