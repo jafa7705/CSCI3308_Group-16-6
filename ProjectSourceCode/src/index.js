@@ -177,7 +177,7 @@ app.get('/', async (req, res) => {
        ORDER BY p.date_created DESC`
     );
     
-    res.render('pages/home', { posts, user: req.session.user });
+    res.render('pages/home', { posts, user: req.session.user, sessionUser: req.session.user });
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).send('Error loading posts.');
@@ -384,7 +384,7 @@ app.get('/profile/:username', async (req, res) => {
 
     // Render the profile page with user data, posts, and connections
     res.render('pages/profile', {
-      user: user,
+      user,
       posts: userPosts,
       connections,
       sessionUser: req.session.user,
