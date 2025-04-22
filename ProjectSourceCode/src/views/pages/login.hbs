@@ -4,21 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="../../resources/css/style.css">
-
+  
 </head>
-<body>
+<body class="login-page">
   <div class="login-container">
     <h1 style="text-align: center;">Login</h1>
 
     {{#if message}}
-      <div class="message">{{message}}</div>    
-      {{/if}}
+      <div class="message">{{message}}</div>
+    {{/if}}
 
     <form action="/login" method="POST">
-      <label for="username"style="color: white;"><strong>Username</strong></label>
+      <label for="username" style="color: white;"><strong>Username</strong></label>
       <input type="text" name="username" required>
 
-      <label for="password"style="color: white;"><strong>Password</strong></label>
+      <label for="password" style="color: white;"><strong>Password</strong></label>
       <input type="password" name="password" required>
 
       <div style="text-align: center; margin-top: 15px;">

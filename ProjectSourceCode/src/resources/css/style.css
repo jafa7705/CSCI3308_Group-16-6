@@ -30,18 +30,33 @@ body {
 
 /* Header */
 header {
-  background-color: var(--cu-gold);
+  /*background-color: var(--cu-gold);*/
+  background-image: url('../img/customBanner.jpg'); 
+  background-size: cover; 
+  background-repeat: no-repeat; 
+  background-position: center center; 
+
   padding: 12px 24px;
   width: 100%;
   position: relative;
   z-index: 1000;
   box-shadow: none;
   border: none;
+  height: 116px;
 }
 
 /* Login Page Styles */
-.login-container, .register-container {
-  background-color: var(--input-bg);
+body.login-page,
+body.register-page {
+  background-image: url('../img/watercolorTexture.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed; 
+}
+
+.login-container,
+.register-container {
   border-radius: 8px;
   width: 100%;
   max-width: 400px;
@@ -49,6 +64,11 @@ header {
   padding: 40px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   text-align: center;
+
+  background-color: rgba(255, 255, 255, 0.1); 
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px); 
+  border: 1px solid rgba(255, 255, 255, 0.2); 
 }
 
 .login-container h1, .register-container h1 {
@@ -154,7 +174,7 @@ form div {
 
 /* Navbar */
 .navbar {
-  background-color: var(--cu-gold) !important;
+  /*background-color: var(--cu-gold) !important;*/
   padding: 6px 0px;
   border: none;
   border-bottom: 2px solid #333;
@@ -419,12 +439,13 @@ h1 {
   border-bottom: 1px solid var(--border-color);
 }
 
+.pending-connections a,
 .connections-section a {
   color: var(--cu-gold);
   text-decoration: none;
   font-weight: bold;
 }
-
+.pending-connections a:hover,
 .connections-section a:hover {
   text-decoration: underline;
 }
