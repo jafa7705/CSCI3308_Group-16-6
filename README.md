@@ -57,6 +57,6 @@ Users only need a modern web browser to access the deployed website.
     Navigate in your web browser to `http://localhost:3000/` to see the website.
 
 # Tests
-
+Test cases and their results can be found in the project report.
 # Deployed Application
 The website can be found at `https://csci3308-group-16-6.onrender.com`

@@ -552,7 +552,7 @@ app.get('/search', async (req, res) => {
 
     if (searchType === 'users') {
       result = await db.any(
-        `SELECT username, bio FROM users WHERE LOWER(username) LIKE LOWER($1)`,
+        `SELECT username, bio, profile_image FROM users WHERE LOWER(username) LIKE LOWER($1)`,
         [`%${searchQuery}%`]
       );
     } else if (searchType === 'titles') {

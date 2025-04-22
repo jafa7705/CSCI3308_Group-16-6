@@ -5,10 +5,14 @@ Feature 1: Functioning User Profile Edit Buttons
     Test data that could be used are the users individual pages/ID and the bio text.
     This would be tested through the cloud, with verifcication of the changes seen on the page.
     If the buttons are visible to exclusevly the user's owner and the changes that occur are saved to the database and thus
-        seen by all users then the feature is working correctly
-    User acceptence testers can just be us developers. 
+    seen by all users then the feature is working correctly
+    User acceptence testers are other Computer Science Majors.
 
     Results:
+    *Users clicked the edit button quickly and typed multiple messages into the boxes.
+    *The users did their actions because they were following the message box prompts. 
+    *The behavior is consistent.
+    *No changes made.
 
 
 Feature 2: Functioning Feed
@@ -17,9 +21,14 @@ Feature 2: Functioning Feed
     This would be tested through the cloud, with verifcication of the changes seen on the page.
     If posts are visible from other users in the feed section, and the users are able sort with filters then the feature
         is working correctly.
-    User acceptence testers can just be us developers. 
+    User acceptence testers are other Computer Science Majors.
 
     Results:
+    *Users scrolled up and down the feed. They tried clicking on the profile names and that did not do anything.
+    *The users intuitively knew that they could scroll. Most websites have the ability to click on the usernames.
+    *It is consistent with the use case, but they were expecting more.
+    *We were not expecting them to click on the usernames. We did not think to include it.
+    *Yes, we added the ability to click on the usernames on posts. 
 
 
 Feature 3: Ability to Post Art
@@ -27,6 +36,25 @@ Feature 3: Ability to Post Art
     Test data could be sample images, tags, and descriptions for specific users.
     This would be tested through the localhost, with verifcication of the changes seen on the database.
     If the image, tags, description, and userID are visible on the database then the feature is working correctly.
-    User acceptence testers can just be us developers. 
+    User acceptence testers are other Computer Science Majors.
 
     Results:
+    *Users tried to post pictures into the post box. They also tried random files of non-picture type.
+    *Their actions just followed the promts for the boxes.
+    *Mostly, they tried to put in random files, but the rest followed the use case.
+    *They tried to put in random files that were not images. They were curious what would happen.
+    *Yes, we forced the inputs to be image files only. 
+
+Feature 4: Messaging between Users
+    The users want the ability to message other users they have a connection with. 
+    Test data could be long messages, messages with special charecters, and mutliple messages sent quickly. 
+    This would be tested through the localhost, with verifcication of the changes seen on the website.
+    If the messages are sent in the correct order no matter how long or how many special charecters they have then the feature works correctly. 
+    User acceptence testers are other Computer Science Majors.
+
+    Results:
+    *Users sent messages in the message box to different contacts. 
+    *The users followed the message prompt and the bar saying 'Contacts'.
+    *Their actions were consistent with the use cases, yes.
+    *There were not any derivations.
+    *No changes were made.
