@@ -90,7 +90,7 @@
           <li>
             <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Photo" class="conn-thumb">
             <a href="/profile/{{this.username}}">{{this.username}}</a>
-            {{#if isOwner}}
+            {{#if ../isOwner}}
               <button class="start-message-btn" data-recipient-id="{{this.user_id}}">
                 <img src="/resources/img/messages.png" alt="Message Icon"> Message
               </button>
@@ -194,5 +194,16 @@
       };
     });
   </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const messageButtons = document.querySelectorAll('.start-message-btn');
+    messageButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const recipientId = this.getAttribute('data-recipient-id');
+        window.location.href = `/messages?recipientId=${recipientId}`;
+      });
+    });
+  });
+ </script>
 </body>
 </html>

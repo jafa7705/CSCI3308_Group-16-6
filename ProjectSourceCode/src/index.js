@@ -567,6 +567,7 @@ app.get('/search', async (req, res) => {
         FROM posts p
         JOIN users u ON p.user_id = u.user_id
         WHERE LOWER(${searchType === 'titles' ? 'title' : 'tags'}) LIKE LOWER($1)
+        ORDER BY p.date_created DESC
       `;
       result = await db.any(query, [`%${searchQuery}%`]);
     }

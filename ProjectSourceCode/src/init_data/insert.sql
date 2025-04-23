@@ -80,8 +80,16 @@ INSERT INTO messages (sender_id, receiver_id, message_text, timestamp) VALUES
 (6, 5, 'Eva, yes I am avalible, send me some details', '2024-03-22 13:10:00'),
 (7, 8, 'Takashi, I really liked your paintings', '2024-03-23 15:00:00'),
 (8, 7, 'Bob, thank you, I am working on a new one', '2024-03-23 15:10:00'),
-(9, 10, 'Jack, do you know of any galleries that might be interested in my work?', '2024-03-24 17:00:00'),
-(10, 9, 'Irene, I might know of a few, send me some photos', '2024-03-24 17:10:00');
+(8, 9, 'Your pottery has such a unique, grounded quality, Irene. I especially admire the "Earthy Teapot."', '2024-03-25 10:30:00'),
+(9, 8, 'Takashi, that is very kind of you to say. I find inspiration in the simple forms of nature.', '2024-03-25 10:45:00'),
+(8, 9, 'The way you interpret those forms in clay is quite compelling. Do you often exhibit your work in San Diego?', '2024-03-26 14:00:00'),
+(9, 8, 'I do show my pieces at a few local galleries and markets. It''s always a joy to connect with people who appreciate handmade objects.', '2024-03-26 14:15:00'),
+(8, 9, 'Perhaps one day my Superflat flowers could find a happy home alongside your earthy creations in an exhibition.', '2024-03-27 11:00:00'),
+(9, 8, 'Oh, that would be a fascinating juxtaposition, Takashi! I can imagine the vibrant energy of your work contrasting beautifully with the textures of my pottery.', '2024-03-27 11:20:00'),
+(8, 9, 'Indeed! Different worlds, perhaps, but both striving for a certain emotional resonance. Do you ever experiment with glazes that have a more... unexpected color palette?', '2024-03-28 16:45:00'),
+(9, 8, 'That''s an interesting thought. I tend to stick to more natural, muted tones, but I''ve been considering exploring some brighter, more playful glazes. Your work is definitely inspiring me to think outside my usual palette!', '2024-03-28 17:00:00'),
+(8, 9, 'Excellent! Embrace the unexpected. Sometimes the happiest accidents lead to the most intriguing results. Keep creating, Irene!', '2024-03-29 09:30:00'),
+(9, 8, 'Thank you for the encouragement, Takashi! Your perspective is truly appreciated.', '2024-03-29 09:40:00');
 
 -- Connections
 INSERT INTO connections (employer_id, artist_id) 
@@ -104,3 +112,6 @@ VALUES ((SELECT user_id FROM users WHERE username = 'Demo_Employer'), (SELECT us
 
 INSERT INTO connections (employer_id, artist_id) 
 VALUES ((SELECT user_id FROM users WHERE username = 'Demo_Employer'), (SELECT user_id FROM users WHERE username = 'Takashi_Murakami'));
+
+INSERT INTO connections (employer_id, artist_id, status)
+VALUES ((SELECT user_id FROM users WHERE username = 'Takashi_Murakami'), (SELECT user_id FROM users WHERE username = 'Demo_Artist'), 'accepted');
