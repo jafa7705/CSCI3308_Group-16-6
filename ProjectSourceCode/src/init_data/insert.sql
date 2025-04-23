@@ -14,13 +14,13 @@ BEGIN
     INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('Carla_Gugino', hashedPassword, 'carla@example.com', false, 'Digital artist', 'http://carladraws.io', 'Austin, Texas', 'carlaPic.jpg');
 
     hashedPassword := crypt('hashedpassword4', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('Dan_Stan', hashedPassword, 'dan@example.com', false, NULL, NULL, 'Chicago, Illinois', 'defaultProfilePic.png');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('Dan_Stan', hashedPassword, 'dan@example.com', false, NULL, NULL, 'Chicago, Illinois', 'dan.jpg');
 
     hashedPassword := crypt('hashedpassword5', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('Eva_Steller', hashedPassword, 'eva@example.com', true, NULL, NULL, 'Miami, Florida', 'defaultProfilePic.png');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('Eva_Steller', hashedPassword, 'eva@example.com', true, NULL, NULL, 'Miami, Florida', 'evastel.jpg');
 
     hashedPassword := crypt('hashedpassword6', gen_salt('bf'));
-    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('Frank_Arren', hashedPassword, 'frank@example.com', false, 'Painter', NULL, 'Denver, Colorado', 'defaultProfilePic.png');
+    INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('Frank_Arren', hashedPassword, 'frank@example.com', false, 'Painter', NULL, 'Denver, Colorado', 'frank.jpeg');
 
     hashedPassword := crypt('hashedpassword7', gen_salt('bf'));
     INSERT INTO users (username, password, email, isClient, bio, website, location, profile_image) VALUES ('Bob_Ross', hashedPassword, 'bobRoss@example.com', false, 'We do not make mistakes, just happy little accidents', 'bobross.com', 'Orlando, Florida', 'bobRoss.jpg');
@@ -44,11 +44,16 @@ INSERT INTO posts (user_id, title, date_created, description, tags, image) VALUE
 (5, 'Untitled', '2024-01-18 08:00:00', 'By George Silk, 1962, Prince Philip at helm of his yawl, Bloodhound, during Cowes Regatta.', 'Photography', 'boat.png'),
 (3, 'Snowy', '2023-10-27 13:35:00', 'By Brian Edward Miller, a beautiful landscape of snowy ranges.', 'Digital Art', 'snowy.png'),
 (6, 'Caipira', '2024-02-14 10:10:00', 'Installation of falling chairs.', 'Painting', 'caipira.png'),
+(6, 'The Spanish Landscape', '2023-01-14 10:10:00', 'A landscape of Spain.', 'Painting', 'spanish.jpg'),
+(6, 'Footsteps', '2022-02-14 10:10:00', 'Spanish art by David Noalia', 'Painting', 'footstep.jpg'),
 (9, 'Amaryllis Twists Ceramic Pottery Vase', '2023-11-30 19:00:00', 'The Amaryllis Twists Vase reinterprets the twisting buds and elegant form of the long-retired Ephraim Pottery Perennial Vase.', 'Pottery', 'leaf.png'),
 (9, 'Acorn and Oak Ceramic Pottery Vase', '2023-12-01 17:20:00', 'A simple bowing oak branch bends at the rim of this sweet vase.', 'Pottery', 'vase.png'),
 (9, 'Wave', '2023-11-01 12:16:00', 'An intricate wave representation.', 'Pottery', 'wave.jpg'),
-(10, 'Bounded by Light', '2025-12-01 9:20:00', 'An abstract landscape.', 'Painting', 'abstract.jpg'),
+(9, 'Earthy Teapot', '2020-11-01 12:16:00', 'An intricate teapot with Earth motifs.', 'Pottery', 'tea.jpg'),
+(9, 'The Red Teapot', '2023-11-01 12:16:00', 'An intricate teapot with Red earth motifs.', 'Pottery', 'redtea.jpg'),
+(10, 'Bounded by Light', '2024-12-01 9:20:00', 'An abstract landscape.', 'Painting', 'abstract.jpg'),
 (10, 'Spectacle of Fancy', '2020-5-01 6:24:00', 'Abstract cascade of colors.', 'Painting', 'abstract2.jpg'),
+(10, 'Air', '2023-5-01 6:24:00', 'Arifah Aronson depiction of air.', 'Painting', 'air.jpg'),
 (7, 'Mountain Retreat', '2021-5-01 6:24:00', 'Apart of the happy accidents collection', 'Painting', 'retreat.jpg'),
 (8, 'Monsterized', '2021-5-01 3:24:00', 'Displayed in the Asian Art Museum', 'Pop Art', 'monster.jpg'),
 (7, 'Winter Frost', '2024-5-01 3:24:00', 'Happy Trees', 'Painting', 'winterFrost.jpg');
