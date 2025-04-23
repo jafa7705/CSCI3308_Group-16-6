@@ -7,21 +7,26 @@
 </head>
 <body>
 
-  <!-- ===== PROFILE HEADER ===== -->
+  <!-- profile -->
   <section class="profile-header">
-    <!-- LEFT: Profile Photo -->
+    <!-- profile photo -->
     <div class="profile-header-left">
-      <img src="/uploads/{{user.profile_image}}" alt="Profile Photo" class="profile-photo">
+      <img src="/uploads/{{user.profile_image}}" alt="Profile Photo" class="profile-photo" style="width:250px; height:250px;">
     </div>
 
-    <!-- RIGHT: Username, Bio, Location, Website, Buttons, Requests -->
+    <!-- Username, Bio, Location, Website, Buttons, Requests, Connect -->
     <div class="profile-header-right">
-      <!-- Username -->
-      <h1 class="profile-username">{{user.username}}</h1>
+      <!-- Username & Role -->
+      <div class="header-top">
+        <h1 class="profile-username">{{user.username}}</h1>
+        <p class="profile-role">
+          {{#if user.isclient}}Client{{else}}Artist{{/if}}
+        </p>
+      </div>
 
       <!-- Bio, Location, Website -->
       {{#if user.bio}}
-        <p class="profile-bio">{{user.bio}}</p>
+        <p class="profile-bio" style="white-space:pre-line;">{{user.bio}}</p>
       {{/if}}
       {{#if user.location}}
         <p class="profile-location">{{user.location}}</p>
@@ -32,22 +37,35 @@
         </p>
       {{/if}}
 
-      <!-- Edit Profile Button (only owner) -->
-      {{#if isOwner}}
-        <button id="edit-profile-button" class="edit-profile-btn">
-          <img src="/resources/img/edit.png" alt="Edit Profile"> Edit Profile
-        </button>
+      <!-- Action Buttons -->
+      <div class="profile-actions">
+        {{#if isOwner}}
+          <button id="edit-profile-button" class="edit-profile-btn">
+            <img src="/resources/img/edit.png" alt="Edit Profile"> Edit Profile
+          </button>
+        {{else if canConnect}}
+          {{#if connectionExists}}
+            <button disabled>{{#if isPending}}Pending Request{{else}}Connected{{/if}}</button>
+          {{else}}
+            <form action="/connect/{{user.username}}" method="POST">
+              <button type="submit">Request Connection</button>
+            </form>
+          {{/if}}
+        {{/if}}
+      </div>
 
-        <!-- Pending Requests (if artist) -->
+      <!-- Pending Requests (only owner & artist) -->
+      {{#if isOwner}}
         {{#unless user.isclient}}
-          <section class="pending-connections">
-            <h2>Pending Requests</h2>
-            {{#if pendingRequests.length}}
+          {{!-- only show if there is at least one pending request --}}
+          {{#if pendingRequests.length}}
+            <section class="pending-connections">
+              <h2>Pending Requests</h2>
               <ul>
                 {{#each pendingRequests}}
                   <li>
                     <img src="/uploads/{{this.profile_image}}" alt="{{this.client_username}}'s Photo" class="conn-thumb">
-                    {{this.client_username}}
+                    <a href="/profile/{{this.client_username}}">{{this.client_username}}</a>
                     <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
                       <button type="submit">Accept</button>
                     </form>
@@ -57,18 +75,17 @@
                   </li>
                 {{/each}}
               </ul>
-            {{else}}
-              <p>No pending requests.</p>
-            {{/if}}
-          </section>
+            </section>
+          {{/if}}
         {{/unless}}
       {{/if}}
     </div>
   </section>
 
-  <!-- ===== CONNECTIONS SECTION ===== (only show if present) -->
+  <!-- connections (only show if any) -->
   {{#if connections.length}}
     <section class="connections-section centered">
+      <h2>Connections</h2>
       <ul>
         {{#each connections}}
           <li>
@@ -85,31 +102,14 @@
     </section>
   {{/if}}
 
-  <!-- ===== POSTS GRID ===== (directly beneath header if no connections) -->
+  <!-- grid posts -->
   <section class="posts-section">
     {{#if posts.length}}
       <div class="posts-grid">
         {{#each posts}}
-          <!-- Thumbnail -->
           <div class="post-thumbnail" data-index="{{@index}}">
-            <img src="/uploads/{{image}}" alt="{{title}}">
+            <img src="/uploads/{{this.image}}" alt="{{this.title}}">
           </div>
-
-          <!-- Hidden full-post template -->
-          <template id="post-template-{{@index}}">
-            <article class="post-prof">
-              <h2>{{title}}</h2>
-              <p><strong>By:</strong> {{username}}</p>
-
-              {{#if image}}
-                <img src="/uploads/{{image}}" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
-              {{/if}}
-
-              <p><strong>Tag:</strong> {{tags}}</p>
-              <p><strong>Date:</strong> {{simpleDate date_created}}</p>
-              <p><strong>Description:</strong> {{description}}</p>
-            </article>
-          </template>
         {{/each}}
       </div>
     {{else}}
@@ -117,20 +117,17 @@
     {{/if}}
   </section>
 
-  <!-- ===== POST DETAIL MODAL ===== -->
+  <!-- modals -->
   <div id="postModal" class="modal">
     <div class="modal-content" id="postModalContent">
       <span class="close-modal">&times;</span>
-      <!-- Content injected via inline JS -->
     </div>
   </div>
 
-  <!-- ===== EDIT PROFILE MODAL ===== -->
   <div id="editModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
       <h2>Edit Profile</h2>
-      <!-- Enctype allows file upload -->
       <form action="/profile/update" method="post" enctype="multipart/form-data">
         <label for="edit-profile-pic">Profile Picture:</label>
         <input type="file" id="edit-profile-pic" name="profileImage" accept="image/*"><br><br>
@@ -149,7 +146,7 @@
     </div>
   </div>
 
-  <!-- Inline JS for modals -->
+  <script src="/resources/js/index.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Edit Profile Modal
@@ -168,18 +165,26 @@
           const idx = thumb.dataset.index;
           const tpl = document.getElementById(`post-template-${idx}`);
           if (!tpl) return;
-          postModalContent.querySelectorAll('article.post-prof').forEach(el => el.remove());
+          postModalContent.innerHTML = '';
           postModalContent.appendChild(tpl.content.cloneNode(true));
           postModal.style.display = 'block';
         });
       });
-      postClose.onclick = () => postModal.style.display = 'none';
+      if (postClose) postClose.onclick = () => postModal.style.display = 'none';
 
       // Global close on outside click
       window.onclick = (e) => {
         if (e.target === editModal) editModal.style.display = 'none';
         if (e.target === postModal) postModal.style.display = 'none';
       };
+
+      // Messaging Buttons
+      document.querySelectorAll('.start-message-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const recipientId = button.getAttribute('data-recipient-id');
+          window.location.href = `/messages?recipientId=${recipientId}`;
+        });
+      });
     });
   </script>
 
