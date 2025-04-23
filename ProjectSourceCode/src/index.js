@@ -290,24 +290,31 @@ app.get('/profile', async (req, res) => {
 
 // Update profile
 //update your own profile
-app.post('/profile/update', async (req, res) => {
-  if (!req.session.user) {
-    return res.redirect('/login');
+app.post(
+  '/profile/update',
+  upload.single('profileImage'),
+  async (req, res) => {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+    const userID = req.session.user.user_id;
+    const { website, location, bio } = req.body;
+    // If an image was uploaded, use its filename; otherwise, keep existing
+    const profileImage = req.file ? req.file.filename : req.session.user.profile_image;
+    try {
+      await db.none(
+        'UPDATE users SET profile_image = $1, website = $2, location = $3, bio = $4 WHERE user_id = $5',
+        [profileImage, website, location, bio, userID]
+      );
+      // Update session so the new image shows immediately
+      req.session.user.profile_image = profileImage;
+      res.redirect('/profile');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('ERROR: Could not update profile info');
+    }
   }
-  const userID = req.session.user.user_id;
-  const { website, location, bio } = req.body;
-
-  try {
-    await db.none(
-      'UPDATE users SET website = $1, location = $2, bio = $3 WHERE user_id = $4',
-      [website, location, bio, userID]
-    );
-    res.redirect('/profile');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('ERROR: Could not update profile info');
-  }
-});
+);
 
 // Other profile
 //view someone elses profile
