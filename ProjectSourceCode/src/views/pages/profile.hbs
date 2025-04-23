@@ -6,141 +6,146 @@
   <link rel="stylesheet" href="../../resources/css/style.css">
 </head>
 <body>
-  <section class="profile">
-    <img src="/uploads/{{user.profile_image}}" alt="Profile Photo" class="profile-photo" style="width: 150px; height: 150px;">
 
-    {{#if isOwner}}
-      <button id="edit-profile-button" class="edit-profile-btn">
-        <img src="resources/img/edit.png" alt="Edit Profile">
-        Edit Profile
-      </button>
-      {{#unless user.isclient}}
-        <section class="pending-connections">
-          <h2>Pending Requests</h2>
-          {{#if pendingRequests.length}}
-            <ul>
-              {{#each pendingRequests}}
-                <li>
-                  <img src="/uploads/{{this.profile_image}}" alt="{{this.client_username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
-                  <a href="/profile/{{this.client_username}}">{{this.client_username}}</a>
-                  <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
-                    <button type="submit">Accept</button>
-                  </form>
-                  <form action="/connection/{{this.connection_id}}/reject" method="POST" style="display:inline;">
-                    <button type="submit">Reject</button>
-                  </form>
-                </li>
-              {{/each}}
-            </ul>
-          {{else}}
-            <p>No pending requests.</p>
-          {{/if}}
-        </section>
-      {{/unless}}
-    {{/if}}
+  <!-- profile -->
+  <section class="profile-header">
+    <!-- profile photo -->
+    <div class="profile-header-left">
+      <img src="/uploads/{{user.profile_image}}" alt="Profile Photo" class="profile-photo" style="width:250px; height:250px;">
+    </div>
 
-    <div class="profile-info">
-
-      <div class="info-row">
-        <h1>{{user.username}}</h1>
+    <!-- Username, Bio, Location, Website, Buttons, Requests, Connect -->
+    <div class="profile-header-right">
+      <!-- Username & Role -->
+      <div class="header-top">
+        <h1 class="profile-username">{{user.username}}</h1>
+        <p class="profile-role">
+          {{#if user.isclient}}Client{{else}}Artist{{/if}}
+        </p>
       </div>
 
-      <p id="user-role">
-        {{#if user.isclient}} 
-            Client
-        {{else}}
-            Artist
-        {{/if}}
-      </p>
+      <!-- Bio, Location, Website -->
+      {{#if user.bio}}
+        <p class="profile-bio" style="white-space:pre-line;">{{user.bio}}</p>
+      {{/if}}
+      {{#if user.location}}
+        <p class="profile-location">{{user.location}}</p>
+      {{/if}}
+      {{#if user.website}}
+        <p class="profile-website">
+          <a href="{{user.website}}" target="_blank" rel="noopener">{{user.website}}</a>
+        </p>
+      {{/if}}
 
-      <div class="info-row"><h2>Website:</h2></div>
-      <p id="website">
-        <a href="{{user.website}}" class="website-link" target="_blank" rel="noopener noreferrer">{{user.website}}</a>
-      </p>
-
-      <div class="info-row"><h2>Location:</h2></div>
-      <p id="location">{{user.location}}</p>
-
-      <div class="info-row"><h2>Bio:</h2></div>
-      <p id="bio" style="white-space: pre-line;">{{user.bio}}</p>
-
-      {{#if canConnect}}
-        <div class="connect-section" style="margin-top: 20px;">
+      <!-- Action Buttons -->
+      <div class="profile-actions">
+        {{#if isOwner}}
+          <button id="edit-profile-button" class="edit-profile-btn">
+            <img src="/resources/img/edit.png" alt="Edit Profile"> Edit Profile
+          </button>
+        {{else if canConnect}}
           {{#if connectionExists}}
-            {{#if isPending}}
-              <button disabled>Pending Request</button>
-            {{else}}
-              <button disabled>Already Connected</button>
-            {{/if}}
+            <button disabled>{{#if isPending}}Pending Request{{else}}Connected{{/if}}</button>
           {{else}}
             <form action="/connect/{{user.username}}" method="POST">
-              <button type="submit">
-                Request Connection
-              </button>
+              <button type="submit">Request Connection</button>
             </form>
           {{/if}}
         {{/if}}
-        </div>
-      
+      </div>
+
+      <!-- Pending Requests (only owner & artist) -->
+      {{#if isOwner}}
+        {{#unless user.isclient}}
+          {{#if pendingRequests.length}}
+            <section class="pending-connections">
+              <h2>Pending Requests</h2>
+              <ul>
+                {{#each pendingRequests}}
+                  <li>
+                    <img src="/uploads/{{this.profile_image}}" alt="{{this.client_username}}'s Photo" class="conn-thumb">
+                    <a href="/profile/{{this.client_username}}">{{this.client_username}}</a>
+                    <form action="/connection/{{this.connection_id}}/accept" method="POST" style="display:inline;">
+                      <button type="submit">Accept</button>
+                    </form>
+                    <form action="/connection/{{this.connection_id}}/reject" method="POST" style="display:inline;">
+                      <button type="submit">Reject</button>
+                    </form>
+                  </li>
+                {{/each}}
+              </ul>
+            </section>
+          {{/if}}
+        {{/unless}}
+      {{/if}}
     </div>
   </section>
 
-  <div class="profile-sections">
-  <!-- Connections Section -->
-  <section class="connections-section">
-    <h2>Connections:</h2>
-    {{#if connections.length}}
-        <ul>
-            {{#each connections}}
-                <li>
-                    <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
-                    <a href="/profile/{{this.username}}">{{this.username}}</a>
-                    {{#if ../isOwner}}
-                        <button class="start-message-btn" data-recipient-id="{{this.user_id}}">
-                            <img src="resources/img/messages.png" alt="Message Icon">
-                            Message
-                        </button>
+  <!-- connections (only show if any) -->
+  {{#if connections.length}}
+    <section class="connections-section centered">
+      <h2>Connections</h2>
+      <ul>
+        {{#each connections}}
+          <li>
+            <img src="/uploads/{{this.profile_image}}" alt="{{this.username}}'s Photo" class="conn-thumb">
+            <a href="/profile/{{this.username}}">{{this.username}}</a>
+            {{#if isOwner}}
+              <button class="start-message-btn" data-recipient-id="{{this.user_id}}">
+                <img src="/resources/img/messages.png" alt="Message Icon"> Message
+              </button>
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    </section>
+  {{/if}}
 
-                    {{/if}}
-                </li>
-            {{/each}}
-        </ul>
-    {{else}}
-        <p>No connections yet.</p>
-    {{/if}}
-</section>
-
-  <!-- Posts Section -->
+  <!-- grid posts -->
   <section class="posts-section">
-    <h2>Posts by {{user.username}}</h2>
-
     {{#if posts.length}}
-      {{#each posts}}
-        <article class="post-prof">
-         
-          <h3>{{title}}</h3>
+      <div class="posts-grid">
+        {{#each posts}}
+          <div class="post-thumbnail" data-index="{{@index}}">
+            <img src="/uploads/{{this.image}}" alt="{{this.title}}">
+          </div>
 
-          {{#if image}}
-            <img src="/uploads/{{image}}" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
-          {{/if}}
-          
-          <p><strong>Category:</strong> {{category}}</p>
-          <p><strong>Date:</strong> {{simpleDate date_created}}</p>
-          <p>{{description}}</p> 
-        </article>
-      {{/each}}
+          <!-- Hidden full-post template (needed for modal) -->
+          <template id="post-template-{{@index}}">
+            <article class="post-prof">
+              <h2>{{this.title}}</h2>
+              <p><strong>By:</strong> {{this.username}}</p>
+
+              {{#if this.image}}
+                <img src="/uploads/{{this.image}}" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+              {{/if}}
+
+              <p><strong>Tag:</strong> {{this.tags}}</p>
+              <p><strong>Date:</strong> {{simpleDate this.date_created}}</p>
+              <p><strong>Description:</strong> {{this.description}}</p>
+            </article>
+          </template>
+        {{/each}}
+      </div>
     {{else}}
-    <p style="text-align: center; color: var(--text-light); margin-top: 20px;">No posts yet.</p>    {{/if}}
+      <p class="no-posts">No posts yet.</p>
+    {{/if}}
   </section>
-</div>
+
+  <!-- modals -->
+  <div id="postModal" class="modal">
+    <div class="modal-content" id="postModalContent">
+      <span class="close-modal">&times;</span>
+    </div>
+  </div>
 
   <div id="editModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
       <h2>Edit Profile</h2>
-      <form action="/profile/update" method="post">
+      <form action="/profile/update" method="post" enctype="multipart/form-data">
         <label for="edit-profile-pic">Profile Picture:</label>
-        <input type="text" id="edit-profile-pic" name="profilePic" value="{{user.profilePic}}"><br><br>
+        <input type="file" id="edit-profile-pic" name="profileImage" accept="image/*"><br><br>
 
         <label for="edit-website">Website:</label>
         <input type="text" id="edit-website" name="website" value="{{user.website}}"><br><br>
@@ -149,49 +154,46 @@
         <input type="text" id="edit-location" name="location" value="{{user.location}}"><br><br>
 
         <label for="edit-bio">Bio:</label><br>
-        <textarea id="edit-bio" rows="4" cols="50" name="bio">{{user.bio}}</textarea><br><br>
+        <textarea id="edit-bio" rows="4" name="bio">{{user.bio}}</textarea><br><br>
 
         <button id="save-profile-changes" type="submit">Save Changes</button>
       </form>
     </div>
   </div>
 
-  <script src="resources/js/index.js"></script>
+  <script src="/resources/js/index.js"></script>
+  <!-- inline JS fallback for modals -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const modal = document.getElementById('editModal');
-      const btn = document.getElementById('edit-profile-button');
-      const span = document.getElementsByClassName('close')[0];
+    document.addEventListener('DOMContentLoaded', () => {
+      // Edit Profile Modal handlers
+      const editModal = document.getElementById('editModal');
+      const editBtn = document.getElementById('edit-profile-button');
+      const editClose = editModal.querySelector('.close');
+      if (editBtn) editBtn.onclick = () => editModal.style.display = 'block';
+      if (editClose) editClose.onclick = () => editModal.style.display = 'none';
 
-      if (btn) {
-        btn.onclick = function () {
-          modal.style.display = 'block';
-        };
-      }
+      // Post Detail Modal handlers
+      const postModal = document.getElementById('postModal');
+      const postModalContent = document.getElementById('postModalContent');
+      const postClose = postModal.querySelector('.close-modal');
+      document.querySelectorAll('.post-thumbnail').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+          const idx = thumb.dataset.index;
+          const tpl = document.getElementById(`post-template-${idx}`);
+          if (!tpl) return;
+          postModalContent.innerHTML = '';
+          postModalContent.appendChild(tpl.content.cloneNode(true));
+          postModal.style.display = 'block';
+        });
+      });
+      if (postClose) postClose.onclick = () => postModal.style.display = 'none';
 
-      if (span) {
-        span.onclick = function () {
-          modal.style.display = 'none';
-        };
-      }
-
-      window.onclick = function (event) {
-        if (event.target === modal) {
-          modal.style.display = 'none';
-        }
+      // Close modals on outside click
+      window.onclick = (e) => {
+        if (e.target === postModal) postModal.style.display = 'none';
+        if (e.target === editModal) editModal.style.display = 'none';
       };
     });
   </script>
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const messageButtons = document.querySelectorAll('.start-message-btn');
-    messageButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const recipientId = this.getAttribute('data-recipient-id');
-        window.location.href = `/messages?recipientId=${recipientId}`;
-      });
-    });
-  });
- </script>
 </body>
 </html>
