@@ -189,7 +189,7 @@ app.get('/post', (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login');
     }
-    res.render('pages/post', { user: req.session.user });
+    res.render('pages/post', { user: req.session.user, sessionUser: req.session.user });
 });
 
 // Submit post (automatically sets current timestamp)
@@ -271,6 +271,8 @@ app.get('/profile', async (req, res) => {
         [req.session.user.user_id, 'pending']);
     }
 
+    console.log('Session User on Search Page:', req.session.user);
+
     res.render('pages/profile', {
       user,
       posts,                 
@@ -290,10 +292,7 @@ app.get('/profile', async (req, res) => {
 
 // Update profile
 //update your own profile
-app.post(
-  '/profile/update',
-  upload.single('profileImage'),
-  async (req, res) => {
+app.post('/profile/update', upload.single('profileImage'), async (req, res) => {
     if (!req.session.user) {
       return res.redirect('/login');
     }
@@ -489,11 +488,11 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password, confirmPassword, isClientHidden } = req.body;
-  const isClient = isClientHidden === 'true';
-  const defaultProfilePic = '/resources/img/defaultProfilePic.png';
+  const { username, password, confirmPassword, accountType } = req.body;
+  const isClient = accountType === 'client'; 
+  const defaultProfilePic = 'defaultProfilePic.png';
 
-  if (!username || !password || !confirmPassword) {
+  if (!username || !password || !confirmPassword || !accountType) {
     return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
@@ -562,20 +561,14 @@ app.get('/search', async (req, res) => {
         `SELECT username, bio, profile_image FROM users WHERE LOWER(username) LIKE LOWER($1)`,
         [`%${searchQuery}%`]
       );
-    } else if (searchType === 'titles') {
-      result = await db.any(
-        `SELECT title, description, date_created, tags, image
-         FROM posts
-         WHERE LOWER(title) LIKE LOWER($1)`,
-        [`%${searchQuery}%`]
-      );
-    } else if (searchType === 'tags') {
-      result = await db.any(
-        `SELECT title, description, date_created, tags, image
-         FROM posts
-         WHERE LOWER(tags) LIKE LOWER($1)`,
-        [`%${searchQuery}%`]
-      );
+    } else if (searchType === 'titles' || searchType === 'tags') {
+      let query = `
+        SELECT p.title, p.description, p.date_created, p.image, p.tags, u.username
+        FROM posts p
+        JOIN users u ON p.user_id = u.user_id
+        WHERE LOWER(${searchType === 'titles' ? 'title' : 'tags'}) LIKE LOWER($1)
+      `;
+      result = await db.any(query, [`%${searchQuery}%`]);
     }
 
     res.render('pages/search', {
@@ -585,9 +578,10 @@ app.get('/search', async (req, res) => {
       user: req.session.user,
       isUserSearch: searchType === 'users',
       isTitleSearch: searchType === 'titles',
-      isTagSearch: searchType === 'tags'
+      isTagSearch: searchType === 'tags',
+      sessionUser: req.session.user
     });
-    
+
 
   } catch (err) {
     console.error('Search error:', err);
@@ -637,7 +631,8 @@ app.get('/messages', async (req, res) => {
       user: req.session.user,
       conversations: conversations,
       selectedRecipient: selectedRecipient,
-      messages: messagesWithRecipient
+      messages: messagesWithRecipient,
+      sessionUser: req.session.user
     });
   } catch (error) {
     console.error("Error retrieving conversations/messages:", error);
