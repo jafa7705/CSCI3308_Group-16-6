@@ -484,7 +484,7 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
   const { username, password, confirmPassword, isClientHidden } = req.body;
   const isClient = isClientHidden === 'true';
-  const defaultProfilePic = '/resources/img/defaultProfilePic.png';
+  const defaultProfilePic = 'defaultProfilePic.png';
 
   if (!username || !password || !confirmPassword) {
     return res.status(400).render('pages/register', { message: 'All fields are required.' });
