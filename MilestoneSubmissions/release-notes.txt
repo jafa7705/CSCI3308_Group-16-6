@@ -1,9 +1,42 @@
-Version: 1.00
-Date: 4/1/2025
-
-Changes:
+Week 1
 - Added home/feed page
 - Added profile page
 - Added login/registration pages
 - Footer added with copyright information
 - Website can be hosted locally
+
+Week 2
+- Created database
+- Added profile page funcitoanlity with db
+- Added bio boxes with db
+- Added icons to profile page
+- Created routes
+- fixed registration routes
+- added footer
+- Various fixes
+
+
+Week 3 
+- Added code for test cases
+- Fixed modal for edit profile
+- Fixed visiblity for different users for profile buttons
+- Added default profile photo
+- Added post partial
+- Post page Created
+- Login/Register pages Created
+- Added basic searches
+- Added functinal header
+- many various fixes
+
+Week 4
+- Lots of css work
+- Working registration 
+- Made registration page same format as login page 
+- Add main.hbs layout to make sure every page see the nav bar
+- Fixed edit profile, added info for contact me
+- Added user data in edit
+- Fixed bio box white space
+- Added functional user data that persists across pages and fixed header
+- Added error message back for taken username error
+- Fixed nav bar not showing user being logged in when on search page
+- Added images to posts 
