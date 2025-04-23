@@ -271,6 +271,8 @@ app.get('/profile', async (req, res) => {
         [req.session.user.user_id, 'pending']);
     }
 
+    console.log('Session User on Search Page:', req.session.user);
+
     res.render('pages/profile', {
       user,
       posts,                 
@@ -482,11 +484,11 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password, confirmPassword, isClientHidden } = req.body;
-  const isClient = isClientHidden === 'true';
+  const { username, password, confirmPassword, accountType } = req.body;
+  const isClient = accountType === 'client'; 
   const defaultProfilePic = 'defaultProfilePic.png';
 
-  if (!username || !password || !confirmPassword) {
+  if (!username || !password || !confirmPassword || !accountType) {
     return res.status(400).render('pages/register', { message: 'All fields are required.' });
   }
 
