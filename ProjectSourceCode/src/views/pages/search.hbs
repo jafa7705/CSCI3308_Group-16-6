@@ -20,17 +20,23 @@
       {{/each}}
     {{else}}
       {{! Show posts }}
+      <div class="posts-container">
       {{#each items}}
-        <li style="margin: 20px 30px; border: 1px solid #ddd; padding: 15px;">
-          <h4>{{title}}</h4>
-          <p><strong>Category:</strong> {{category}}</p>
-          <p><strong>Date:</strong> {{date_created}}</p>
-          <p>{{description}}</p>
-          {{#if tags}}
-            <p><strong>Tags:</strong> {{tags}}</p>
+        <article class="post">
+          <h2>{{title}}</h2>
+          <p><strong>By:</strong> <a href="/profile/{{username}}" style="color: inherit; text-decoration: none;">{{username}}</a></p>
+          
+          {{#if image}}
+            <img src="/uploads/{{image}}" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
           {{/if}}
-        </li>
+
+          <p><strong>Tag:</strong> {{tags}}</p>
+          <p><strong>Date:</strong> {{simpleDate date_created}}</p>
+          <p><strong>Description:</strong> {{description}}</p>
+
+        </article>
       {{/each}}
+      </div>
     {{/if}}
   </ul>
 {{else}}
