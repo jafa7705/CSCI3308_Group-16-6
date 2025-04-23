@@ -57,7 +57,6 @@
       <!-- Pending Requests (only owner & artist) -->
       {{#if isOwner}}
         {{#unless user.isclient}}
-          {{!-- only show if there is at least one pending request --}}
           {{#if pendingRequests.length}}
             <section class="pending-connections">
               <h2>Pending Requests</h2>
@@ -110,6 +109,22 @@
           <div class="post-thumbnail" data-index="{{@index}}">
             <img src="/uploads/{{this.image}}" alt="{{this.title}}">
           </div>
+
+          <!-- Hidden full-post template (needed for modal) -->
+          <template id="post-template-{{@index}}">
+            <article class="post-prof">
+              <h2>{{this.title}}</h2>
+              <p><strong>By:</strong> {{this.username}}</p>
+
+              {{#if this.image}}
+                <img src="/uploads/{{this.image}}" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+              {{/if}}
+
+              <p><strong>Tag:</strong> {{this.tags}}</p>
+              <p><strong>Date:</strong> {{simpleDate this.date_created}}</p>
+              <p><strong>Description:</strong> {{this.description}}</p>
+            </article>
+          </template>
         {{/each}}
       </div>
     {{else}}
@@ -147,16 +162,17 @@
   </div>
 
   <script src="/resources/js/index.js"></script>
+  <!-- inline JS fallback for modals -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Edit Profile Modal
+      // Edit Profile Modal handlers
       const editModal = document.getElementById('editModal');
       const editBtn = document.getElementById('edit-profile-button');
       const editClose = editModal.querySelector('.close');
       if (editBtn) editBtn.onclick = () => editModal.style.display = 'block';
       if (editClose) editClose.onclick = () => editModal.style.display = 'none';
 
-      // Post Detail Modal
+      // Post Detail Modal handlers
       const postModal = document.getElementById('postModal');
       const postModalContent = document.getElementById('postModalContent');
       const postClose = postModal.querySelector('.close-modal');
@@ -172,21 +188,12 @@
       });
       if (postClose) postClose.onclick = () => postModal.style.display = 'none';
 
-      // Global close on outside click
+      // Close modals on outside click
       window.onclick = (e) => {
-        if (e.target === editModal) editModal.style.display = 'none';
         if (e.target === postModal) postModal.style.display = 'none';
+        if (e.target === editModal) editModal.style.display = 'none';
       };
-
-      // Messaging Buttons
-      document.querySelectorAll('.start-message-btn').forEach(button => {
-        button.addEventListener('click', () => {
-          const recipientId = button.getAttribute('data-recipient-id');
-          window.location.href = `/messages?recipientId=${recipientId}`;
-        });
-      });
     });
   </script>
-
 </body>
 </html>
