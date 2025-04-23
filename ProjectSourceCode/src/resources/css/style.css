@@ -30,7 +30,6 @@ body {
 
 /* Header */
 header {
-  /*background-color: var(--cu-gold);*/
   background-image: url('../img/customBanner.jpg'); 
   background-size: cover; 
   background-repeat: no-repeat; 
@@ -174,7 +173,6 @@ form div {
 
 /* Navbar */
 .navbar {
-  /*background-color: var(--cu-gold) !important;*/
   padding: 6px 0px;
   border: none;
   border-bottom: 2px solid #333;
@@ -191,7 +189,7 @@ form div {
 .navbar-brand img {
   width: 45px;
   height: 45px;
-  margin-right: 15px; /* Reduce margin to avoid pushing the content */
+  margin-right: 15px;
   flex-shrink: 0;
 }
 
@@ -206,19 +204,19 @@ form div {
   font-weight: 600;
   color: #333 !important;
   transition: color 0.3s ease, text-decoration 0.3s ease;
-  padding: 6px 10px; /* Added padding for clickable space */
+  padding: 6px 10px;
   border-radius: 4px;
 }
 
 .navbar-nav .nav-link:hover {
-  color: var(--dark-bg); /* Darkens on hover */
-  text-decoration: underline; /* Underlines the link when hovered */
+  color: var(--dark-bg); 
+  text-decoration: underline; 
 }
 
 .input-group select,
 .input-group input[type="search"],
 .input-group button {
-  height: 42px;  /* Make sure all elements in the group have equal height */
+  height: 42px;  
   font-size: 16px;
 }
 
@@ -288,7 +286,7 @@ h1 {
   border-radius: 8px;
   padding: 20px;
   max-width: 400px;
-  margin: 20px auto 0 auto; /* center it horizontally */
+  margin: 20px auto 0 auto; 
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -377,7 +375,7 @@ h1 {
 }
 
 .connect-section button:hover {
-  background-color: #bfa15b; /*darker gold on hover */
+  background-color: #bfa15b; 
 }
 
 .connect-section button:disabled {
@@ -532,16 +530,16 @@ h1 {
 
 
 .posts-container {
-  max-width: 800px; /* Set max-width to match the Art Feed title width */
-  margin: 0 auto; /* Center the container horizontally */
-  padding: 20px 0; /* Add vertical padding */
+  max-width: 800px; 
+  margin: 0 auto; 
+  padding: 20px 0; 
 }
 
 /* Individual Post Styling */
 .post {
   background-color: rgb(36, 36, 36);
-  border: 1px solid #fff; /* white border around the post */
-  border-radius: 4px; /* rounded corners */
+  border: 1px solid #fff; 
+  border-radius: 4px; 
   padding: 20px;
   margin-bottom: 80px;
   margin-top: 80px;
@@ -567,13 +565,13 @@ h1 {
   max-width: 80%;
   height: auto;
   display: block;
-  border-radius: 2px; /*rounded corners*/
+  border-radius: 2px; 
   margin: 10px 0;
 }
 
 /* Description and tags */
 .post p strong {
-  color: var(--cu-gold); /* Accent color for strong text */
+  color: var(--cu-gold); 
 }
 
 /* Tags Section */
@@ -593,8 +591,8 @@ h1 {
 
 
 .connections li {
-  display: flex; /* Enable flexbox for list items */
-  align-items: center; /* Vertically align items in the center */
+  display: flex; 
+  align-items: center; 
   margin-bottom: 10px;
 }
 
@@ -613,7 +611,7 @@ h1 {
 }
 
 .connections li .start-message-btn {
-  margin-left: auto; /* Push the message button to the right */
+  margin-left: auto; 
 }
 
 /* Forms & Inputs */
@@ -666,14 +664,14 @@ form small {
 
 
 footer {
-  background-color: var(--dark-bg); /* Dark footer background */
-  color: rgb(155, 155, 155); /* Light text color */
-  padding: 4px 0; /* Add some padding to the footer */
+  background-color: var(--dark-bg); 
+  color: rgb(155, 155, 155); 
+  padding: 4px 0; 
   border-top: 1px solid #444;
 }
 
 .container {
-  padding-bottom: 50px; /* Add padding to the bottom of the content so footer won't overlap */
+  padding-bottom: 50px; 
   flex:1;
 }
 
@@ -724,7 +722,7 @@ footer {
 
 .post-thumbnail {
   width: 100%;
-  padding-top: 100%; /* square thumbnails */
+  padding-top: 100%; 
   position: relative;
   overflow: hidden;
   border-radius: 8px;
