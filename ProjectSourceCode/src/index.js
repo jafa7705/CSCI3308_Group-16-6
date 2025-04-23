@@ -189,7 +189,7 @@ app.get('/post', (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login');
     }
-    res.render('pages/post', { user: req.session.user });
+    res.render('pages/post', { user: req.session.user, sessionUser: req.session.user });
 });
 
 // Submit post (automatically sets current timestamp)
@@ -292,10 +292,7 @@ app.get('/profile', async (req, res) => {
 
 // Update profile
 //update your own profile
-app.post(
-  '/profile/update',
-  upload.single('profileImage'),
-  async (req, res) => {
+app.post('/profile/update', upload.single('profileImage'), async (req, res) => {
     if (!req.session.user) {
       return res.redirect('/login');
     }
@@ -581,7 +578,8 @@ app.get('/search', async (req, res) => {
       user: req.session.user,
       isUserSearch: searchType === 'users',
       isTitleSearch: searchType === 'titles',
-      isTagSearch: searchType === 'tags'
+      isTagSearch: searchType === 'tags',
+      sessionUser: req.session.user
     });
 
 
@@ -633,7 +631,8 @@ app.get('/messages', async (req, res) => {
       user: req.session.user,
       conversations: conversations,
       selectedRecipient: selectedRecipient,
-      messages: messagesWithRecipient
+      messages: messagesWithRecipient,
+      sessionUser: req.session.user
     });
   } catch (error) {
     console.error("Error retrieving conversations/messages:", error);
