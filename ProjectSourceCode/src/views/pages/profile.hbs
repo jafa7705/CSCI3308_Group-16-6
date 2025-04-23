@@ -18,7 +18,7 @@
         <section class="pending-connections">
           <h2>Pending Requests</h2>
           {{#if pendingRequests.length}}
-            <ul>
+            <ul style="list-style-type: none; padding-left: 0;">
               {{#each pendingRequests}}
                 <li>
                   <img src="/uploads/{{this.profile_image}}" alt="{{this.client_username}}'s Profile Photo" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid white; box-sizing: border-box;">
@@ -47,9 +47,9 @@
 
       <p id="user-role">
         {{#if user.isclient}} 
-            Client
+            <strong>Client</strong>
         {{else}}
-            Artist
+            <strong>Artist</strong>
         {{/if}}
       </p>
 
@@ -142,13 +142,13 @@
         <label for="edit-profile-pic">Profile Picture:</label>
         <input type="text" id="edit-profile-pic" name="profilePic" value="{{user.profilePic}}"><br><br>
 
-        <label for="edit-website">Website:</label>
+        <label for="edit-website"><strong>Website:</strong></label>
         <input type="text" id="edit-website" name="website" value="{{user.website}}"><br><br>
 
-        <label for="edit-location">Location:</label>
+        <label for="edit-location"><strong>Location:</strong></label>
         <input type="text" id="edit-location" name="location" value="{{user.location}}"><br><br>
 
-        <label for="edit-bio">Bio:</label><br>
+        <label for="edit-bio"></strong>Bio:</strong></label><br>
         <textarea id="edit-bio" rows="4" cols="50" name="bio">{{user.bio}}</textarea><br><br>
 
         <button id="save-profile-changes" type="submit">Save Changes</button>
