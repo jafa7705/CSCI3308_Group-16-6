@@ -1,20 +1,13 @@
-4/4 Group 16-6 Team Meeting
+Group 16-6 Team Meetings
+4/4 Team Meeting
+Finished part c of lab, Designed Database, Nav Bar/Header redesign, Decided on New Post page
+Todo: Implement database, Finish Nav Bar/Header, Finish Profile Frame (after database), Registration page direct access
 
-Finish part c of lab
-Designed Database
-Nav Bar/Header redesign
-Decided on New Post page
+4/11 Team Meeting
+Connect front and back ends. Database needs user, post, and image functionality.
+Start to work on front end styling as well
 
-Todo:
-Implement database
-Finish Nav Bar/Header
-Finish Profile Frame (after database)
-Registration page direct access
-
-
-
-4/18 Group Meeting logs
-
+4/18 Team Meeting
 Done this week:
 Fixed the nav bar errors
 Added images to the post
@@ -22,10 +15,40 @@ Added message setup and the functions
 Search profiles link working
 Create new database
 Design the overall css.style for the whole project
-Dark/light mode added
+Theme/color scheme
 
+4/22 Team Meeting
+Polishing and working on the presentation
 TODO:
 Check the projects work on all functions
 Prepare for the presentation
 Clean all the stuff if don't need anymore, make the code clean and tidy.
 
+TA MEETING LOGS
+3/18
+Jason: Worked on registration page. No challenges. Next work on adding buttons for pages
+Christian: Worked on profile page. Had trouble with modal. Next work on refining profile page
+Jiaye: worked on partials. Had trouble finishing. Next work on finishing partials
+Sydney: Worked on login page. No challenges. Next work on 
+Evan: Worked on home page. Need to focus more on database rather than CSS and HTML. Next work on database
+
+4/1
+Jason: Worked on test cases. Trouble with the login tests working. Next work on implementing more tests through code.
+Christian: Started working on connections for artists/clients. Some bugs, will work on resolving
+Jiaye: 
+Sydney: Finished working on login page. No trouble, will work on search bar
+Evan: Worked on database and got backend started. Will continue fleshing out database. 
+
+4/8
+Jason: Worked on navbar. Had trouble with CSS. Next week work on finishing the CSS and styling
+Christian: Started working on messages page, had trouble with the API. Next work on finishing it
+Jiaye: Worked on CSS, will continue working on bug fixes
+Sydney: Finished working on search bar. Will work on sample posts and images.
+Evan: Got user profile connected to backend. Will continue working on database
+
+4/15
+Jason: Worked on CSS for the whole website. Had challenges with making everything cohesive. Next work on bugs through the site
+Christian: Worked on finishing up messages page. No challenges. Work on release notes and bugs
+Jiaye: Worked on bug fixes, will continue working on bug fixes
+Sydney: Worked on CSS, will continue working on CSS.
+Evan: Finished databse and got image functionality. Will work on bug fixes
